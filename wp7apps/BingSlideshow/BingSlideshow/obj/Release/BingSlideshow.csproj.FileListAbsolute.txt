@@ -1,0 +1,15 @@
+C:\Users\Lukas\Documents\Programmieren\WP7\BingSlideshow\BingSlideshow\BingSlideshow\Bin\Release\ApplicationIcon.png
+C:\Users\Lukas\Documents\Programmieren\WP7\BingSlideshow\BingSlideshow\BingSlideshow\Bin\Release\Background.png
+C:\Users\Lukas\Documents\Programmieren\WP7\BingSlideshow\BingSlideshow\BingSlideshow\Bin\Release\BingSlideshow.dll
+C:\Users\Lukas\Documents\Programmieren\WP7\BingSlideshow\BingSlideshow\BingSlideshow\Bin\Release\BingSlideshow.pdb
+C:\Users\Lukas\Documents\Programmieren\WP7\BingSlideshow\BingSlideshow\BingSlideshow\Bin\Release\AppManifest.xaml
+C:\Users\Lukas\Documents\Programmieren\WP7\BingSlideshow\BingSlideshow\BingSlideshow\Bin\Release\BingSlideshow.xap
+C:\Users\Lukas\Documents\Programmieren\WP7\BingSlideshow\BingSlideshow\BingSlideshow\Bin\Release\Microsoft.Phone.Controls.dll
+C:\Users\Lukas\Documents\Programmieren\WP7\BingSlideshow\BingSlideshow\BingSlideshow\Bin\Release\Microsoft.Phone.Controls.xml
+C:\Users\Lukas\Documents\Programmieren\WP7\BingSlideshow\BingSlideshow\BingSlideshow\obj\Release\ResolveAssemblyReference.cache
+C:\Users\Lukas\Documents\Programmieren\WP7\BingSlideshow\BingSlideshow\BingSlideshow\obj\Release\App.g.i.cs
+C:\Users\Lukas\Documents\Programmieren\WP7\BingSlideshow\BingSlideshow\BingSlideshow\obj\Release\MainPage.g.i.cs
+C:\Users\Lukas\Documents\Programmieren\WP7\BingSlideshow\BingSlideshow\BingSlideshow\obj\Release\BingSlideshow.g.resources
+C:\Users\Lukas\Documents\Programmieren\WP7\BingSlideshow\BingSlideshow\BingSlideshow\obj\Release\BingSlideshow.dll
+C:\Users\Lukas\Documents\Programmieren\WP7\BingSlideshow\BingSlideshow\BingSlideshow\obj\Release\BingSlideshow.pdb
+C:\Users\Lukas\Documents\Programmieren\WP7\BingSlideshow\BingSlideshow\BingSlideshow\obj\Release\XapCacheFile.xml

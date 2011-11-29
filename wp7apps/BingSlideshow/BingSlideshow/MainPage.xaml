@@ -17,19 +17,18 @@
 
     <!--LayoutRoot is the root grid where all page content is placed-->
     <Grid x:Name="LayoutRoot" Background="Transparent">
- 
+        
         <!--Panorama control-->
         <controls:Panorama Title="" x:Name="Pan" Margin="0,-16,0,16">
-            <!--<controls:Panorama.Background>
-                <ImageBrush ImageSource="PanoramaBackground.png"/>
-            </controls:Panorama.Background>-->
-
-            <controls:PanoramaItem Header="slideshow"></controls:PanoramaItem>
+            
+            <controls:PanoramaItem Header="slideshow">
+                <Grid x:Name="ContentPanel" Margin="6,100,6,6">
+                    <TextBlock Height="30" HorizontalAlignment="Left" Margin="6,6,0,0" Name="TextBlock1" Text="Searchterm" VerticalAlignment="Top" Width="111" />
+                    <TextBox Height="72" HorizontalAlignment="Left" Margin="6,42,0,0" Name="TextBox1" Text="" VerticalAlignment="Top" Width="395" />
+                    <Button Content="Search" Height="72" HorizontalAlignment="Left" Margin="250,117,0,0" Name="Button1" VerticalAlignment="Top" Width="160" Click="Button1_Click" />
+                </Grid>
+            </controls:PanoramaItem>
         </controls:Panorama>
-        <Grid x:Name="ContentPanel" Margin="12,231,24,299">
-            <TextBlock Height="30" HorizontalAlignment="Left" Margin="6,6,0,0" Name="TextBlock1" Text="Searchterm" VerticalAlignment="Top" Width="111" />
-            <TextBox Height="72" HorizontalAlignment="Left" Margin="6,42,0,0" Name="TextBox1" Text="" VerticalAlignment="Top" Width="432" />
-            <Button Content="Search" Height="72" HorizontalAlignment="Left" Margin="278,120,0,0" Name="Button1" VerticalAlignment="Top" Width="160" Click="Button1_Click" />
-        </Grid>
+        <TextBlock Height="33" HorizontalAlignment="Left" Margin="12,87,0,0" x:Name="textBlock2" Text="TextBlock" VerticalAlignment="Top" Width="396" />
     </Grid>
 </phone:PhoneApplicationPage>
