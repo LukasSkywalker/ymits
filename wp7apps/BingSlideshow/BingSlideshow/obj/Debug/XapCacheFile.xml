@@ -1,9 +1,9 @@
-﻿<xapCache source="C:\Users\Lukas\Documents\Programmieren\WP7\BingSlideshow2\BingSlideshow\BingSlideshow\Bin\Debug\BingSlideshow.xap" wasSigned="False" certificateThumbprint="" TimeStampUrl="" lastWriteTime="28.11.2011 23:36:48">
-  <file source="C:\Users\Lukas\Documents\Programmieren\WP7\BingSlideshow2\BingSlideshow\BingSlideshow\Bin\Debug\WMAppManifest.xml" archivePath="WMAppManifest.xml" lastWriteTime="28.11.2011 11:27:17" />
-  <file source="C:\Users\Lukas\Documents\Programmieren\WP7\BingSlideshow2\BingSlideshow\BingSlideshow\Background.png" archivePath="Background.png" lastWriteTime="28.11.2011 11:26:30" />
-  <file source="C:\Users\Lukas\Documents\Programmieren\WP7\BingSlideshow2\BingSlideshow\BingSlideshow\ApplicationIcon.png" archivePath="ApplicationIcon.png" lastWriteTime="28.11.2011 11:26:30" />
-  <file source="C:\Users\Lukas\Documents\Programmieren\WP7\BingSlideshow2\BingSlideshow\BingSlideshow\obj\Debug\BingSlideshow.dll" archivePath="BingSlideshow.dll" lastWriteTime="28.11.2011 23:36:48" />
+﻿<xapCache source="C:\Users\Lukas\Documents\Programmieren\WP7\BingSlideshow\BingSlideshow\BingSlideshow\Bin\Debug\BingSlideshow.xap" wasSigned="False" certificateThumbprint="" TimeStampUrl="" lastWriteTime="29.11.2011 07:59:06">
+  <file source="C:\Users\Lukas\Documents\Programmieren\WP7\BingSlideshow\BingSlideshow\BingSlideshow\Bin\Debug\WMAppManifest.xml" archivePath="WMAppManifest.xml" lastWriteTime="28.11.2011 11:27:17" />
+  <file source="C:\Users\Lukas\Documents\Programmieren\WP7\BingSlideshow\BingSlideshow\BingSlideshow\Background.png" archivePath="Background.png" lastWriteTime="28.11.2011 11:26:30" />
+  <file source="C:\Users\Lukas\Documents\Programmieren\WP7\BingSlideshow\BingSlideshow\BingSlideshow\ApplicationIcon.png" archivePath="ApplicationIcon.png" lastWriteTime="28.11.2011 11:26:30" />
+  <file source="C:\Users\Lukas\Documents\Programmieren\WP7\BingSlideshow\BingSlideshow\BingSlideshow\obj\Debug\BingSlideshow.dll" archivePath="BingSlideshow.dll" lastWriteTime="29.11.2011 07:59:05" />
   <file source="C:\Program Files\Microsoft SDKs\Windows Phone\v7.1\Libraries\Silverlight\Microsoft.Phone.Controls.dll" archivePath="Microsoft.Phone.Controls.dll" lastWriteTime="15.09.2011 15:36:26" />
-  <file source="C:\Users\Lukas\Documents\Programmieren\WP7\BingSlideshow2\BingSlideshow\BingSlideshow\SplashScreenImage.jpg" archivePath="SplashScreenImage.jpg" lastWriteTime="28.11.2011 11:26:30" />
-  <file source="C:\Users\Lukas\Documents\Programmieren\WP7\BingSlideshow2\BingSlideshow\BingSlideshow\Bin\Debug\AppManifest.xaml" archivePath="AppManifest.xaml" lastWriteTime="28.11.2011 11:27:16" />
+  <file source="C:\Users\Lukas\Documents\Programmieren\WP7\BingSlideshow\BingSlideshow\BingSlideshow\SplashScreenImage.jpg" archivePath="SplashScreenImage.jpg" lastWriteTime="28.11.2011 11:26:30" />
+  <file source="C:\Users\Lukas\Documents\Programmieren\WP7\BingSlideshow\BingSlideshow\BingSlideshow\Bin\Debug\AppManifest.xaml" archivePath="AppManifest.xaml" lastWriteTime="28.11.2011 11:27:16" />
 </xapCache>

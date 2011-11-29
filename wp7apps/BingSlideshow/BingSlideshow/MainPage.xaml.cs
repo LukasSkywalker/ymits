@@ -77,6 +77,7 @@ namespace BingSlideshow
             Grid grid = new Grid();
 
             var image = new Image();
+            image.ImageOpened += new EventHandler<RoutedEventArgs>(onImageLoaded);
             image.Source = img;
             image.Stretch = Stretch.Uniform;
             grid.Children.Add(image);
@@ -87,13 +88,17 @@ namespace BingSlideshow
             Pan.Items.Add(pi);
         }
 
+        private void onImageLoaded(Object sender, RoutedEventArgs e) {
+            MessageBox.Show("Loaded");
+        }
+
         private void downloadImages(Stack<String> urls) {
             foreach (string s in urls)
             {
                 loadImage(s);
             }
             step();
-            startStep();
+            //startStep();
         }
 
         private void startStep(){
@@ -132,11 +137,11 @@ namespace BingSlideshow
                 Pan.DefaultItem = Pan.Items[0];
                 PanoramaItem item = Pan.DefaultItem as PanoramaItem;
                 Grid grid = item.Content as Grid;
-                child = grid.Children[1] as Image;
+                child = grid.Children[0] as Image;
             }
             imageWidth = child.ActualWidth;
 
-            startAnimation();
+            //startAnimation();
         }
 
         private void startAnimation()
@@ -210,24 +215,6 @@ namespace BingSlideshow
             }
         }
 
-        public bool hasValidImage(PanoramaItem item) {
-            try
-            {
-                Grid grid = item.Content as Grid;
-                Image child = grid.Children[0] as Image;
-                double iWidth = child.ActualWidth;
-                if (iWidth != 0)
-                {
-                    return true;
-                }
-                else
-                {
-                    return false;
-                }
-            }
-            catch (Exception){
-                return false;
-            }
-        }
+
     }
 }
