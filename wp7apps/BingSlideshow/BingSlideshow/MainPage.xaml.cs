@@ -28,6 +28,8 @@ namespace BingSlideshow
         private Stack<String> urls = new Stack<String>();
         private double imageWidth = 0;
         private int imageWidthCounter = 0;
+        private int imageDownloadCounter = 0;
+        private bool panoramaAdvanced = false;
         
 
         // Constructor
@@ -82,7 +84,12 @@ namespace BingSlideshow
         }
 
         private void getResults(String searchterm){
+            panoramaAdvanced = false;
+            imageDownloadCounter = 0;
             urls.Clear();
+            if (myStep.IsEnabled) {
+                myStep.Stop();
+            }
             if (!NetworkInterface.GetIsNetworkAvailable()) {
                 MessageBox.Show("Please connect to the internet");
             }
@@ -134,7 +141,10 @@ namespace BingSlideshow
         }
 
         private void onImageLoaded(Object sender, RoutedEventArgs e) {
-            
+            if (!panoramaAdvanced) {
+                Pan.DefaultItem = Pan.Items[1];
+                panoramaAdvanced = true;
+            }
         }
 
         private void onImageError(Object sender, RoutedEventArgs e) {
@@ -152,25 +162,20 @@ namespace BingSlideshow
             System.Diagnostics.Debug.WriteLine("Images downloaded");
         }
 
-        private void startStep(){
-            myStep.Interval = new TimeSpan( 0, 0, 0, 4, 0);
+        private void startDownload(){
+            myStep.Interval = new TimeSpan( 0, 0, 0, 2, 0);
             myStep.Tick +=
             delegate(object s, EventArgs args)
             {
-                step();
+                if (imageDownloadCounter < urls.Count) {
+                    loadImage(urls.ElementAt(imageDownloadCounter));
+                    imageDownloadCounter++;
+                }
+                else {
+                    myStep.Stop();
+                }
             };
             myStep.Start();
-        }
-
-        private void step(){
-            
-            try
-            {
-                Pan.DefaultItem = Pan.Items[1];
-            }
-            catch (Exception) {
-                Pan.DefaultItem = Pan.Items[0];
-            }
         }
 
         private void startAnimation()
@@ -237,8 +242,9 @@ namespace BingSlideshow
                 System.Diagnostics.Debug.WriteLine("URLs matched");
 
                 //urls holds an array of URLs
-                downloadImages(urls);
-                step();
+                //downloadImages(urls);
+                startDownload();
+                //step();
 
             }
             finally
