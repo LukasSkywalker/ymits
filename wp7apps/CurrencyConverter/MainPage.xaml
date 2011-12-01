@@ -40,6 +40,8 @@
             <TextBlock Height="36" Name="TextBlock2" Text="To" Width="50" HorizontalAlignment="Left" VerticalAlignment="Top" Grid.Column="1" Margin="244,6,0,0" />
             <ListBox Grid.Column="1" Height="239" HorizontalAlignment="Left" Margin="244,42,0,0" Name="ToListBox" VerticalAlignment="Top" Width="200" Grid.ColumnSpan="2" />
             <TextBlock Grid.Column="1" Height="67" HorizontalAlignment="Left" Margin="0,534,0,0" Name="TextBlock4" Text="" VerticalAlignment="Top" Width="444" Grid.ColumnSpan="2" />
+            <Button Content="Button" Grid.Column="2" Height="72" HorizontalAlignment="Left" Margin="14,328,0,0" Name="Button2" VerticalAlignment="Top" Width="160" />
+            <TextBox Grid.Column="1" Grid.ColumnSpan="2" Height="72" HorizontalAlignment="Left" Margin="73,250,0,0" Name="TextBox1" Text="TextBox" VerticalAlignment="Top" Width="460" />
         </Grid>
     </Grid>
  

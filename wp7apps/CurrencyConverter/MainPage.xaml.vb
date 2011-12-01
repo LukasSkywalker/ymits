@@ -114,4 +114,8 @@ Partial Public Class MainPage
             ToListBox.Items.Add(currencyStrings2(x))
         Next x
     End Sub
+
+    Private Sub Button2_Click(sender As System.Object, e As System.Windows.RoutedEventArgs) Handles Button2.Click
+        MessageBox.Show(CType(TextBox1.Text, Integer) + CType(AmountTextBox.Text, Integer))
+    End Sub
 End Class
