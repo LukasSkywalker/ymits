@@ -24,6 +24,7 @@ namespace MusicBird
 
         // Timer for updating the UI
         DispatcherTimer _timer;
+        DispatcherTimer _tileTimer;
 
         // Indexes into the array of ApplicationBar.Buttons
         const int prevButton = 0;
@@ -62,6 +63,10 @@ namespace MusicBird
             _timer.Interval = TimeSpan.FromSeconds(0.5);
             _timer.Tick += new EventHandler(UpdateState);
 
+            _tileTimer = new DispatcherTimer();
+            _tileTimer.Interval = TimeSpan.FromSeconds(5);
+            _tileTimer.Tick += new EventHandler(setAppTile);
+
             BackgroundAudioPlayer.Instance.PlayStateChanged += new EventHandler(Instance_PlayStateChanged);
 
             if (BackgroundAudioPlayer.Instance.PlayerState == PlayState.Playing)
@@ -82,6 +87,7 @@ namespace MusicBird
         /// <param name="e"></param>
         void Instance_PlayStateChanged(object sender, EventArgs e)
         {
+            //_tileTimer.Start();
             switch (BackgroundAudioPlayer.Instance.PlayerState)
             {
                 case PlayState.Playing:
@@ -343,6 +349,47 @@ namespace MusicBird
             AudioPlaybackAgent1.AudioPlayer.addToList(current);            
 
             //Panorama.DefaultItem = playerItem;
+        }
+
+        private void setAppTile(object sender, EventArgs e)
+        {
+            int newCount = 0;
+
+            // Application Tile is always the first Tile, even if it is not pinned to Start.
+            ShellTile TileToFind = ShellTile.ActiveTiles.First();
+
+            // Application should always be found
+            if (TileToFind != null)
+            {
+
+                string status;
+                int count;
+                if (BackgroundAudioPlayer.Instance.PlayerState == PlayState.Playing)
+                {
+                    status = "Playing...";
+                    count = 1;
+                }
+                else {
+                    status = "Paused";
+                    count = 0;
+                }
+
+
+                // Set the properties to update for the Application Tile.
+                // Empty strings for the text values and URIs will result in the property being cleared.
+                StandardTileData NewTileData = new StandardTileData
+                {
+                    Title = "MusicBird",
+                    //BackgroundImage = new Uri(textBoxBackgroundImage.Text, UriKind.Relative),
+                    Count = 0,
+                    //BackTitle = status,
+                    //BackBackgroundImage = new Uri(textBoxBackBackgroundImage.Text, UriKind.Relative),
+                    //BackContent = BackgroundAudioPlayer.Instance.Track.Title + " - " + BackgroundAudioPlayer.Instance.Track.Artist
+                };
+
+                // Update the Application Tile
+                TileToFind.Update(NewTileData);
+            }
         }
 
     }
