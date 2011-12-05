@@ -259,6 +259,7 @@ namespace MusicBird
         {
             string url = "http://mp3skull.com/mp3/" + query.Replace(" ", "_") + ".html";
             System.Diagnostics.Debug.WriteLine("Opening URL "+url);
+            wc.CancelAsync();
             wc.OpenReadAsync(new Uri(url));
         }
 
@@ -400,6 +401,9 @@ namespace MusicBird
                     updatePlaylist();
                     Panorama.DefaultItem = playerItem;
                     break;
+                case "download":
+                    saveTrack(selectedTrack.artist+" - "+selectedTrack.title, selectedTrack.url);
+                    break;
                 default:
                     break;
             
@@ -519,36 +523,47 @@ namespace MusicBird
                 } 
             }
 
-            private void playlistItem_Click(object sender, RoutedEventArgs e) { 
-                
+            private void playlistItem_Click(object sender, RoutedEventArgs e) {
+                TrackListItem selectedTrack = (sender as FrameworkElement).DataContext as TrackListItem;
+                AudioTrack current = new AudioTrack(new Uri(selectedTrack.url, UriKind.Relative), selectedTrack.artist, selectedTrack.title, "", null);
+
+                AudioPlaybackAgent1.AudioPlayer.addToList(current);
+                BackgroundAudioPlayer.Instance.Track = current;
+                BackgroundAudioPlayer.Instance.Play();
+                updatePlaylist();
+                Panorama.DefaultItem = playerItem;
             }
 
             private void playlistItem_Hold(object sender, RoutedEventArgs e)
             {
-                ListBoxItem selectedListBoxItem = getListBoxItem(sender);
+                ListBoxItem selectedListBoxItem = PlaylistElement.ItemContainerGenerator.ContainerFromItem((sender as MenuItem).DataContext) as ListBoxItem;
                 if (selectedListBoxItem == null)
                 {
+                    System.Diagnostics.Debug.WriteLine("Selected LB is null");
                     return;
                 }
                 //get selected Track
-                TrackListItem selectedTrack = selectedListBoxItem.DataContext as TrackListItem;
+                TrackListItem selectedTrack = selectedListBoxItem.Content as TrackListItem;
                 AudioTrack current = new AudioTrack(new Uri(selectedTrack.url, UriKind.RelativeOrAbsolute), selectedTrack.artist, selectedTrack.title, "", null);
+
+                MessageBox.Show(selectedListBoxItem.TabIndex.ToString());
 
                 //get selected Context menu item
                 var menuItem = (MenuItem)sender;
                 var tag = menuItem.Tag.ToString();
                 switch (tag)
                 {
-                    case "add":
-                        AudioPlaybackAgent1.AudioPlayer.addToList(current);
-                        updatePlaylist();
-                        break;
                     case "play":
                         AudioPlaybackAgent1.AudioPlayer.addToList(current);
                         BackgroundAudioPlayer.Instance.Track = current;
                         BackgroundAudioPlayer.Instance.Play();
                         updatePlaylist();
                         Panorama.DefaultItem = playerItem;
+                        break;
+                    case "delete":
+                        AudioPlaybackAgent1.AudioPlayer.removeFromList(current);
+                        AudioPlaybackAgent1.AudioPlayer._playList.RemoveAt(PlaylistElement.SelectedIndex);
+                        updatePlaylist();
                         break;
                     default:
                         break;
@@ -561,35 +576,16 @@ namespace MusicBird
                 LibraryItem selectedTrack = (sender as FrameworkElement).DataContext as LibraryItem;
                 AudioTrack current = new AudioTrack(new Uri(selectedTrack.filename, UriKind.Relative), selectedTrack.filename, "", "", null);
                 
-
-                /*IsolatedStorageFile isoStore = IsolatedStorageFile.GetUserStoreForApplication();
-                MessageBox.Show(isoStore.FileExists(selectedTrack.filename).ToString());
-                
-                MediaPlayerLauncher objMediaPlayerLauncher = new MediaPlayerLauncher();
-                objMediaPlayerLauncher.Media = new Uri(selectedTrack.filename, UriKind.Relative);
-                
-                objMediaPlayerLauncher.Location = MediaLocationType.Install;
-                objMediaPlayerLauncher.Controls = MediaPlaybackControls.Pause | MediaPlaybackControls.Stop | MediaPlaybackControls.All;
-                //objMediaPlayerLauncher.Orientation = MediaPlayerOrientation.Landscape;
-                objMediaPlayerLauncher.Show();*/
-
                 AudioPlaybackAgent1.AudioPlayer.addToList(current);
                 BackgroundAudioPlayer.Instance.Track = current;
                 BackgroundAudioPlayer.Instance.Play();
                 updatePlaylist();
                 Panorama.DefaultItem = playerItem;
-                /*MediaLibrary myMediaLibrary = new MediaLibrary();
-                SongCollection asdf = myMediaLibrary.Songs;
-                for (int i = 0; i < asdf.Count; i++) {
-                    Song bla = asdf[i];
-                    MessageBox.Show(bla.Name+" "+bla.Artist+" "+bla.Rating);
-                    MediaPlayer.Play(bla);
-                }*/
             }
 
             private void libraryItem_Hold(object sender, RoutedEventArgs e)
             {
-                ListBoxItem selectedListBoxItem = getListBoxItem(sender);
+                ListBoxItem selectedListBoxItem = LibraryElement.ItemContainerGenerator.ContainerFromItem((sender as MenuItem).DataContext) as ListBoxItem;
                 if (selectedListBoxItem == null)
                 {
                     return;
@@ -617,8 +613,12 @@ namespace MusicBird
                     case "delete":
                         using (var store = IsolatedStorageFile.GetUserStoreForApplication())
                         {
-                            if (store.FileExists(selectedTrack.filename)) {
+                            if (store.FileExists(selectedTrack.filename))
+                            {
                                 store.DeleteFile(selectedTrack.filename);
+                            }
+                            else {
+                                MessageBox.Show(selectedTrack.filename);
                             }
                         }
                         updateLibrary();

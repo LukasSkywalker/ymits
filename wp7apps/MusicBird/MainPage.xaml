@@ -25,9 +25,9 @@
             </controls:Panorama.Background>
  
             <!--Panorama item one-->
-            <controls:PanoramaItem Header="player" x:Name="playerItem">
+            <controls:PanoramaItem Header="player" x:Name="playerItem" Height="545">
                 <!--Double line list with text wrapping-->
-                <Grid x:Name="ContentPanel" Grid.Row="1" Margin="12,0,12,100">
+                <Grid x:Name="ContentPanel" Grid.Row="1" Margin="12,0,12,13" Height="412" Width="407">
                     <TextBlock Height="32" HorizontalAlignment="Left" Margin="12,497,0,0" x:Name="txtState" Text="State: N/A" VerticalAlignment="Top" Width="438" />
                     <TextBlock Height="45" HorizontalAlignment="Left" Margin="12,24,0,0" x:Name="txtTrack" Text="Track:" VerticalAlignment="Top" Width="438" FontSize="28" />
                     <ProgressBar HorizontalAlignment="Left" Margin="12,100,0,0" x:Name="positionIndicator" VerticalAlignment="Top" Width="378" Height="5" />
@@ -48,15 +48,15 @@
                     
                     <!--Double line list with image placeholder and text wrapping-->
 
-                    <ListBox Height="250" Name="TrackListElement" Width="460" >
+                    <ListBox Height="281" Name="TrackListElement" Width="418" Margin="1,0" >
                         <ListBox.ItemTemplate>
                             <DataTemplate>
                                 <Button Click="trackItem_Click">
                                     <toolkit:ContextMenuService.ContextMenu>
-                                        <toolkit:ContextMenu>
+                                        <toolkit:ContextMenu IsZoomEnabled="False">
                                             <toolkit:MenuItem Header="play" Tag="play" Click="trackItem_Hold" />
                                             <toolkit:MenuItem Header="add to playlist" Tag="add" Click="trackItem_Hold" />
-                                            <!--<toolkit:MenuItem Header="favorite" Tag="favorite" Click="trackItem_Hold" />-->
+                                            <toolkit:MenuItem Header="download" Tag="download" Click="trackItem_Hold" />
                                         </toolkit:ContextMenu>
                                     </toolkit:ContextMenuService.ContextMenu>
                                     <Button.Content>
@@ -77,16 +77,16 @@
             </controls:PanoramaItem>
             <controls:PanoramaItem Header="playlist" x:Name="playlistItem">
                 <!--Double line list with text wrapping-->
-                <Grid x:Name="playlistContentPanel" Grid.Row="1" Margin="12,0,12,100">
-                    <ListBox Height="400" Name="PlaylistElement" Width="400" >
+                <Grid x:Name="playlistContentPanel" Grid.Row="1" Margin="12,0,12,100" Height="401">
+                    <ListBox Name="PlaylistElement" >
                         <ListBox.ItemTemplate>
                             <DataTemplate>
                                 <Button Click="playlistItem_Click">
                                     <toolkit:ContextMenuService.ContextMenu>
-                                        <toolkit:ContextMenu>
-                                            <toolkit:MenuItem Header="share" Tag="share" Click="playlistItem_Hold" />
+                                        <toolkit:ContextMenu IsZoomEnabled="False">
+                                            <toolkit:MenuItem Header="play" Tag="play" Click="playlistItem_Hold" />
                                             <toolkit:MenuItem Header="delete" Tag="delete" Click="playlistItem_Hold" />
-                                            <toolkit:MenuItem Header="favorite" Tag="favorite" Click="playlistItem_Hold" />
+                                            <!--<toolkit:MenuItem Header="favorite" Tag="favorite" Click="playlistItem_Hold" />-->
                                         </toolkit:ContextMenu>
                                     </toolkit:ContextMenuService.ContextMenu>
                                     <Button.Content>
@@ -108,13 +108,13 @@
 
             <controls:PanoramaItem Header="library" x:Name="libraryItem">
                 <!--Double line list with text wrapping-->
-                <Grid x:Name="libraryContentPanel" Grid.Row="1" Margin="12,0,12,100">
-                    <ListBox Height="400" Name="LibraryElement" Width="400" >
+                <Grid x:Name="libraryContentPanel" Grid.Row="1" Margin="12,0,12,100" Height="426" Width="408">
+                    <ListBox Name="LibraryElement" Margin="8,8,0,0" >
                         <ListBox.ItemTemplate>
                             <DataTemplate>
                                 <Button Click="libraryItem_Click">
                                     <toolkit:ContextMenuService.ContextMenu>
-                                        <toolkit:ContextMenu>
+                                        <toolkit:ContextMenu IsZoomEnabled="False">
                                             <toolkit:MenuItem Header="play" Tag="play" Click="libraryItem_Hold" />
                                             <toolkit:MenuItem Header="add to playlist" Tag="add" Click="libraryItem_Hold" />
                                             <toolkit:MenuItem Header="delete" Tag="delete" Click="libraryItem_Hold" />

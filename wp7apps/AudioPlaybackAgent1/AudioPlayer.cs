@@ -68,6 +68,11 @@ namespace AudioPlaybackAgent1
             _playList.Add(track);
         }
 
+        public static void removeFromList(AudioTrack track)
+        {
+            _playList.Remove(track);
+        }
+
         /// Code to execute on Unhandled Exceptions
         private void AudioPlayer_UnhandledException(object sender, ApplicationUnhandledExceptionEventArgs e)
         {
