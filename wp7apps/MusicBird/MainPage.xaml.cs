@@ -837,6 +837,8 @@ namespace MusicBird
                                 }
                                 isoStore.MoveFile(transfer.DownloadLocation.OriginalString, filename);
                             }
+
+                            updateLibrary();
                         }
                         else
                         {

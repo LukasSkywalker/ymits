@@ -161,6 +161,7 @@
                                                 <TextBlock Text="total bytes: "/>
                                                 <TextBlock Text="{Binding TotalBytesToReceive}" HorizontalAlignment="Right"/>
                                             </StackPanel>
+                                            <ProgressBar Maximum="{Binding TotalBytesToReceive}" Value="{Binding BytesReceived}"></ProgressBar>
                                         </StackPanel>
                                     </Grid>
                                     <Grid Grid.Column="1">
