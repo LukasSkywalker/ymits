@@ -158,7 +158,10 @@ namespace AudioPlaybackAgent1
                     player.Stop();
                     break;
                 case UserAction.Pause:
-                    player.Pause();
+                    if (player.PlayerState == PlayState.Playing)
+                    {
+                        player.Pause();
+                    }
                     break;
                 case UserAction.FastForward:
                     player.FastForward();

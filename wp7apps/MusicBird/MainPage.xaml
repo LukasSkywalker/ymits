@@ -5,6 +5,7 @@
     xmlns:phone="clr-namespace:Microsoft.Phone.Controls;assembly=Microsoft.Phone"
     xmlns:shell="clr-namespace:Microsoft.Phone.Shell;assembly=Microsoft.Phone"
     xmlns:controls="clr-namespace:Microsoft.Phone.Controls;assembly=Microsoft.Phone.Controls"
+    xmlns:toolkit="clr-namespace:Microsoft.Phone.Controls;assembly=Microsoft.Phone.Controls.Toolkit"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
     mc:Ignorable="d" d:DesignWidth="480" d:DesignHeight="728" 
@@ -33,6 +34,7 @@
                     <TextBlock Height="30" HorizontalAlignment="Left" Margin="12,120,0,0" Name="textPosition" Text="00:00:00" VerticalAlignment="Top" />
                     <TextBlock Height="30" HorizontalAlignment="Left" Margin="300,119,0,0" Name="textRemaining" Text="-00:00:00" VerticalAlignment="Top" />
                     <ProgressBar IsIndeterminate="False" Margin="0,500,0,0" x:Name="loadProgress" Visibility="Collapsed"/>
+                    <TextBlock Height="30" Name="downloadProgressTextBlock" Text="" />
                 </Grid>
             </controls:PanoramaItem>
  
@@ -43,18 +45,26 @@
                 <TextBox x:Name="queryTextbox" Text=""></TextBox>
                     <Button Content="Search" Height="72" Margin="246,0,0,0" Name="queryButton" Width="160" Click="queryButton_Click" />
                     <ProgressBar IsIndeterminate="False" x:Name="queryProgress" Visibility="Collapsed"/>
-                <!--Double line list with image placeholder and text wrapping-->
+                    
+                    <!--Double line list with image placeholder and text wrapping-->
 
                     <ListBox Height="250" Name="TrackListElement" Width="460" >
                         <ListBox.ItemTemplate>
                             <DataTemplate>
-                                <Button Click="trackItem_Click" Hold="trackItem_Hold">
+                                <Button Click="trackItem_Click">
+                                    <toolkit:ContextMenuService.ContextMenu>
+                                        <toolkit:ContextMenu>
+                                            <toolkit:MenuItem Header="play" Tag="play" Click="trackItem_Hold" />
+                                            <toolkit:MenuItem Header="add to playlist" Tag="add" Click="trackItem_Hold" />
+                                            <!--<toolkit:MenuItem Header="favorite" Tag="favorite" Click="trackItem_Hold" />-->
+                                        </toolkit:ContextMenu>
+                                    </toolkit:ContextMenuService.ContextMenu>
                                     <Button.Content>
                                         <StackPanel Orientation="Horizontal" Margin="0,0,0,17" x:Name="spItem">
                                             <!--Replace rectangle with image-->
                                     
                                             <StackPanel Width="311">
-                                                <TextBlock TextWrapping="Wrap" Text="{Binding title}" Style="{StaticResource PhoneTextExtraLargeStyle}"/>
+                                                <TextBlock TextWrapping="Wrap" Text="{Binding title}" Style="{StaticResource PhoneTextExtraLargeStyle}" FontSize="{StaticResource PhoneFontSizeMediumLarge}"/>
                                                 <TextBlock TextWrapping="Wrap" Text="{Binding artist}" Margin="12,-6,12,0" Style="{StaticResource PhoneTextSubtleStyle}"/>
                                             </StackPanel>
                                         </StackPanel>
@@ -65,6 +75,66 @@
                     </ListBox>
                 </StackPanel>
             </controls:PanoramaItem>
+            <controls:PanoramaItem Header="playlist" x:Name="playlistItem">
+                <!--Double line list with text wrapping-->
+                <Grid x:Name="playlistContentPanel" Grid.Row="1" Margin="12,0,12,100">
+                    <ListBox Height="400" Name="PlaylistElement" Width="400" >
+                        <ListBox.ItemTemplate>
+                            <DataTemplate>
+                                <Button Click="playlistItem_Click">
+                                    <toolkit:ContextMenuService.ContextMenu>
+                                        <toolkit:ContextMenu>
+                                            <toolkit:MenuItem Header="share" Tag="share" Click="playlistItem_Hold" />
+                                            <toolkit:MenuItem Header="delete" Tag="delete" Click="playlistItem_Hold" />
+                                            <toolkit:MenuItem Header="favorite" Tag="favorite" Click="playlistItem_Hold" />
+                                        </toolkit:ContextMenu>
+                                    </toolkit:ContextMenuService.ContextMenu>
+                                    <Button.Content>
+                                        <StackPanel Orientation="Horizontal" Margin="0,0,0,17" x:Name="spItem">
+                                            <!--Replace rectangle with image-->
+
+                                            <StackPanel Width="311">
+                                                <TextBlock TextWrapping="Wrap" Text="{Binding title}" Style="{StaticResource PhoneTextExtraLargeStyle}" FontSize="{StaticResource PhoneFontSizeMediumLarge}"/>
+                                                <TextBlock TextWrapping="Wrap" Text="{Binding artist}" Margin="12,-6,12,0" Style="{StaticResource PhoneTextSubtleStyle}"/>
+                                            </StackPanel>
+                                        </StackPanel>
+                                    </Button.Content>
+                                </Button>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
+                </Grid>
+            </controls:PanoramaItem>
+
+            <controls:PanoramaItem Header="library" x:Name="libraryItem">
+                <!--Double line list with text wrapping-->
+                <Grid x:Name="libraryContentPanel" Grid.Row="1" Margin="12,0,12,100">
+                    <ListBox Height="400" Name="LibraryElement" Width="400" >
+                        <ListBox.ItemTemplate>
+                            <DataTemplate>
+                                <Button Click="libraryItem_Click">
+                                    <toolkit:ContextMenuService.ContextMenu>
+                                        <toolkit:ContextMenu>
+                                            <toolkit:MenuItem Header="play" Tag="play" Click="libraryItem_Hold" />
+                                            <toolkit:MenuItem Header="add to playlist" Tag="add" Click="libraryItem_Hold" />
+                                            <toolkit:MenuItem Header="delete" Tag="delete" Click="libraryItem_Hold" />
+                                        </toolkit:ContextMenu>
+                                    </toolkit:ContextMenuService.ContextMenu>
+                                    <Button.Content>
+                                        <StackPanel Orientation="Horizontal" Margin="0,0,0,17" x:Name="spItem">
+                                            <!--Replace rectangle with image-->
+
+                                            <StackPanel Width="311">
+                                                <TextBlock TextWrapping="Wrap" Text="{Binding filename}" Style="{StaticResource PhoneTextExtraLargeStyle}" FontSize="{StaticResource PhoneFontSizeMediumLarge}"/>
+                                            </StackPanel>
+                                        </StackPanel>
+                                    </Button.Content>
+                                </Button>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
+                </Grid>
+            </controls:PanoramaItem>
         </controls:Panorama>
         
     </Grid>
@@ -72,8 +142,8 @@
          <shell:ApplicationBar IsVisible="True" IsMenuEnabled="False" x:Name="AppBar">
             <shell:ApplicationBarIconButton IconUri="/Images/appbar.transport.rew.rest.png" Text="previous" Click="prevButton_Click"/>
             <shell:ApplicationBarIconButton IconUri="/Images/appbar.transport.play.rest.png" Text="play" Click="playButton_Click"/>
-            <shell:ApplicationBarIconButton IconUri="/Images/appbar.transport.pause.rest.png" Text="pause" Click="pauseButton_Click" IsEnabled="False"/>
             <shell:ApplicationBarIconButton IconUri="/Images/appbar.transport.ff.rest.png" Text="next" Click="nextButton_Click"/>
+            <shell:ApplicationBarIconButton IconUri="/Images/appbar.transport.down.rest.png" Text="download" Click="downButton_Click"/>
         </shell:ApplicationBar>
     </phone:PhoneApplicationPage.ApplicationBar>
 </phone:PhoneApplicationPage>

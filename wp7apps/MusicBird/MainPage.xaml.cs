@@ -15,7 +15,12 @@ using System.Windows.Navigation;
 using Microsoft.Phone.BackgroundAudio;
 using Microsoft.Phone.Shell;
 using System.IO;
+using System.IO.IsolatedStorage;
+using System.Windows.Resources;
 using System.Text.RegularExpressions;
+using Microsoft.Xna.Framework.Media;
+using Microsoft.Phone.Tasks;
+using System.Net.NetworkInformation;
 
 namespace MusicBird
 {
@@ -29,8 +34,8 @@ namespace MusicBird
         // Indexes into the array of ApplicationBar.Buttons
         const int prevButton = 0;
         const int playButton = 1;
-        const int pauseButton = 2;
-        const int nextButton = 3;
+        const int downButton = 3;
+        const int nextButton = 2;
 
         WebClient wc = new WebClient();
         
@@ -54,8 +59,8 @@ namespace MusicBird
 
         private void PhoneApplicationPage_Loaded(object sender, RoutedEventArgs e)
         {
-          
         }
+
         void MainPage_Loaded(object sender, RoutedEventArgs e)
         {
             // Initialize a timer to update the UI every half-second.
@@ -67,6 +72,8 @@ namespace MusicBird
             _tileTimer.Interval = TimeSpan.FromSeconds(5);
             _tileTimer.Tick += new EventHandler(setAppTile);
 
+            NetworkChange.NetworkAddressChanged += NetworkAddress_Changed;
+
             BackgroundAudioPlayer.Instance.PlayStateChanged += new EventHandler(Instance_PlayStateChanged);
 
             if (BackgroundAudioPlayer.Instance.PlayerState == PlayState.Playing)
@@ -74,9 +81,14 @@ namespace MusicBird
                 // If audio was already playing when the app was launched, update the UI.
                 positionIndicator.IsIndeterminate = false;
                 positionIndicator.Maximum = BackgroundAudioPlayer.Instance.Track.Duration.TotalSeconds;
-                UpdateButtons(true, false, true, true);
+                UpdateButtons(true, false, true);
                 UpdateState(null, null);
             }
+
+            IsolatedStorageExplorer.Explorer.Start("localhost");
+
+            updatePlaylist();
+            updateLibrary();
         }
 
 
@@ -94,7 +106,7 @@ namespace MusicBird
                     // Update the UI.
                     positionIndicator.IsIndeterminate = false;
                     positionIndicator.Maximum = BackgroundAudioPlayer.Instance.Track.Duration.TotalSeconds;
-                    UpdateButtons(true, false, true, true);
+                    UpdateButtons(true, false, true);
                     UpdateState(null, null);
 
                     // Start the timer for updating the UI.
@@ -104,7 +116,7 @@ namespace MusicBird
 
                 case PlayState.Paused:
                     // Update the UI.
-                    UpdateButtons(true, true, false, true);
+                    UpdateButtons(true, true, true);
                     UpdateState(null, null);
 
                     // Stop the timer for updating the UI.
@@ -121,13 +133,19 @@ namespace MusicBird
         /// <param name="playBtnEnabled"></param>
         /// <param name="pauseBtnEnabled"></param>
         /// <param name="nextBtnEnabled"></param>
-        void UpdateButtons(bool prevBtnEnabled, bool playBtnEnabled, bool pauseBtnEnabled, bool nextBtnEnabled)
+        void UpdateButtons(bool prevBtnEnabled, bool playBtnEnabled, bool nextBtnEnabled)
         {
             // Set the IsEnabled state of the ApplicationBar.Buttons array
             ((ApplicationBarIconButton)(ApplicationBar.Buttons[prevButton])).IsEnabled = prevBtnEnabled;
-            ((ApplicationBarIconButton)(ApplicationBar.Buttons[playButton])).IsEnabled = playBtnEnabled;
-            ((ApplicationBarIconButton)(ApplicationBar.Buttons[pauseButton])).IsEnabled = pauseBtnEnabled;
+            if (playBtnEnabled) {
+                ((ApplicationBarIconButton)(ApplicationBar.Buttons[playButton])).IconUri = new Uri("/Images/appbar.transport.play.rest.png", UriKind.Relative);
+            }else{
+                ((ApplicationBarIconButton)(ApplicationBar.Buttons[playButton])).IconUri = new Uri("/Images/appbar.transport.pause.rest.png", UriKind.Relative);
+            }
+            //((ApplicationBarIconButton)(ApplicationBar.Buttons[playButton])).IsEnabled = playBtnEnabled;
+            //((ApplicationBarIconButton)(ApplicationBar.Buttons[pauseButton])).IsEnabled = pauseBtnEnabled;
             ((ApplicationBarIconButton)(ApplicationBar.Buttons[nextButton])).IsEnabled = nextBtnEnabled;
+            //((ApplicationBarIconButton)(ApplicationBar.Buttons[downButton])).IsEnabled = downBtnEnabled;
         }
 
 
@@ -190,12 +208,16 @@ namespace MusicBird
             if (PlayState.Playing == BackgroundAudioPlayer.Instance.PlayerState)
             {
                 BackgroundAudioPlayer.Instance.Pause();
+                ApplicationBarIconButton btn = sender as ApplicationBarIconButton;
+                btn.IconUri = new Uri("/Images/appbar.transport.play.rest.png",UriKind.Relative);
                 positionIndicator.IsIndeterminate = false;
                 
             }
             else
             {
                 BackgroundAudioPlayer.Instance.Play();
+                ApplicationBarIconButton btn = sender as ApplicationBarIconButton;
+                btn.IconUri = new Uri("/Images/appbar.transport.pause.rest.png", UriKind.Relative);
                 positionIndicator.IsIndeterminate = true;
             }
             
@@ -207,10 +229,11 @@ namespace MusicBird
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void pauseButton_Click(object sender, EventArgs e)
+        private void downButton_Click(object sender, EventArgs e)
         {
-            // Tell the backgound audio agent to pause the current track.
-            BackgroundAudioPlayer.Instance.Pause();
+            string url = BackgroundAudioPlayer.Instance.Track.Source.ToString();
+            string name = BackgroundAudioPlayer.Instance.Track.Artist + " - " + BackgroundAudioPlayer.Instance.Track.Title;
+            saveTrack(name, url);
         }
 
 
@@ -274,32 +297,8 @@ namespace MusicBird
                     string name = h.ToString();
                     string artist = name;
                     string title = name;
-                    if (name.IndexOf("-") > -1)
-                    {
-                        artist = name.Split((char)45)[0];
-                        artist.Trim();
-                        title = name.Split((char)45)[1];
-                        title.Trim();
-                    }
-                    else {
-                        int len = name.Split((char)32).Length;
-                        if (len >= 2)
-                        {
-                            string[] nameArray = name.Split((char)32);
-                            for (int i = 0; i < len; i++)
-                            {
-                                if (i < len / 2)
-                                {
-                                    artist += nameArray[i];
-                                }
-                                else
-                                {
-                                    title += nameArray[i];
-                                }
-                            }
-                        }
-                    }
-                    TrackListItem item = new TrackListItem(artist, title, g.ToString());
+                    string[] data = getArtistAndTitle(name);
+                    TrackListItem item = new TrackListItem(data[0], data[1], g.ToString());
                     trackList.Add(item);
                     //urls.Push(g.ToString());
                     matchCount += 1;
@@ -322,6 +321,37 @@ namespace MusicBird
             }
         }
 
+        private string[] getArtistAndTitle(string name)
+        {
+            String artist = "";
+            String title = "";
+            if (name.IndexOf("-") > -1)                 //name contains a dash, split at its position
+            {
+                artist = name.Split((char)45)[0];
+                title = name.Split((char)45)[1];            
+            }
+            else
+            {
+                int len = name.Split((char)32).Length;
+                if (len >= 2)
+                {
+                    string[] nameArray = name.Split((char)32);
+                    for (int i = 0; i < len; i++)
+                    {
+                        if (i < len / 2)
+                        {
+                            artist += nameArray[i];
+                        }
+                        else
+                        {
+                            title += nameArray[i];
+                        }
+                    }
+                }
+            }
+            return new String[] { artist.Trim(), title.Trim() };
+        }
+
         private void queryButton_Click(object sender, RoutedEventArgs e)
         {
             queryProgress.Visibility = Visibility.Visible;
@@ -338,23 +368,48 @@ namespace MusicBird
             AudioPlaybackAgent1.AudioPlayer.addToList(current);
             BackgroundAudioPlayer.Instance.Track = current;
             BackgroundAudioPlayer.Instance.Play();
-
+            updatePlaylist();
             Panorama.DefaultItem = playerItem;
         }
 
         private void trackItem_Hold(object sender, RoutedEventArgs e) {
-            TrackListItem selectedTrack = (sender as FrameworkElement).DataContext as TrackListItem;
-            AudioTrack current = new AudioTrack(new Uri(selectedTrack.url, UriKind.RelativeOrAbsolute), selectedTrack.artist, "", "", null);
+            //OLD TrackListItem selectedTrack = (sender as FrameworkElement).DataContext as TrackListItem;
+            
+            //get selected Item
+            ListBoxItem selectedListBoxItem = getListBoxItem(sender);
+            if (selectedListBoxItem == null)
+            {
+                return;
+            }
+            //get selected Track
+            TrackListItem selectedTrack = selectedListBoxItem.DataContext as TrackListItem;
+            AudioTrack current = new AudioTrack(new Uri(selectedTrack.url, UriKind.RelativeOrAbsolute), selectedTrack.artist, selectedTrack.title, "", null);
 
-            AudioPlaybackAgent1.AudioPlayer.addToList(current);            
-
+            //get selected Context menu item
+            var menuItem = (MenuItem) sender;
+            var tag = menuItem.Tag.ToString();
+            switch (tag) { 
+                case "add":
+                    AudioPlaybackAgent1.AudioPlayer.addToList(current);
+                    updatePlaylist();
+                    break;
+                case "play":
+                    AudioPlaybackAgent1.AudioPlayer.addToList(current);
+                    BackgroundAudioPlayer.Instance.Track = current;
+                    BackgroundAudioPlayer.Instance.Play();
+                    updatePlaylist();
+                    Panorama.DefaultItem = playerItem;
+                    break;
+                default:
+                    break;
+            
+            }
+            
             //Panorama.DefaultItem = playerItem;
         }
 
         private void setAppTile(object sender, EventArgs e)
         {
-            int newCount = 0;
-
             // Application Tile is always the first Tile, even if it is not pinned to Start.
             ShellTile TileToFind = ShellTile.ActiveTiles.First();
 
@@ -390,7 +445,215 @@ namespace MusicBird
                 // Update the Application Tile
                 TileToFind.Update(NewTileData);
             }
+
         }
+
+        
+
+            private void saveTrack(string filename, string uri)
+            {  
+                var dl = new WebClient();
+                dl.OpenReadAsync(new Uri(uri), filename);
+                dl.OpenReadCompleted += new OpenReadCompletedEventHandler(dl_downloadCompleted);
+                dl.DownloadProgressChanged += new DownloadProgressChangedEventHandler(dl_DownloadProgressChanged);
+
+                //((ApplicationBarIconButton)(ApplicationBar.Buttons[downButton])).IsEnabled = false;
+            }
+
+            void dl_DownloadProgressChanged(object sender, DownloadProgressChangedEventArgs e) {
+                downloadProgressTextBlock.Text = "Downloading... ("+e.ProgressPercentage+"%)";
+            }
+
+            void dl_downloadCompleted(object sender, OpenReadCompletedEventArgs e)
+            {
+                if (e.Error != null) return;
+
+                var filename = e.UserState.ToString()+".mp3";
+                var str = e.Result;
+
+                using (var myStore = IsolatedStorageFile.GetUserStoreForApplication())
+                {
+                  if (myStore.FileExists(filename)) myStore.DeleteFile(filename);
+
+                  var buffer = new byte[1024];
+                  using (var isoStorStr = myStore.OpenFile(filename, FileMode.CreateNew))
+                  {
+                    int bytesRead = 0;
+                    while ((bytesRead = str.Read(buffer, 0, 1024)) > 0)
+                        isoStorStr.Write(buffer, 0, bytesRead);
+                  }
+               }
+                updateLibrary();
+                downloadProgressTextBlock.Text = "Download completed!";
+            }
+
+            private void updatePlaylist() {
+                List<TrackListItem> trackList = new List<TrackListItem>();
+                for(int i=0; i<AudioPlaybackAgent1.AudioPlayer._playList.Count; i++){
+                    AudioTrack track = AudioPlaybackAgent1.AudioPlayer._playList[i];
+                    Uri uri = track.Source;
+                    String artist = track.Artist;
+                    String title = track.Title;
+                    trackList.Add(new TrackListItem(artist, title, uri.ToString()));
+                }
+                PlaylistElement.ItemsSource = trackList;
+            }
+
+            private void updateLibrary()
+            {
+                using (var myStore = IsolatedStorageFile.GetUserStoreForApplication())
+                {
+
+                    List<LibraryItem> trackList = new List<LibraryItem>();
+                    
+                    string[] files = myStore.GetFileNames();
+                    if (files.Length > 0)
+                    {
+                        for (int i = 0; i < files.Length; i++)
+                        {
+                            LibraryItem item = new LibraryItem(files[i]);
+                            trackList.Add(item);
+                        }
+                        LibraryElement.ItemsSource = trackList;
+                    }
+                } 
+            }
+
+            private void playlistItem_Click(object sender, RoutedEventArgs e) { 
+                
+            }
+
+            private void playlistItem_Hold(object sender, RoutedEventArgs e)
+            {
+                ListBoxItem selectedListBoxItem = getListBoxItem(sender);
+                if (selectedListBoxItem == null)
+                {
+                    return;
+                }
+                //get selected Track
+                TrackListItem selectedTrack = selectedListBoxItem.DataContext as TrackListItem;
+                AudioTrack current = new AudioTrack(new Uri(selectedTrack.url, UriKind.RelativeOrAbsolute), selectedTrack.artist, selectedTrack.title, "", null);
+
+                //get selected Context menu item
+                var menuItem = (MenuItem)sender;
+                var tag = menuItem.Tag.ToString();
+                switch (tag)
+                {
+                    case "add":
+                        AudioPlaybackAgent1.AudioPlayer.addToList(current);
+                        updatePlaylist();
+                        break;
+                    case "play":
+                        AudioPlaybackAgent1.AudioPlayer.addToList(current);
+                        BackgroundAudioPlayer.Instance.Track = current;
+                        BackgroundAudioPlayer.Instance.Play();
+                        updatePlaylist();
+                        Panorama.DefaultItem = playerItem;
+                        break;
+                    default:
+                        break;
+
+                }
+            }
+
+            private void libraryItem_Click(object sender, RoutedEventArgs e)
+            {
+                LibraryItem selectedTrack = (sender as FrameworkElement).DataContext as LibraryItem;
+                AudioTrack current = new AudioTrack(new Uri(selectedTrack.filename, UriKind.Relative), selectedTrack.filename, "", "", null);
+                
+
+                /*IsolatedStorageFile isoStore = IsolatedStorageFile.GetUserStoreForApplication();
+                MessageBox.Show(isoStore.FileExists(selectedTrack.filename).ToString());
+                
+                MediaPlayerLauncher objMediaPlayerLauncher = new MediaPlayerLauncher();
+                objMediaPlayerLauncher.Media = new Uri(selectedTrack.filename, UriKind.Relative);
+                
+                objMediaPlayerLauncher.Location = MediaLocationType.Install;
+                objMediaPlayerLauncher.Controls = MediaPlaybackControls.Pause | MediaPlaybackControls.Stop | MediaPlaybackControls.All;
+                //objMediaPlayerLauncher.Orientation = MediaPlayerOrientation.Landscape;
+                objMediaPlayerLauncher.Show();*/
+
+                AudioPlaybackAgent1.AudioPlayer.addToList(current);
+                BackgroundAudioPlayer.Instance.Track = current;
+                BackgroundAudioPlayer.Instance.Play();
+                updatePlaylist();
+                Panorama.DefaultItem = playerItem;
+                /*MediaLibrary myMediaLibrary = new MediaLibrary();
+                SongCollection asdf = myMediaLibrary.Songs;
+                for (int i = 0; i < asdf.Count; i++) {
+                    Song bla = asdf[i];
+                    MessageBox.Show(bla.Name+" "+bla.Artist+" "+bla.Rating);
+                    MediaPlayer.Play(bla);
+                }*/
+            }
+
+            private void libraryItem_Hold(object sender, RoutedEventArgs e)
+            {
+                ListBoxItem selectedListBoxItem = getListBoxItem(sender);
+                if (selectedListBoxItem == null)
+                {
+                    return;
+                }
+                //get selected Track
+                LibraryItem selectedTrack = selectedListBoxItem.DataContext as LibraryItem;
+                AudioTrack current = new AudioTrack(new Uri(selectedTrack.filename, UriKind.RelativeOrAbsolute), selectedTrack.filename, "", "", null);
+
+                //get selected Context menu item
+                var menuItem = (MenuItem)sender;
+                var tag = menuItem.Tag.ToString();
+                switch (tag)
+                {
+                    case "add":
+                        AudioPlaybackAgent1.AudioPlayer.addToList(current);
+                        updatePlaylist();
+                        break;
+                    case "play":
+                        AudioPlaybackAgent1.AudioPlayer.addToList(current);
+                        BackgroundAudioPlayer.Instance.Track = current;
+                        BackgroundAudioPlayer.Instance.Play();
+                        updatePlaylist();
+                        Panorama.DefaultItem = playerItem;
+                        break;
+                    case "delete":
+                        using (var store = IsolatedStorageFile.GetUserStoreForApplication())
+                        {
+                            if (store.FileExists(selectedTrack.filename)) {
+                                store.DeleteFile(selectedTrack.filename);
+                            }
+                        }
+                        updateLibrary();
+                        break;
+                    default:
+                        break;
+
+                }
+            }
+
+            private bool IsolatedStorageFileExists(string name)
+            {
+                using (var folder = IsolatedStorageFile.GetUserStoreForApplication())
+                {
+                    return folder.FileExists(name);
+                }
+            }
+
+            private bool IsNetworkAvailable()
+            {
+                return NetworkInterface.GetIsNetworkAvailable();
+            }
+
+            private void NetworkAddress_Changed(object sender, EventArgs e)
+            {
+                if (!IsNetworkAvailable())
+                {
+                    MessageBox.Show("Network connection lost. Please connect to a network if you want to access online music.");
+                }
+            }
+
+            private ListBoxItem getListBoxItem(Object sender) {
+                return TrackListElement.ItemContainerGenerator.ContainerFromItem((sender as MenuItem).DataContext) as ListBoxItem;
+            }
+
 
     }
 
@@ -405,6 +668,16 @@ namespace MusicBird
             this.artist = artist;
             this.title = title;
             this.url = url;
+        }
+    }
+
+    public class LibraryItem
+    {
+        public string filename { get; set; }
+
+        public LibraryItem(String filename)
+        {
+            this.filename = filename;
         }
     }
 }
