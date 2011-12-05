@@ -545,8 +545,15 @@ namespace MusicBird
                 //get selected Track
                 TrackListItem selectedTrack = selectedListBoxItem.Content as TrackListItem;
                 AudioTrack current = new AudioTrack(new Uri(selectedTrack.url, UriKind.RelativeOrAbsolute), selectedTrack.artist, selectedTrack.title, "", null);
-
-                MessageBox.Show(selectedListBoxItem.TabIndex.ToString());
+                
+                //loop through items and check if item matches selectedItem (selectedIndex is not updated with context menu...)
+                int i = 0;
+                TrackListItem currentTrack = (PlaylistElement.ItemContainerGenerator.ContainerFromIndex(0) as ListBoxItem).Content as TrackListItem;
+                while (currentTrack != selectedTrack) {
+                    i++;
+                    currentTrack = (PlaylistElement.ItemContainerGenerator.ContainerFromIndex(i) as ListBoxItem).Content as TrackListItem;
+                }
+                int selectedIndex = i;
 
                 //get selected Context menu item
                 var menuItem = (MenuItem)sender;
@@ -561,8 +568,7 @@ namespace MusicBird
                         Panorama.DefaultItem = playerItem;
                         break;
                     case "delete":
-                        AudioPlaybackAgent1.AudioPlayer.removeFromList(current);
-                        AudioPlaybackAgent1.AudioPlayer._playList.RemoveAt(PlaylistElement.SelectedIndex);
+                        AudioPlaybackAgent1.AudioPlayer._playList.RemoveAt(selectedIndex);
                         updatePlaylist();
                         break;
                     default:
