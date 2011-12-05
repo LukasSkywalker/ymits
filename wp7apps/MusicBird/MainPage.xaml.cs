@@ -335,15 +335,29 @@ namespace MusicBird
         {
             String artist = "";
             String title = "";
-            if (name.IndexOf("-") > -1)                 //name contains a dash, split at its position
-            {
-                artist = name.Split((char)45)[0];
-                title = name.Split((char)45)[1];            
-            }
-            else
-            {
-                int len = name.Split((char)32).Length;
-                if (len >= 2)
+
+            string pattern = "^[0-9]{1,2}?\\.\\s+";                     //replace leading track number (01. or 1. or 12. )
+            Regex rgx = new Regex(pattern);
+            name = rgx.Replace(name, "");
+
+            string pattern2 = "[0-9]{1,2}?[\\s]*-\\s+";                 //replace leading track number (01- or 1 - or 12- )
+            Regex rgx2 = new Regex(pattern2);
+            name = rgx2.Replace(name, "");
+
+            string pattern3 = "(\\.wma|\\.mp3)";                        //replace file ext. (.mp3)
+            Regex rgx3 = new Regex(pattern3);
+            name = rgx3.Replace(name, "");
+
+            name = name.Trim();
+
+            int count = name.Length - name.Replace("-", "").Length+1;     //count parts of string separated by dash
+
+            if (count == 1) {                                           // John Wayne Heaven
+                int len = name.Split((char)32).Length;                  // split at space
+                if (len == 1) {                                         // Ex. JohnWayneHeaven
+                    artist = name;
+                    title = "";
+                }else if (len > 1)                                      // Ex. JohnWayne Heaven or John Wayne Heaven
                 {
                     string[] nameArray = name.Split((char)32);
                     for (int i = 0; i < len; i++)
@@ -359,7 +373,36 @@ namespace MusicBird
                     }
                 }
             }
-            return new String[] { artist.Trim(), title.Trim() };
+            else if (count == 2) {                                      // John Wayne - Heaven
+                artist = name.Split((char)45)[0];
+                title = name.Split((char)45)[1];
+            }else if(count > 2){                                        // John Wayne - Heaven - Live at Brixton Academy
+                string[] parts = name.Split((char)45);
+                int len = parts.Length;
+                for (int i = 0; i < len; i++)
+                {
+                    if (i < len / 2)
+                    {
+                        artist += parts[i];
+                    }
+                    else
+                    {
+                        title += parts[i];
+                    }
+                }
+            }
+
+            artist = artist.Replace( "_", " " );
+            title = title.Replace( "_", " " );
+
+            artist = UppercaseWords( artist );
+            title = UppercaseWords( title );
+
+
+            artist = artist.Trim();
+            title = title.Trim();
+
+            return new String[] { artist, title };
         }
 
         private void queryButton_Click(object sender, RoutedEventArgs e)
@@ -522,7 +565,7 @@ namespace MusicBird
                     BackgroundTransferService.Add(transferRequest);
                     transferRequest.TransferStatusChanged += new EventHandler<BackgroundTransferEventArgs>(transfer_TransferStatusChanged);
                     transferRequest.TransferProgressChanged += new EventHandler<BackgroundTransferEventArgs>(transfer_TransferProgressChanged);
-                    MessageBox.Show("Transfer was added.");
+                    MessageBox.Show("Download was added.");
                     UpdateUI();
                 }
                 catch (InvalidOperationException ex)
@@ -791,7 +834,7 @@ namespace MusicBird
                     ProcessTransfer(transfer);
                 }
 
-                MessageBox.Show("added event handlers");
+                //DEBUG MessageBox.Show("added event handlers");
 
                 if (WaitingForExternalPower)
                 {
@@ -911,6 +954,32 @@ namespace MusicBird
                 {
                     // Handle the exception.
                 }
+            }
+
+            static string UppercaseWords( string value )
+            {
+                char[] array = value.ToCharArray();
+                // Handle the first letter in the string.
+                if ( array.Length >= 1 )
+                {
+                    if ( char.IsLower( array[0] ) )
+                    {
+                        array[0] = char.ToUpper( array[0] );
+                    }
+                }
+                // Scan through the letters, checking for spaces.
+                // ... Uppercase the lowercase letters following spaces.
+                for ( int i = 1 ; i < array.Length ; i++ )
+                {
+                    if ( array[i - 1] == ' ' )
+                    {
+                        if ( char.IsLower( array[i] ) )
+                        {
+                            array[i] = char.ToUpper( array[i] );
+                        }
+                    }
+                }
+                return new string( array );
             }
 
             

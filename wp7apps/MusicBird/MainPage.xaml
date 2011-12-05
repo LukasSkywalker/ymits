@@ -135,9 +135,9 @@
                     </ListBox>
                 </Grid>
             </controls:PanoramaItem>
-            <controls:PanoramaItem>
+            <controls:PanoramaItem Header="downloads">
                 <Grid x:Name="DownloadPanel" Grid.Row="1" Margin="12,0,12,0">
-                    <TextBlock Text="you have no transfers registered" Name="EmptyTextBlock" Visibility="Collapsed"/>
+                    <TextBlock Text="You have no running Downloads." Name="EmptyTextBlock" Visibility="Collapsed"/>
                     <ListBox Name="TransferListBox">
                         <ListBox.ItemTemplate>
                             <DataTemplate>
@@ -165,7 +165,7 @@
                                         </StackPanel>
                                     </Grid>
                                     <Grid Grid.Column="1">
-                                        <Button Tag="{Binding RequestId}" Click="CancelButton_Click" Content="X" BorderBrush="Red" Background="Red" Foreground="{StaticResource PhoneBackgroundBrush}" VerticalAlignment="Top" BorderThickness="0" Width="50" Padding="0,0,0,0"></Button>
+                                        <Button Tag="{Binding RequestId}" Margin="-50,0,0,0" Click="CancelButton_Click" Content="X" BorderBrush="Red" Background="Red" Foreground="{StaticResource PhoneBackgroundBrush}" VerticalAlignment="Top" BorderThickness="0" Width="50" Padding="0,0,0,0"></Button>
                                     </Grid>
                                 </Grid>
                             </DataTemplate>
@@ -181,7 +181,7 @@
             <shell:ApplicationBarIconButton IconUri="/Images/appbar.transport.rew.rest.png" Text="previous" Click="prevButton_Click"/>
             <shell:ApplicationBarIconButton IconUri="/Images/appbar.transport.play.rest.png" Text="play" Click="playButton_Click"/>
             <shell:ApplicationBarIconButton IconUri="/Images/appbar.transport.ff.rest.png" Text="next" Click="nextButton_Click"/>
-            <shell:ApplicationBarIconButton IconUri="/Images/appbar.transport.down.rest.png" Text="download" Click="downButton_Click"/>
+            <shell:ApplicationBarIconButton IconUri="/Images/appbar.transport.down.rest.png" IsEnabled="False" Text="download" Click="downButton_Click"/>
         </shell:ApplicationBar>
     </phone:PhoneApplicationPage.ApplicationBar>
 </phone:PhoneApplicationPage>
