@@ -20,6 +20,7 @@ using System.Windows.Resources;
 using System.Text.RegularExpressions;
 using Microsoft.Xna.Framework.Media;
 using Microsoft.Phone.Tasks;
+using System.Windows.Data;
 using System.Net.NetworkInformation;
 using Microsoft.Phone.BackgroundTransfer;
 
@@ -35,6 +36,8 @@ namespace MusicBird
         bool WaitingForExternalPowerDueToBatterySaverMode;
         bool WaitingForNonVoiceBlockingNetwork;
         bool WaitingForWiFi;
+
+        public string percentage { get; set; }
 
         // Timer for updating the UI
         DispatcherTimer _timer;
@@ -565,7 +568,7 @@ namespace MusicBird
                     BackgroundTransferService.Add(transferRequest);
                     transferRequest.TransferStatusChanged += new EventHandler<BackgroundTransferEventArgs>(transfer_TransferStatusChanged);
                     transferRequest.TransferProgressChanged += new EventHandler<BackgroundTransferEventArgs>(transfer_TransferProgressChanged);
-                    MessageBox.Show("Download was added.");
+                    Panorama.DefaultItem = downloadItem;
                     UpdateUI();
                 }
                 catch (InvalidOperationException ex)
@@ -1003,6 +1006,7 @@ namespace MusicBird
     public class LibraryItem
     {
         public string filename { get; set; }
+        
 
         public LibraryItem(String filename)
         {

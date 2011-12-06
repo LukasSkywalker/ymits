@@ -8,6 +8,7 @@
     xmlns:toolkit="clr-namespace:Microsoft.Phone.Controls;assembly=Microsoft.Phone.Controls.Toolkit"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+    xmlns:conv="clr-namespace:MusicBird;assembly=MusicBird"
     mc:Ignorable="d" d:DesignWidth="480" d:DesignHeight="728" 
     FontFamily="{StaticResource PhoneFontFamilyNormal}"
     FontSize="{StaticResource PhoneFontSizeNormal}"
@@ -17,7 +18,7 @@
 
     <!--LayoutRoot is the root grid where all page content is placed-->
     <Grid x:Name="LayoutRoot" Background="Transparent">
- 
+
         <!--Panorama control-->
         <controls:Panorama Title="musicbird" x:Name="Panorama">
             <controls:Panorama.Background>
@@ -135,7 +136,7 @@
                     </ListBox>
                 </Grid>
             </controls:PanoramaItem>
-            <controls:PanoramaItem Header="downloads">
+            <controls:PanoramaItem Header="downloads" x:Name="downloadItem">
                 <Grid x:Name="DownloadPanel" Grid.Row="1" Margin="12,0,12,0">
                     <TextBlock Text="You have no running Downloads." Name="EmptyTextBlock" Visibility="Collapsed"/>
                     <ListBox Name="TransferListBox">
@@ -155,11 +156,11 @@
                                             </StackPanel>
                                             <StackPanel Orientation="Horizontal">
                                                 <TextBlock Text="bytes received: "/>
-                                                <TextBlock Text="{Binding BytesReceived}" HorizontalAlignment="Right"/>
+                                                <TextBlock x:Name="bytesReceived" Text="{Binding BytesReceived}" HorizontalAlignment="Right"/>
                                             </StackPanel>
                                             <StackPanel Orientation="Horizontal">
                                                 <TextBlock Text="total bytes: "/>
-                                                <TextBlock Text="{Binding TotalBytesToReceive}" HorizontalAlignment="Right"/>
+                                                <TextBlock x:Name="totalBytes" Text="{Binding TotalBytesToReceive}" HorizontalAlignment="Right"/>
                                             </StackPanel>
                                             <ProgressBar Maximum="{Binding TotalBytesToReceive}" Value="{Binding BytesReceived}"></ProgressBar>
                                         </StackPanel>
