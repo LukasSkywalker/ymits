@@ -2,6 +2,7 @@
 using System.Windows;
 using Microsoft.Phone.BackgroundAudio;
 using System.Collections.Generic;
+using System.IO.IsolatedStorage;
 
 namespace AudioPlaybackAgent1
 {
@@ -101,6 +102,12 @@ namespace AudioPlaybackAgent1
         /// </remarks>
         protected override void OnPlayStateChanged(BackgroundAudioPlayer player, AudioTrack track, PlayState playState)
         {
+            List<string[]> strings = getFromPlaylist();
+            List<AudioTrack> trackList = new List<AudioTrack>();
+            foreach(var item in strings){
+                trackList.Add(new AudioTrack(new Uri(item[2]), item[1], item[0],null, null));
+            }
+            _playList = trackList;
             switch (playState)
             {
                 case PlayState.TrackEnded:
@@ -178,7 +185,11 @@ namespace AudioPlaybackAgent1
                     player.Position = (TimeSpan)param;
                     break;
                 case UserAction.SkipNext:
-                    player.Track = GetNextTrack();
+                    AudioTrack nextTrack = GetNextTrack();
+                    if(nextTrack != null)
+                    {
+                        player.Track = nextTrack;
+                    }
                     break;
                 case UserAction.SkipPrevious:
                     AudioTrack previousTrack = GetPreviousTrack();
@@ -207,8 +218,12 @@ namespace AudioPlaybackAgent1
         private AudioTrack GetNextTrack()
         {
             // TODO: add logic to get the next audio track
+            if(++currentTrackNumber >= _playList.Count)
+            {
+                currentTrackNumber = 0;
+            }
 
-            AudioTrack track = null;
+            AudioTrack track = _playList[currentTrackNumber];
 
             // specify the track
 
@@ -229,8 +244,13 @@ namespace AudioPlaybackAgent1
         private AudioTrack GetPreviousTrack()
         {
             // TODO: add logic to get the previous audio track
+            if(--currentTrackNumber < 0)
+            {
+                currentTrackNumber = _playList.Count-1;
+            }
 
-            AudioTrack track = null;
+            AudioTrack track = _playList[currentTrackNumber];
+            
 
             // specify the track
 
@@ -271,6 +291,43 @@ namespace AudioPlaybackAgent1
         protected override void OnCancel()
         {
 
+        }
+
+        private List<String[]> getFromPlaylist()
+        {
+            var settings = IsolatedStorageSettings.ApplicationSettings;
+            if(settings.Contains("playlist"))
+            {
+                List<String[]> items;
+                if(settings.TryGetValue<List<String[]>>("playlist", out items))
+                {
+                    return items;
+                }
+                else
+                {
+                    throw new IsolatedStorageException("Could not get Playlist from ApplicationSettings");
+                }
+            }
+            else
+            {
+                return (new List<String[]>());
+            }
+
+        }
+    }
+    public class TrackListItem
+    {
+        public string title { get; set; }
+        public string artist { get; set; }
+        public string size { get; set; }
+        public string duration { get; set; }
+        public string url { get; set; }
+
+        public TrackListItem( String artist, String title, String url )
+        {
+            this.artist = artist;
+            this.title = title;
+            this.url = url;
         }
     }
 }

@@ -41,10 +41,10 @@
  
             <!--Panorama item two-->
             <!--Use 'Orientation="Horizontal"' to enable a panel that lays out horizontally-->
-            <controls:PanoramaItem Header="search" FontSize="15">
+            <controls:PanoramaItem Header="search" FontSize="15" x:Name="searchItem">
                 <StackPanel>
-                <TextBox x:Name="queryTextbox" Text=""></TextBox>
-                    <Button Content="Search" Height="72" Margin="246,0,0,0" Name="queryButton" Width="160" Click="queryButton_Click" />
+                    <TextBox x:Name="queryTextbox" Text="" InputScope="Search" KeyUp="search_KeyUp"></TextBox>
+                    <!--<Button Content="Search" Height="72" Margin="246,0,0,0" Name="queryButton" Width="160" Click="queryButton_Click" />-->
                     <ProgressBar IsIndeterminate="False" x:Name="queryProgress" Visibility="Collapsed"/>
                     
                     <!--Double line list with image placeholder and text wrapping-->
