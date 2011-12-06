@@ -8,7 +8,6 @@
     xmlns:toolkit="clr-namespace:Microsoft.Phone.Controls;assembly=Microsoft.Phone.Controls.Toolkit"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
-    xmlns:conv="clr-namespace:MusicBird;assembly=MusicBird"
     mc:Ignorable="d" d:DesignWidth="480" d:DesignHeight="728" 
     FontFamily="{StaticResource PhoneFontFamilyNormal}"
     FontSize="{StaticResource PhoneFontSizeNormal}"
@@ -21,9 +20,9 @@
 
         <!--Panorama control-->
         <controls:Panorama Title="musicbird" x:Name="Panorama">
-            <controls:Panorama.Background>
+            <!--<controls:Panorama.Background>
                 <ImageBrush ImageSource="PanoramaBackground.png"/>
-            </controls:Panorama.Background>
+            </controls:Panorama.Background>-->
  
             <!--Panorama item one-->
             <controls:PanoramaItem Header="player" x:Name="playerItem" Height="545">
@@ -32,10 +31,9 @@
                     <TextBlock Height="32" HorizontalAlignment="Left" Margin="12,497,0,0" x:Name="txtState" Text="State: N/A" VerticalAlignment="Top" Width="438" />
                     <TextBlock Height="45" HorizontalAlignment="Left" Margin="12,24,0,0" x:Name="txtTrack" Text="Track:" VerticalAlignment="Top" Width="438" FontSize="28" />
                     <ProgressBar HorizontalAlignment="Left" Margin="12,100,0,0" x:Name="positionIndicator" VerticalAlignment="Top" Width="378" Height="5" />
-                    <TextBlock Height="30" HorizontalAlignment="Left" Margin="12,120,0,0" Name="textPosition" Text="00:00:00" VerticalAlignment="Top" />
-                    <TextBlock Height="30" HorizontalAlignment="Left" Margin="300,119,0,0" Name="textRemaining" Text="-00:00:00" VerticalAlignment="Top" />
-                    <ProgressBar IsIndeterminate="False" Margin="0,500,0,0" x:Name="loadProgress" Visibility="Collapsed"/>
-                    <TextBlock Height="30" Name="downloadProgressTextBlock" Text="" />
+                    <Slider Height="84" CacheMode="BitmapCache" HorizontalAlignment="Left" Margin="0,90,18,0" Name="positionSlider" VerticalAlignment="Top" Width="460"/>
+                    <TextBlock Height="30" CacheMode="BitmapCache" HorizontalAlignment="Left" Margin="12,120,0,0" Name="textPosition" Text="00:00:00" VerticalAlignment="Top" />
+                    <TextBlock Height="30" CacheMode="BitmapCache" HorizontalAlignment="Left" Margin="300,119,0,0" Name="textRemaining" Text="-00:00:00" VerticalAlignment="Top" />
                 </Grid>
             </controls:PanoramaItem>
  
@@ -45,7 +43,7 @@
                 <StackPanel>
                     <TextBox x:Name="queryTextbox" Text="" InputScope="Search" KeyUp="search_KeyUp"></TextBox>
                     <!--<Button Content="Search" Height="72" Margin="246,0,0,0" Name="queryButton" Width="160" Click="queryButton_Click" />-->
-                    <ProgressBar IsIndeterminate="False" x:Name="queryProgress" Visibility="Collapsed"/>
+                    <toolkit:PerformanceProgressBar IsIndeterminate="False" x:Name="queryProgress" Visibility="Collapsed"/>
                     
                     <!--Double line list with image placeholder and text wrapping-->
 
@@ -102,7 +100,7 @@
                                     </Button.Content>
                                 </Button>
                             </DataTemplate>
-                        </ListBox.ItemTemplate>
+                        </ListBox.ItemTemplate>  
                     </ListBox>
                 </Grid>
             </controls:PanoramaItem>
@@ -175,7 +173,6 @@
                 </Grid>
             </controls:PanoramaItem>
         </controls:Panorama>
-        
     </Grid>
     <phone:PhoneApplicationPage.ApplicationBar>
          <shell:ApplicationBar IsVisible="True" IsMenuEnabled="False" x:Name="AppBar">

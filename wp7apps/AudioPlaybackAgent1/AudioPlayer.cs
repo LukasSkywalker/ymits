@@ -102,12 +102,7 @@ namespace AudioPlaybackAgent1
         /// </remarks>
         protected override void OnPlayStateChanged(BackgroundAudioPlayer player, AudioTrack track, PlayState playState)
         {
-            List<string[]> strings = getFromPlaylist();
-            List<AudioTrack> trackList = new List<AudioTrack>();
-            foreach(var item in strings){
-                trackList.Add(new AudioTrack(new Uri(item[2]), item[1], item[0],null, null));
-            }
-            _playList = trackList;
+            updatePlaylist();
             switch (playState)
             {
                 case PlayState.TrackEnded:
@@ -218,6 +213,9 @@ namespace AudioPlaybackAgent1
         private AudioTrack GetNextTrack()
         {
             // TODO: add logic to get the next audio track
+
+            updatePlaylist();
+
             if(++currentTrackNumber >= _playList.Count)
             {
                 currentTrackNumber = 0;
@@ -244,6 +242,9 @@ namespace AudioPlaybackAgent1
         private AudioTrack GetPreviousTrack()
         {
             // TODO: add logic to get the previous audio track
+
+            updatePlaylist();
+
             if(--currentTrackNumber < 0)
             {
                 currentTrackNumber = _playList.Count-1;
@@ -313,6 +314,16 @@ namespace AudioPlaybackAgent1
                 return (new List<String[]>());
             }
 
+        }
+
+        private void updatePlaylist() {
+            List<string[]> strings = getFromPlaylist();
+            List<AudioTrack> trackList = new List<AudioTrack>();
+            foreach(var item in strings)
+            {
+                trackList.Add(new AudioTrack(new Uri(item[2]), item[1], item[0], null, null));
+            }
+            _playList = trackList;
         }
     }
     public class TrackListItem

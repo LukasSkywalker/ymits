@@ -51,6 +51,8 @@ namespace MusicBird
         const int downButton = 3;
         const int nextButton = 2;
 
+        bool sliderPosChangeAllowed = true;
+
         WebClient wc = new WebClient();
         
 
@@ -66,13 +68,30 @@ namespace MusicBird
 
             BackgroundAudioPlayer.Instance.PlayStateChanged += new EventHandler(Instance_PlayStateChanged);
 
+            positionSlider.ManipulationStarted += new EventHandler<ManipulationStartedEventArgs>(slider_ManipulationStarted);
+            Touch.FrameReported += new TouchFrameEventHandler(Touch_FrameReported);
+
             /*MouseClickManager fMouseManager = new MouseClickManager(200);
             fMouseManager.Click += new MouseButtonEventHandler(spItem_Click);
             fMouseManager.DoubleClick += new MouseButtonEventHandler(YourControl_DoubleClick);*/
         }
 
-        private void PhoneApplicationPage_Loaded(object sender, RoutedEventArgs e)
+        void Touch_FrameReported( object sender, TouchFrameEventArgs e )
         {
+            if(e.GetPrimaryTouchPoint(positionSlider).Action == TouchAction.Up)
+            {
+                (Panorama.SelectedItem as PanoramaItem).IsHitTestVisible = true;
+                sliderPosChangeAllowed = true;
+                double pos = positionSlider.Value;
+                int seconds = Convert.ToInt32(pos);
+                BackgroundAudioPlayer.Instance.Position = new TimeSpan(0, 0, seconds);
+            }
+        }
+
+        void slider_ManipulationStarted( object sender, ManipulationStartedEventArgs e )
+        {
+            (Panorama.SelectedItem as PanoramaItem).IsHitTestVisible = false;
+            sliderPosChangeAllowed = false;
         }
 
         void MainPage_Loaded(object sender, RoutedEventArgs e)
@@ -80,7 +99,7 @@ namespace MusicBird
             // Initialize a timer to update the UI every half-second.
             _timer = new DispatcherTimer();
             _timer.Interval = TimeSpan.FromSeconds(0.5);
-            _timer.Tick += new EventHandler(UpdateState);
+            _timer.Tick += new EventHandler(UpdateState);            
 
             _tileTimer = new DispatcherTimer();
             _tileTimer.Interval = TimeSpan.FromSeconds(5);
@@ -94,9 +113,12 @@ namespace MusicBird
             {
                 // If audio was already playing when the app was launched, update the UI.
                 positionIndicator.IsIndeterminate = false;
+                positionIndicator.Visibility = Visibility.Collapsed;
                 positionIndicator.Maximum = BackgroundAudioPlayer.Instance.Track.Duration.TotalSeconds;
+                positionSlider.Maximum = BackgroundAudioPlayer.Instance.Track.Duration.TotalSeconds;
                 UpdateButtons(true, false, true);
-                UpdateState(null, null);
+                _timer.Start();
+                //UpdateState(null, null); this is called by _timer.Start()
             }
 
             //DEBUG IsolatedStorageExplorer.Explorer.Start("localhost");
@@ -119,13 +141,16 @@ namespace MusicBird
                 case PlayState.Playing:
                     // Update the UI.
                     positionIndicator.IsIndeterminate = false;
+                    positionIndicator.Visibility = Visibility.Collapsed;
                     positionIndicator.Maximum = BackgroundAudioPlayer.Instance.Track.Duration.TotalSeconds;
+                    positionSlider.Maximum = BackgroundAudioPlayer.Instance.Track.Duration.TotalSeconds;
                     UpdateButtons(true, false, true);
                     UpdateState(null, null);
 
                     // Start the timer for updating the UI.
                     _timer.Start();
                     positionIndicator.IsIndeterminate = false;
+                    positionIndicator.Visibility = Visibility.Collapsed;
                     break;
 
                 case PlayState.Paused:
@@ -179,6 +204,7 @@ namespace MusicBird
 
                 // Set the current position on the ProgressBar.
                 positionIndicator.Value = BackgroundAudioPlayer.Instance.Position.TotalSeconds;
+                if(sliderPosChangeAllowed) positionSlider.Value = BackgroundAudioPlayer.Instance.Position.TotalSeconds;
 
                 // Update the current playback position.
                 TimeSpan position = new TimeSpan();
@@ -202,6 +228,7 @@ namespace MusicBird
         {
             // Show the indeterminate progress bar.
             positionIndicator.IsIndeterminate = true;
+            positionIndicator.Visibility = Visibility.Visible;
 
             // Disable the button so the user can't click it multiple times before 
             // the background audio agent is able to handle their request.
@@ -225,6 +252,7 @@ namespace MusicBird
                 ApplicationBarIconButton btn = sender as ApplicationBarIconButton;
                 btn.IconUri = new Uri("/Images/appbar.transport.play.rest.png",UriKind.Relative);
                 positionIndicator.IsIndeterminate = false;
+                positionIndicator.Visibility = Visibility.Collapsed;
                 
             }
             else
@@ -233,6 +261,7 @@ namespace MusicBird
                 ApplicationBarIconButton btn = sender as ApplicationBarIconButton;
                 btn.IconUri = new Uri("/Images/appbar.transport.pause.rest.png", UriKind.Relative);
                 positionIndicator.IsIndeterminate = true;
+                positionIndicator.Visibility = Visibility.Visible;
             }
             
         }
@@ -260,6 +289,7 @@ namespace MusicBird
         {
             // Show the indeterminate progress bar.
             positionIndicator.IsIndeterminate = true;
+            positionIndicator.Visibility = Visibility.Visible;
 
             // Disable the button so the user can't click it multiple times before 
             // the background audio agent is able to handle their request.
@@ -267,6 +297,16 @@ namespace MusicBird
 
             // Tell the backgound audio agent to skip to the next track.
             BackgroundAudioPlayer.Instance.SkipNext();
+        }
+
+        private void seek( object sender, EventArgs e )
+        {
+            // Show the indeterminate progress bar.
+            positionIndicator.IsIndeterminate = true;
+            positionIndicator.Visibility = Visibility.Visible;
+
+            // Tell the backgound audio agent to skip to the next track.
+            BackgroundAudioPlayer.Instance.Position = new TimeSpan(0, 1, 1);
         }
 
         private void search_KeyUp( object sender, KeyEventArgs e ) {
@@ -426,6 +466,8 @@ namespace MusicBird
 
             AudioPlaybackAgent1.AudioPlayer.addToList(current);
             BackgroundAudioPlayer.Instance.Track = current;
+            BackgroundAudioPlayer.Instance.Position = new TimeSpan(0, 0, 0);
+            positionSlider.Value = 0;
             BackgroundAudioPlayer.Instance.Play();
             updatePlaylist();
             Panorama.DefaultItem = playerItem;
@@ -455,6 +497,8 @@ namespace MusicBird
                 case "play":
                     AudioPlaybackAgent1.AudioPlayer.addToList(current);
                     BackgroundAudioPlayer.Instance.Track = current;
+                    BackgroundAudioPlayer.Instance.Position = new TimeSpan(0, 0, 0);
+                    positionSlider.Value = 0;
                     BackgroundAudioPlayer.Instance.Play();
                     updatePlaylist();
                     Panorama.DefaultItem = playerItem;
@@ -619,7 +663,8 @@ namespace MusicBird
                         for (int i = 0; i < files.Length; i++)
                         {
                             LibraryItem item = new LibraryItem(files[i]);
-                            trackList.Add(item);
+                            if(item.filename.IndexOf(".mp3") != -1)
+                            { trackList.Add(item); }
                         }
                         LibraryElement.ItemsSource = trackList;
                     }
@@ -632,6 +677,8 @@ namespace MusicBird
 
                 AudioPlaybackAgent1.AudioPlayer.addToList(current);
                 BackgroundAudioPlayer.Instance.Track = current;
+                BackgroundAudioPlayer.Instance.Position = new TimeSpan(0, 0, 0);
+                positionSlider.Value = 0;
                 BackgroundAudioPlayer.Instance.Play();
                 updatePlaylist();
                 Panorama.DefaultItem = playerItem;
@@ -666,6 +713,8 @@ namespace MusicBird
                     case "play":
                         AudioPlaybackAgent1.AudioPlayer.addToList(current);
                         BackgroundAudioPlayer.Instance.Track = current;
+                        BackgroundAudioPlayer.Instance.Position = new TimeSpan(0,0,0);
+                        positionSlider.Value = 0;
                         BackgroundAudioPlayer.Instance.Play();
                         updatePlaylist();
                         Panorama.DefaultItem = playerItem;
@@ -687,6 +736,8 @@ namespace MusicBird
                 
                 AudioPlaybackAgent1.AudioPlayer.addToList(current);
                 BackgroundAudioPlayer.Instance.Track = current;
+                BackgroundAudioPlayer.Instance.Position = new TimeSpan(0, 0, 0);
+                positionSlider.Value = 0;
                 BackgroundAudioPlayer.Instance.Play();
                 updatePlaylist();
                 Panorama.DefaultItem = playerItem;
@@ -715,6 +766,8 @@ namespace MusicBird
                     case "play":
                         AudioPlaybackAgent1.AudioPlayer.addToList(current);
                         BackgroundAudioPlayer.Instance.Track = current;
+                        BackgroundAudioPlayer.Instance.Position = new TimeSpan(0, 0, 0);
+                        positionSlider.Value = 0;
                         BackgroundAudioPlayer.Instance.Play();
                         updatePlaylist();
                         Panorama.DefaultItem = playerItem;
@@ -1025,6 +1078,11 @@ namespace MusicBird
                         settings.Save();
                     }
                 }
+            }
+
+            private void positionSlider_ValueChanged( object sender, RoutedPropertyChangedEventArgs<double> e )
+            {
+                
             }
 
             
