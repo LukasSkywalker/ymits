@@ -177,7 +177,10 @@ namespace AudioPlaybackAgent1
                     player.Rewind();
                     break;
                 case UserAction.Seek:
-                    player.Position = (TimeSpan)param;
+                    if(player.CanSeek)
+                    {
+                        player.Position = (TimeSpan)param;
+                    }
                     break;
                 case UserAction.SkipNext:
                     AudioTrack nextTrack = GetNextTrack();
