@@ -1,18 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Animation;
+﻿using System.Windows;
 using System.Windows.Navigation;
-using System.Windows.Shapes;
 using Microsoft.Phone.Controls;
-using Microsoft.Phone.Shell;
 using Microsoft.Phone.Marketplace;
+using Microsoft.Phone.Shell;
 
 namespace MusicBird
 {
@@ -57,7 +47,7 @@ namespace MusicBird
                 Application.Current.Host.Settings.EnableFrameRateCounter = true;
 
                 // Show the areas of the app that are being redrawn in each frame.
-                //Application.Current.Host.Settings.EnableRedrawRegions = true;
+                Application.Current.Host.Settings.EnableRedrawRegions = true;
 
                 // Enable non-production analysis visualization mode, 
                 // which shows areas of a page that are handed off to GPU with a colored overlay.
@@ -124,7 +114,7 @@ namespace MusicBird
             // When debugging, we want to simulate a trial mode experience. The following conditional allows us to set the _isTrial 
             // property to simulate trial mode being on or off. 
         #if DEBUG
-            string message = "This sample demonstrates the implementation of a trial mode in an application." +
+            string message = "This sample demonstrates the implementation of a trial mode in an application. " +
                                "Press 'OK' to simulate trial mode. Press 'Cancel' to run the application in normal mode.";
             if ( MessageBox.Show( message, "Debug Trial",
                  MessageBoxButton.OKCancel ) == MessageBoxResult.OK )

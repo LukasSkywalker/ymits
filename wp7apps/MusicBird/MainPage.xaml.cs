@@ -8,23 +8,15 @@ using System.Net.NetworkInformation;
 using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Resources;
-using System.Windows.Shapes;
 using System.Windows.Threading;
-using System.Xml;
 using Microsoft.Phone.BackgroundAudio;
 using Microsoft.Phone.BackgroundTransfer;
 using Microsoft.Phone.Controls;
 using Microsoft.Phone.Shell;
 using Microsoft.Phone.Tasks;
-//using Microsoft.Xna.Framework.Media;
+
 
 
 namespace MusicBird
@@ -53,8 +45,6 @@ namespace MusicBird
         const int playButton = 1;
         const int downButton = 3;
         const int nextButton = 2;
-
-        bool sliderPosChangeAllowed = true;
 
         WebClient wc = new WebClient();
         
@@ -250,6 +240,7 @@ namespace MusicBird
         /// <param name="e"></param>
         private void playButton_Click(object sender, EventArgs e)
         {
+            isPlaybackLimitExceeded();
             if (PlayState.Playing == BackgroundAudioPlayer.Instance.PlayerState)
             {
                 BackgroundAudioPlayer.Instance.Pause();
@@ -1114,6 +1105,42 @@ namespace MusicBird
                         //MessageBox.Show(url);
                         albumartImage.Source = new BitmapImage(new Uri(url,UriKind.Absolute));
                     }
+                }
+            }
+
+            private bool isPlaybackLimitExceeded() {
+                var settings = IsolatedStorageSettings.ApplicationSettings;
+                DateTime now = new DateTime();
+                MessageBox.Show(now.Ticks.ToString());
+
+                if(settings.Contains("playback"))
+                {
+                    List<DateTime> items;   
+                    if(settings.TryGetValue<List<DateTime>>("playback", out items))
+                    {
+                        if(items.Count > 5)
+                        {
+                            return true;
+                        }
+                        else
+                        {
+                            items.Add(now);
+                            settings.Remove("playback");
+                            settings.Add("playback", items);
+                            settings.Save();
+                            return false;
+                        }
+                    }
+                    else
+                    {
+                        return false;
+                    }
+                }
+                else {
+                    List<DateTime> newItem = new List<DateTime>();
+                    newItem.Add(now);
+                    settings.Add("playback", newItem);
+                    return false;
                 }
             }
 

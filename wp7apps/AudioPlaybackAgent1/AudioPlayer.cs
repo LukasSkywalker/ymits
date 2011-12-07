@@ -1,8 +1,8 @@
 ﻿using System;
-using System.Windows;
-using Microsoft.Phone.BackgroundAudio;
 using System.Collections.Generic;
 using System.IO.IsolatedStorage;
+using System.Windows;
+using Microsoft.Phone.BackgroundAudio;
 
 namespace AudioPlaybackAgent1
 {
