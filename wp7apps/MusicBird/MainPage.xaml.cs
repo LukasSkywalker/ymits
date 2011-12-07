@@ -1,30 +1,31 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
+using System.IO.IsolatedStorage;
 using System.Linq;
 using System.Net;
+using System.Net.NetworkInformation;
+using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
-using System.Windows.Shapes;
-using Microsoft.Phone.Controls;
-using Microsoft.Phone.Tasks;
-using System.Windows.Threading;
-using System.Windows.Navigation;
-using Microsoft.Phone.BackgroundAudio;
-using Microsoft.Phone.Shell;
-using System.IO;
-using System.Xml;
-using System.IO.IsolatedStorage;
-using System.Windows.Resources;
-using System.Text.RegularExpressions;
-using Microsoft.Xna.Framework.Media;
-using System.Windows.Data;
-using System.Net.NetworkInformation;
-using Microsoft.Phone.BackgroundTransfer;
 using System.Windows.Media.Imaging;
+using System.Windows.Navigation;
+using System.Windows.Resources;
+using System.Windows.Shapes;
+using System.Windows.Threading;
+using System.Xml;
+using Microsoft.Phone.BackgroundAudio;
+using Microsoft.Phone.BackgroundTransfer;
+using Microsoft.Phone.Controls;
+using Microsoft.Phone.Shell;
+using Microsoft.Phone.Tasks;
+//using Microsoft.Xna.Framework.Media;
+
 
 namespace MusicBird
 {
