@@ -467,7 +467,7 @@ namespace MusicBird
             //positionSlider.Value = 0;
             BackgroundAudioPlayer.Instance.Play();
             updatePlaylist();
-            Panorama.DefaultItem = playerItem;
+            Panorama.SelectedItem = playerItem;
         }
 
         private void trackItem_Hold(object sender, RoutedEventArgs e) {
@@ -498,7 +498,7 @@ namespace MusicBird
                     //positionSlider.Value = 0;
                     BackgroundAudioPlayer.Instance.Play();
                     updatePlaylist();
-                    Panorama.DefaultItem = playerItem;
+                    Panorama.SelectedItem = playerItem;
                     break;
                 case "download":
                     if((Application.Current as App).IsTrial)
@@ -634,7 +634,7 @@ namespace MusicBird
                     BackgroundTransferService.Add(transferRequest);
                     transferRequest.TransferStatusChanged += new EventHandler<BackgroundTransferEventArgs>(transfer_TransferStatusChanged);
                     transferRequest.TransferProgressChanged += new EventHandler<BackgroundTransferEventArgs>(transfer_TransferProgressChanged);
-                    Panorama.DefaultItem = downloadItem;
+                    Panorama.SelectedItem = downloadItem;
                     UpdateUI();
                 }
                 catch (InvalidOperationException ex)
@@ -688,7 +688,7 @@ namespace MusicBird
                 //positionSlider.Value = 0;
                 BackgroundAudioPlayer.Instance.Play();
                 updatePlaylist();
-                Panorama.DefaultItem = playerItem;
+                Panorama.SelectedItem = playerItem;
             }
 
             private void playlistItem_Hold(object sender, RoutedEventArgs e)
@@ -724,7 +724,7 @@ namespace MusicBird
                         //positionSlider.Value = 0;
                         BackgroundAudioPlayer.Instance.Play();
                         updatePlaylist();
-                        Panorama.DefaultItem = playerItem;
+                        Panorama.SelectedItem = playerItem;
                         break;
                     case "delete":
                         removeFromPlaylist(selectedIndex);
@@ -747,7 +747,7 @@ namespace MusicBird
                 //positionSlider.Value = 0;
                 BackgroundAudioPlayer.Instance.Play();
                 updatePlaylist();
-                Panorama.DefaultItem = playerItem;
+                Panorama.SelectedItem = playerItem;
             }
 
             private void libraryItem_Hold(object sender, RoutedEventArgs e)
@@ -777,7 +777,7 @@ namespace MusicBird
                         //positionSlider.Value = 0;
                         BackgroundAudioPlayer.Instance.Play();
                         updatePlaylist();
-                        Panorama.DefaultItem = playerItem;
+                        Panorama.SelectedItem = playerItem;
                         break;
                     case "delete":
                         using (var store = IsolatedStorageFile.GetUserStoreForApplication())

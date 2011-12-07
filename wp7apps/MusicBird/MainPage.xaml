@@ -19,28 +19,28 @@
     <Grid x:Name="LayoutRoot" Background="Transparent">
 
         <!--Panorama control-->
-        <controls:Panorama Title="musicbird" x:Name="Panorama">
+        <controls:Pivot Title="musicbird" x:Name="Panorama">
             <!--<controls:Panorama.Background>
                 <ImageBrush ImageSource="PanoramaBackground.png"/>
             </controls:Panorama.Background>-->
  
             <!--Panorama item one-->
-            <controls:PanoramaItem Header="player" x:Name="playerItem" Height="545">
+            <controls:PivotItem Header="player" x:Name="playerItem">
                 <!--Double line list with text wrapping-->
-                <Grid x:Name="ContentPanel" Grid.Row="1" Margin="12,0,12,13" Height="412" Width="407">
+                <Grid x:Name="ContentPanel" Grid.Row="1" Margin="12,0,12,13" Height="575" Width="455">
                     <TextBlock Height="32" HorizontalAlignment="Left" Margin="12,497,0,0" x:Name="txtState" Text="State: N/A" VerticalAlignment="Top" Width="438" />
                     <TextBlock Height="45" HorizontalAlignment="Left" Margin="12,24,0,0" x:Name="txtTrack" Text="Track:" VerticalAlignment="Top" Width="438" FontSize="28" />
                     <ProgressBar HorizontalAlignment="Left" Margin="12,100,0,0" x:Name="positionIndicator" VerticalAlignment="Top" Width="378" Height="5" />
                     <!--<Slider Height="84" CacheMode="BitmapCache" HorizontalAlignment="Left" Margin="0,90,18,0" Name="positionSlider" VerticalAlignment="Top" Width="460"/>-->
                     <TextBlock Height="30" CacheMode="BitmapCache" HorizontalAlignment="Left" Margin="12,120,0,0" Name="textPosition" Text="00:00:00" VerticalAlignment="Top" />
                     <TextBlock Height="30" CacheMode="BitmapCache" HorizontalAlignment="Left" Margin="300,119,0,0" Name="textRemaining" Text="-00:00:00" VerticalAlignment="Top" />
-                    <Image Height="222" HorizontalAlignment="Center" Margin="0,174,0,0" Name="albumartImage" Stretch="Uniform" VerticalAlignment="Top" Width="320" />
+                    <Image Height="302" HorizontalAlignment="Center" Margin="3,174,3,0" Name="albumartImage" Stretch="Uniform" VerticalAlignment="Top" Width="449" />
                 </Grid>
-            </controls:PanoramaItem>
+            </controls:PivotItem>
  
             <!--Panorama item two-->
             <!--Use 'Orientation="Horizontal"' to enable a panel that lays out horizontally-->
-            <controls:PanoramaItem Header="search" FontSize="15" x:Name="searchItem">
+            <controls:PivotItem Header="search" FontSize="15" x:Name="searchItem">
                 <StackPanel>
                     <TextBox x:Name="queryTextbox" Text="" InputScope="Search" KeyUp="search_KeyUp"></TextBox>
                     <!--<Button Content="Search" Height="72" Margin="246,0,0,0" Name="queryButton" Width="160" Click="queryButton_Click" />-->
@@ -48,7 +48,7 @@
                     
                     <!--Double line list with image placeholder and text wrapping-->
 
-                    <ListBox Height="348" Name="TrackListElement" Width="418" Margin="1,0" >
+                    <ListBox Height="490" Name="TrackListElement" >
                         <ListBox.ItemTemplate>
                             <DataTemplate>
                                 <Button Click="trackItem_Click">
@@ -74,11 +74,11 @@
                         </ListBox.ItemTemplate>
                     </ListBox>
                 </StackPanel>
-            </controls:PanoramaItem>
-            <controls:PanoramaItem Header="playlist" x:Name="playlistItem">
+            </controls:PivotItem>
+            <controls:PivotItem Header="playlist" x:Name="playlistItem">
                 <!--Double line list with text wrapping-->
-                <Grid x:Name="playlistContentPanel" Grid.Row="1" Margin="12,0,12,100" Height="401">
-                    <ListBox Name="PlaylistElement" >
+                <!--<Grid x:Name="playlistContentPanel" Grid.Row="1" Margin="12,0,12,100" Height="560">-->
+                    <ListBox Name="PlaylistElement">
                         <ListBox.ItemTemplate>
                             <DataTemplate>
                                 <Button Click="playlistItem_Click">
@@ -103,13 +103,12 @@
                             </DataTemplate>
                         </ListBox.ItemTemplate>  
                     </ListBox>
-                </Grid>
-            </controls:PanoramaItem>
+                <!--</Grid>-->
+            </controls:PivotItem>
 
-            <controls:PanoramaItem Header="library" x:Name="libraryItem">
+            <controls:PivotItem Header="library" x:Name="libraryItem">
                 <!--Double line list with text wrapping-->
-                <Grid x:Name="libraryContentPanel" Grid.Row="1" Margin="12,0,12,100" Height="426" Width="408">
-                    <ListBox Name="LibraryElement" Margin="8,8,0,0" >
+                    <ListBox Name="LibraryElement">
                         <ListBox.ItemTemplate>
                             <DataTemplate>
                                 <Button Click="libraryItem_Click">
@@ -133,10 +132,9 @@
                             </DataTemplate>
                         </ListBox.ItemTemplate>
                     </ListBox>
-                </Grid>
-            </controls:PanoramaItem>
-            <controls:PanoramaItem Header="downloads" x:Name="downloadItem">
-                <Grid x:Name="DownloadPanel" Grid.Row="1" Margin="12,0,12,0">
+            </controls:PivotItem>
+            <controls:PivotItem Header="downloads" x:Name="downloadItem">
+                <Grid x:Name="DownloadPanel" Grid.Row="1" >
                     <TextBlock Text="You have no running Downloads." Name="EmptyTextBlock" Visibility="Collapsed"/>
                     <ListBox Name="TransferListBox">
                         <ListBox.ItemTemplate>
@@ -172,8 +170,8 @@
                         </ListBox.ItemTemplate>
                     </ListBox>
                 </Grid>
-            </controls:PanoramaItem>
-        </controls:Panorama>
+            </controls:PivotItem>
+        </controls:Pivot>
     </Grid>
     <phone:PhoneApplicationPage.ApplicationBar>
          <shell:ApplicationBar IsVisible="True" IsMenuEnabled="False" x:Name="AppBar">
