@@ -46,7 +46,7 @@ namespace MusicBird
         const int downButton = 3;
         const int nextButton = 2;
 
-        WebClient wc = new WebClient();
+        
         
 
         // Constructor
@@ -57,35 +57,7 @@ namespace MusicBird
             // Set the data context of the listbox control to the sample data
             //DataContext = App.ViewModel;
             this.Loaded += new RoutedEventHandler(MainPage_Loaded);
-            wc.OpenReadCompleted += new OpenReadCompletedEventHandler(wc_OpenReadCompleted);
-
-            BackgroundAudioPlayer.Instance.PlayStateChanged += new EventHandler(Instance_PlayStateChanged);
-
-            //positionSlider.ManipulationStarted += new EventHandler<ManipulationStartedEventArgs>(slider_ManipulationStarted);
-            //Touch.FrameReported += new TouchFrameEventHandler(Touch_FrameReported);
-
-            /*MouseClickManager fMouseManager = new MouseClickManager(200);
-            fMouseManager.Click += new MouseButtonEventHandler(spItem_Click);
-            fMouseManager.DoubleClick += new MouseButtonEventHandler(YourControl_DoubleClick);*/
         }
-
-        /*void Touch_FrameReported( object sender, TouchFrameEventArgs e )
-        {
-            if(e.GetPrimaryTouchPoint(positionSlider).Action == TouchAction.Up)
-            {
-                (Panorama.SelectedItem as PanoramaItem).IsHitTestVisible = true;
-                sliderPosChangeAllowed = true;
-                double pos = positionSlider.Value;
-                int seconds = Convert.ToInt32(pos);
-                //BackgroundAudioPlayer.Instance.Position = new TimeSpan(0, 0, seconds);
-            }
-        }
-
-        void slider_ManipulationStarted( object sender, ManipulationStartedEventArgs e )
-        {
-            (Panorama.SelectedItem as PanoramaItem).IsHitTestVisible = false;
-            sliderPosChangeAllowed = false;
-        }*/
 
         void MainPage_Loaded(object sender, RoutedEventArgs e)
         {
@@ -97,8 +69,11 @@ namespace MusicBird
             _tileTimer = new DispatcherTimer();
             _tileTimer.Interval = TimeSpan.FromSeconds(5);
             _tileTimer.Tick += new EventHandler(setAppTile);
+            _tileTimer.Start();
 
             NetworkChange.NetworkAddressChanged += NetworkAddress_Changed;
+
+            
 
             BackgroundAudioPlayer.Instance.PlayStateChanged += new EventHandler(Instance_PlayStateChanged);
 
@@ -115,6 +90,8 @@ namespace MusicBird
 
             //DEBUG IsolatedStorageExplorer.Explorer.Start("localhost");
 
+            showNagScreen();
+
             updatePlaylist();
             updateLibrary();
         }
@@ -127,10 +104,12 @@ namespace MusicBird
         /// <param name="e"></param>
         void Instance_PlayStateChanged(object sender, EventArgs e)
         {
+            
             //_tileTimer.Start();
             switch (BackgroundAudioPlayer.Instance.PlayerState)
             {
                 case PlayState.Playing:
+                    
                     // Update the UI.
                     positionIndicator.IsIndeterminate = false;
                     positionIndicator.Maximum = BackgroundAudioPlayer.Instance.Track.Duration.TotalSeconds;
@@ -150,6 +129,10 @@ namespace MusicBird
 
                     // Stop the timer for updating the UI.
                     _timer.Stop();
+                    break;
+                case PlayState.Stopped:
+                    UpdateButtons(true, true, true);
+                    positionIndicator.IsIndeterminate = false;
                     break;
             }
         }
@@ -191,6 +174,10 @@ namespace MusicBird
         private void UpdateState(object sender, EventArgs e)
         {
             txtState.Text = string.Format("State: {0}", BackgroundAudioPlayer.Instance.PlayerState);
+
+            if(BackgroundAudioPlayer.Instance.PlayerState == PlayState.Stopped) {
+                return;
+            }
 
             if (BackgroundAudioPlayer.Instance.Track != null)
             {
@@ -240,7 +227,7 @@ namespace MusicBird
         /// <param name="e"></param>
         private void playButton_Click(object sender, EventArgs e)
         {
-            isPlaybackLimitExceeded();
+            //AudioPlaybackAgent1.AudioPlayer.isPlaybackLimitExceeded();
             if (PlayState.Playing == BackgroundAudioPlayer.Instance.PlayerState)
             {
                 BackgroundAudioPlayer.Instance.Pause();
@@ -251,12 +238,22 @@ namespace MusicBird
             }
             else
             {
-                BackgroundAudioPlayer.Instance.Play();
-                ApplicationBarIconButton btn = sender as ApplicationBarIconButton;
-                btn.IconUri = new Uri("/Images/appbar.transport.pause.rest.png", UriKind.Relative);
-                positionIndicator.IsIndeterminate = true;
+                if((Application.Current as App).IsTrial)
+                {
+                    if(MessageBox.Show("You are using MusicBird in trial mode. Please purchase " +
+                        "the paid license to listen to more than 5 tracks per day. Press OK to go to the market.", "Trial",
+                            MessageBoxButton.OKCancel) == MessageBoxResult.OK)
+                    {
+                        MarketplaceDetailTask _marketPlaceDetailTask = new MarketplaceDetailTask();
+                        _marketPlaceDetailTask.Show();
+                    }
+                }else{
+                    BackgroundAudioPlayer.Instance.Play();
+                    ApplicationBarIconButton btn = sender as ApplicationBarIconButton;
+                    btn.IconUri = new Uri("/Images/appbar.transport.pause.rest.png", UriKind.Relative);
+                    positionIndicator.IsIndeterminate = true;
+                }
             }
-            
         }
 
 
@@ -311,7 +308,9 @@ namespace MusicBird
         {
             string url = "http://mp3skull.com/mp3/" + query.Replace(" ", "_") + ".html";
             System.Diagnostics.Debug.WriteLine("Opening URL "+url);
-            wc.CancelAsync();
+            WebClient wc = new WebClient();
+            wc.OpenReadCompleted += new OpenReadCompletedEventHandler(wc_OpenReadCompleted);
+            NetworkAddress_Changed(null, null);
             wc.OpenReadAsync(new Uri(url));
         }
 
@@ -321,9 +320,9 @@ namespace MusicBird
             Regex pattern = new Regex("<a href=\"(.*?.mp3)\" rel=\"nofollow\"", RegexOptions.IgnoreCase);
             Regex pattern2 = new Regex("<div style=\"font-size:15px;\"><b>(.*?) mp3</b></div>",RegexOptions.IgnoreCase);
             String s;
-            Stream response = e.Result;
             try
             {
+                Stream response = e.Result;
                 StreamReader sr = new StreamReader(response, System.Text.Encoding.UTF8);
                 try
                 {
@@ -333,6 +332,7 @@ namespace MusicBird
                 finally
                 {
                     sr.Close();
+                    response.Close();
                 }
 
 
@@ -366,9 +366,15 @@ namespace MusicBird
                 //startDownload();
 
             }
+            catch(WebException ex)
+            {
+                String status = ex.Status.ToString();
+                String msg = ex.Message;
+                String statCode = ((HttpWebResponse)ex.Response).StatusCode.ToString();
+                String statDescr = ((HttpWebResponse)ex.Response).StatusDescription.ToString();
+            }
             finally
             {
-                response.Close();
                 queryProgress.Visibility = Visibility.Collapsed;
                 queryProgress.IsIndeterminate = false;
             }
@@ -458,6 +464,7 @@ namespace MusicBird
             //BackgroundAudioPlayer.Instance.Position = new TimeSpan(0, 0, 0);
             //positionSlider.Value = 0;
             BackgroundAudioPlayer.Instance.Play();
+            addToPlaylist(selectedTrack.artist, selectedTrack.title, selectedTrack.url);
             updatePlaylist();
             Panorama.SelectedItem = playerItem;
         }
@@ -484,19 +491,13 @@ namespace MusicBird
                     updatePlaylist();
                     break;
                 case "play":
-                    AudioPlaybackAgent1.AudioPlayer.addToList(current);
-                    BackgroundAudioPlayer.Instance.Track = current;
-                    //BackgroundAudioPlayer.Instance.Position = new TimeSpan(0, 0, 0);
-                    //positionSlider.Value = 0;
-                    BackgroundAudioPlayer.Instance.Play();
-                    updatePlaylist();
-                    Panorama.SelectedItem = playerItem;
+                    trackItem_Click(sender, e);
                     break;
                 case "download":
                     if((Application.Current as App).IsTrial)
                     {
-                        if(MessageBox.Show("You are using MusicBird in trial mode. Please purchase" +
-                            "the paid license to use this feature. Press OK to go to the market.", "Debug Trial",
+                        if(MessageBox.Show("You are using MusicBird in trial mode. Please purchase " +
+                            "the paid license to use this feature. Press OK to go to the market.", "Trial",
                                 MessageBoxButton.OKCancel) == MessageBoxResult.OK)
                         {
                             MarketplaceDetailTask _marketPlaceDetailTask = new MarketplaceDetailTask();
@@ -524,14 +525,35 @@ namespace MusicBird
             if (TileToFind != null)
             {
 
-                string status;
-                int count = BackgroundTransferService.Requests.Count();
-                if (BackgroundAudioPlayer.Instance.PlayerState == PlayState.Playing)
+                string status = "Paused";
+                string name = "";
+                int count = 0;
+                try
                 {
-                    status = "Playing...";
+                    count = BackgroundTransferService.Requests.Count();
                 }
-                else {
-                    status = "Paused";
+                catch(Exception ex) { }
+
+                try
+                {
+                    if(BackgroundAudioPlayer.Instance.PlayerState == PlayState.Playing)
+                    {
+                        status = "Playing...";
+                    }
+                    else
+                    {
+                        status = "Paused";
+                    }
+                }
+                catch(Exception ex) { }
+
+
+                if(BackgroundAudioPlayer.Instance != null)
+                {
+                    if(BackgroundAudioPlayer.Instance.Track != null)
+                    {
+                        name = BackgroundAudioPlayer.Instance.Track.Title + " - " + BackgroundAudioPlayer.Instance.Track.Artist;
+                    }
                 }
 
 
@@ -542,9 +564,9 @@ namespace MusicBird
                     Title = "MusicBird",
                     //BackgroundImage = new Uri(textBoxBackgroundImage.Text, UriKind.Relative),
                     Count = count,
-                    //BackTitle = status,
+                    BackTitle = status,
                     //BackBackgroundImage = new Uri(textBoxBackBackgroundImage.Text, UriKind.Relative),
-                    //BackContent = BackgroundAudioPlayer.Instance.Track.Title + " - " + BackgroundAudioPlayer.Instance.Track.Artist
+                    BackContent = name
                 };
 
                 // Update the Application Tile
@@ -637,6 +659,7 @@ namespace MusicBird
                 {
                     MessageBox.Show("Unable to add background transfer request.");
                 }
+                setAppTile(null, null);
             }
 
             private void updatePlaylist() {
@@ -737,6 +760,7 @@ namespace MusicBird
                 BackgroundAudioPlayer.Instance.Track = current;
                 //BackgroundAudioPlayer.Instance.Position = new TimeSpan(0, 0, 0);
                 //positionSlider.Value = 0;
+                addToPlaylist(selectedTrack.filename,"", selectedTrack.filename);
                 BackgroundAudioPlayer.Instance.Play();
                 updatePlaylist();
                 Panorama.SelectedItem = playerItem;
@@ -763,13 +787,7 @@ namespace MusicBird
                         updatePlaylist();
                         break;
                     case "play":
-                        AudioPlaybackAgent1.AudioPlayer.addToList(current);
-                        BackgroundAudioPlayer.Instance.Track = current;
-                        //BackgroundAudioPlayer.Instance.Position = new TimeSpan(0, 0, 0);
-                        //positionSlider.Value = 0;
-                        BackgroundAudioPlayer.Instance.Play();
-                        updatePlaylist();
-                        Panorama.SelectedItem = playerItem;
+                        libraryItem_Click(sender, e);
                         break;
                     case "delete":
                         using (var store = IsolatedStorageFile.GetUserStoreForApplication())
@@ -864,6 +882,19 @@ namespace MusicBird
                 // When the page loads, refresh the list of file transfers.
                 InitialTransferStatusCheck();
                 UpdateUI();
+            }
+
+            private void showNagScreen() {
+                if((Application.Current as App).IsTrial)
+                {
+                    if(MessageBox.Show("You are using MusicBird in Trial mode. You can only listen " +
+                        "to 5 tracks per day and you can't download the music. Press OK to go to the market.", "Trial",
+                                MessageBoxButton.OKCancel) == MessageBoxResult.OK)
+                    {
+                        MarketplaceDetailTask _marketPlaceDetailTask = new MarketplaceDetailTask();
+                        _marketPlaceDetailTask.Show();
+                    }
+                }
             }
 
             private void InitialTransferStatusCheck()
@@ -1072,7 +1103,7 @@ namespace MusicBird
                             string[] part = (string[]) item;
                             items.Remove(part);
                         }
-                        settings.Clear();
+                        settings.Remove("playlist");
                         settings.Add("playlist", items);
                         settings.Save();
                     }
@@ -1107,44 +1138,6 @@ namespace MusicBird
                     }
                 }
             }
-
-            private bool isPlaybackLimitExceeded() {
-                var settings = IsolatedStorageSettings.ApplicationSettings;
-                DateTime now = new DateTime();
-                MessageBox.Show(now.Ticks.ToString());
-
-                if(settings.Contains("playback"))
-                {
-                    List<DateTime> items;   
-                    if(settings.TryGetValue<List<DateTime>>("playback", out items))
-                    {
-                        if(items.Count > 5)
-                        {
-                            return true;
-                        }
-                        else
-                        {
-                            items.Add(now);
-                            settings.Remove("playback");
-                            settings.Add("playback", items);
-                            settings.Save();
-                            return false;
-                        }
-                    }
-                    else
-                    {
-                        return false;
-                    }
-                }
-                else {
-                    List<DateTime> newItem = new List<DateTime>();
-                    newItem.Add(now);
-                    settings.Add("playback", newItem);
-                    return false;
-                }
-            }
-
-            
 
     }
 

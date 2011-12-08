@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO.IsolatedStorage;
 using System.Windows;
 using Microsoft.Phone.BackgroundAudio;
+using Microsoft.Phone.Marketplace;
 
 namespace AudioPlaybackAgent1
 {
@@ -44,7 +45,7 @@ namespace AudioPlaybackAgent1
             {
                 currentTrackNumber = 0;
             }
-
+            
             PlayTrack(player);
         }
 
@@ -60,9 +61,38 @@ namespace AudioPlaybackAgent1
 
         private void PlayTrack(BackgroundAudioPlayer player)
         {
+            updatePlaylist();
             // Sets the track to play. When the TrackReady state is received, 
             // playback begins from the OnPlayStateChanged handler.
-            player.Track = _playList[currentTrackNumber];
+            if(_playList.Count == 0) {
+                if(player.PlayerState == PlayState.Playing)
+                {
+                    player.Stop();
+                }
+                else { 
+                    System.Diagnostics.Debug.WriteLine("Not playing");
+                }
+                return;
+            }
+            if(_playList.Count>=currentTrackNumber+1)
+            {
+                System.Diagnostics.Debug.WriteLine("Index exists "+currentTrackNumber);
+                if(_playList[currentTrackNumber] != null)
+                {
+                    System.Diagnostics.Debug.WriteLine("Index is not null " + currentTrackNumber);
+                    player.Track = _playList[currentTrackNumber];
+                }
+                else {
+                    System.Diagnostics.Debug.WriteLine("Index does is null" + currentTrackNumber);
+                    GetNextTrack();
+                    PlayTrack(player);
+                }
+            }
+            else {
+                System.Diagnostics.Debug.WriteLine("Index does not exist len<ctn+1; len=" + _playList.Count+", ctn+1=" + currentTrackNumber+1);
+                GetNextTrack();
+                PlayTrack(player);
+            }
         }
 
         public static void addToList(AudioTrack track) {
@@ -106,9 +136,17 @@ namespace AudioPlaybackAgent1
             switch (playState)
             {
                 case PlayState.TrackEnded:
-                    player.Track = GetNextTrack();
+                    GetNextTrack();
+                    PlayTrack(player);
                     break;
                 case PlayState.TrackReady:
+                    if(isTrial()){
+                        if(isPlaybackLimitExceeded())
+                        {
+                            player.Pause();
+                            return;
+                        }
+                    }
                     player.Play();
                     break;
                 case PlayState.Shutdown:
@@ -153,16 +191,18 @@ namespace AudioPlaybackAgent1
         /// </remarks>
         protected override void OnUserAction(BackgroundAudioPlayer player, AudioTrack track, UserAction action, object param)
         {
+            updatePlaylist();
             switch (action)
             {
                 case UserAction.Play:
-                    if (player.PlayerState != PlayState.Playing)
-                    {
-                        player.Play();
-                    }
+                    player.Play();
                     break;
                 case UserAction.Stop:
-                    player.Stop();
+                    if(player.PlayerState == PlayState.Playing)
+                    {
+                        player.Stop();
+                        currentTrackNumber = 0;
+                    }
                     break;
                 case UserAction.Pause:
                     if (player.PlayerState == PlayState.Playing)
@@ -183,18 +223,20 @@ namespace AudioPlaybackAgent1
                     }
                     break;
                 case UserAction.SkipNext:
-                    AudioTrack nextTrack = GetNextTrack();
-                    if(nextTrack != null)
-                    {
-                        player.Track = nextTrack;
-                    }
+                    GetNextTrack();
+                    System.Diagnostics.Debug.WriteLine("SkipNext; index is " + currentTrackNumber);
+                    //if(nextTrack != null)
+                    //{
+                        PlayTrack(player);
+                    //}
                     break;
                 case UserAction.SkipPrevious:
-                    AudioTrack previousTrack = GetPreviousTrack();
-                    if (previousTrack != null)
-                    {
-                        player.Track = previousTrack;
-                    }
+                    GetPreviousTrack();
+                    System.Diagnostics.Debug.WriteLine("SkipPrev; index is " + currentTrackNumber);
+                    //if (previousTrack != null)
+                    //{
+                        PlayTrack(player);
+                    //}
                     break;
             }
 
@@ -213,7 +255,7 @@ namespace AudioPlaybackAgent1
         /// (c) MediaStreamSource (null)
         /// </remarks>
         /// <returns>an instance of AudioTrack, or null if the playback is completed</returns>
-        private AudioTrack GetNextTrack()
+        private void GetNextTrack()
         {
             // TODO: add logic to get the next audio track
 
@@ -224,11 +266,11 @@ namespace AudioPlaybackAgent1
                 currentTrackNumber = 0;
             }
 
-            AudioTrack track = _playList[currentTrackNumber];
+            //AudioTrack track = _playList[currentTrackNumber];
 
             // specify the track
 
-            return track;
+            //return currentTrackNumber;
         }
 
 
@@ -242,7 +284,7 @@ namespace AudioPlaybackAgent1
         /// (c) MediaStreamSource (null)
         /// </remarks>
         /// <returns>an instance of AudioTrack, or null if previous track is not allowed</returns>
-        private AudioTrack GetPreviousTrack()
+        private void GetPreviousTrack()
         {
             // TODO: add logic to get the previous audio track
 
@@ -253,12 +295,12 @@ namespace AudioPlaybackAgent1
                 currentTrackNumber = _playList.Count-1;
             }
 
-            AudioTrack track = _playList[currentTrackNumber];
+            //AudioTrack track = _playList[currentTrackNumber];
             
 
             // specify the track
 
-            return track;
+            //return currentTrackNumber;
         }
 
         /// <summary>
@@ -328,6 +370,80 @@ namespace AudioPlaybackAgent1
             }
             _playList = trackList;
         }
+
+        private bool isTrial() {
+            bool isTrial = true;
+            var settings = IsolatedStorageSettings.ApplicationSettings;
+            if(settings.Contains("isTrial"))
+            {
+                settings.TryGetValue<bool>("isTrial", out isTrial);
+            }
+            System.Diagnostics.Debug.WriteLine("isTrial in AP is "+isTrial.ToString());
+            return isTrial;
+        }
+
+        public static bool isPlaybackLimitExceeded()
+        {
+            var settings = IsolatedStorageSettings.ApplicationSettings;
+            DateTime now = new DateTime();
+            now = DateTime.Now;
+            DateTime date = now.Date;
+
+            if(settings.Contains("playback"))
+            {
+                String[] items;
+                if(settings.TryGetValue<String[]>("playback", out items))
+                {
+                    if(DateTime.Parse(items[0]) != date)
+                    {
+                        //last date was yesterday
+                        System.Diagnostics.Debug.WriteLine("Dates do not match. Counter set to 1.");
+                        items[0] = date.ToString();
+                        items[1] = "1";
+                        return false;
+                    }
+                    else
+                    {
+                        //already played today
+                        if(Convert.ToInt32(items[1]) >= 5)
+                        {
+                            //more than or exactly 5 playbacks. Exceeded.
+                            System.Diagnostics.Debug.WriteLine("Playback limit exceeded. "+Convert.ToInt32(items[1])+" plays.");
+                            return true;
+                        }
+                        else
+                        {
+                            //less than 5 replays. Count 1 up.
+                            System.Diagnostics.Debug.WriteLine("Not exceeded. " + Convert.ToInt32(items[1]) + " plays.");
+                            items[1] = (Convert.ToInt32(items[1]) + 1).ToString();
+                            settings.Remove("playback");
+                            settings.Add("playback", items);
+                            settings.Save();
+                            return false;
+                        }
+                    }
+                }
+                else
+                {
+                    settings.Remove("playback");
+                    System.Diagnostics.Debug.WriteLine("Tryget failed. Setting to 1.");
+                    String[] nullItem = new String[] {date.ToString(), "1" };
+                    settings.Add("playback", nullItem);
+                    settings.Save();
+                    //failed to get value
+                    return false;
+                }
+            }
+            else
+            {
+                System.Diagnostics.Debug.WriteLine(".contains() returns false. Created with count=1.");
+                String[] nullItem = new String[] { date.ToString(), "1" };
+                settings.Add("playback", nullItem);
+                settings.Save();
+                return false;
+            }
+        }
+
     }
     public class TrackListItem
     {

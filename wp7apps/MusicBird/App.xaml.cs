@@ -1,8 +1,10 @@
-﻿using System.Windows;
+﻿using System.IO.IsolatedStorage;
+using System.Windows;
 using System.Windows.Navigation;
 using Microsoft.Phone.Controls;
 using Microsoft.Phone.Marketplace;
 using Microsoft.Phone.Shell;
+using Microsoft.Phone.Tasks;
 
 namespace MusicBird
 {
@@ -128,6 +130,13 @@ namespace MusicBird
         #else
             _isTrial = _licenseInfo.IsTrial();
         #endif
+            var settings = IsolatedStorageSettings.ApplicationSettings;
+            if(settings.Contains("isTrial"))
+            {
+                settings.Remove("isTrial");
+            }
+            settings.Add("isTrial", _isTrial);
+            settings.Save();
         }
 
         #region Phone application initialization
