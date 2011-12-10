@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO.IsolatedStorage;
+using System.Threading;
 using System.Windows;
 using Microsoft.Phone.BackgroundAudio;
 using Microsoft.Phone.Marketplace;
@@ -12,6 +13,7 @@ namespace AudioPlaybackAgent1
         
         private static volatile bool _classInitialized;
         static int currentTrackNumber = 0;
+        public static Mutex mut = new Mutex(false, "playlistMutex");
 
         public static List<AudioTrack> _playList = new List<AudioTrack>
         {
@@ -93,15 +95,6 @@ namespace AudioPlaybackAgent1
                 GetNextTrack();
                 PlayTrack(player);
             }
-        }
-
-        public static void addToList(AudioTrack track) {
-            _playList.Add(track);
-        }
-
-        public static void removeFromList(AudioTrack track)
-        {
-            _playList.Remove(track);
         }
 
         /// Code to execute on Unhandled Exceptions
@@ -341,21 +334,25 @@ namespace AudioPlaybackAgent1
 
         private List<String[]> getFromPlaylist()
         {
+            mut.WaitOne();
             var settings = IsolatedStorageSettings.ApplicationSettings;
             if(settings.Contains("playlist"))
             {
                 List<String[]> items;
                 if(settings.TryGetValue<List<String[]>>("playlist", out items))
                 {
+                    mut.ReleaseMutex();
                     return items;
                 }
                 else
                 {
+                    mut.ReleaseMutex();
                     throw new IsolatedStorageException("Could not get Playlist from ApplicationSettings");
                 }
             }
             else
             {
+                mut.ReleaseMutex();
                 return (new List<String[]>());
             }
 
@@ -368,6 +365,8 @@ namespace AudioPlaybackAgent1
             {
                 trackList.Add(new AudioTrack(new Uri(item[2]), item[1], item[0], null, null));
             }
+            _playList.Clear();
+            _playList = new List<AudioTrack>();
             _playList = trackList;
         }
 
