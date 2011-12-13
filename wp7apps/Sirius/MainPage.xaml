@@ -16,8 +16,8 @@
     <!--LayoutRoot is the root grid where all page content is placed-->
     <Grid x:Name="LayoutRoot" Background="Transparent">
         <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="*"/>
+            <RowDefinition Height="173"/>
+            <RowDefinition Height="595*"/>
         </Grid.RowDefinitions>
 
         <!--TitlePanel contains the name of the application and page title-->
@@ -29,6 +29,8 @@
         <!--ContentPanel - place additional content here-->
         <Grid x:Name="ContentPanel" Grid.Row="1" Margin="0,0,0,0">
             <Button Content="Button" Height="72" HorizontalAlignment="Left" Margin="310,80,0,0" Name="button1" VerticalAlignment="Top" Width="160" Click="button1_Click" />
+            <Button Content="Button" Height="72" HorizontalAlignment="Left" Margin="250,158,0,0" Name="button2" VerticalAlignment="Top" Width="160" Click="button2_Click" />
+            <ProgressBar x:Name="prg" IsIndeterminate="False" Value="0" Margin="0,0,0,0" Height="20" Maximum="200"/>
         </Grid>
     </Grid>
  

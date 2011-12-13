@@ -3,6 +3,10 @@ Microsoft Visual Studio Solution File, Format Version 11.00
 # Visual Studio 2010 Express for Windows Phone
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sirius", "Sirius\Sirius.csproj", "{4E5656BC-9292-45E3-AB2D-3710F9315505}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ClientLibraryBase", "..\..\..\..\..\..\Program Files\Microsoft SDKs\Hawaii Cloud Services\Clients\ClientLibraryBase\ClientLibraryBase.csproj", "{AC93C88D-4A95-48CD-BA6E-146A03AFEA53}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SpeechRecognitionClientLibrary", "..\..\..\..\..\..\Program Files\Microsoft SDKs\Hawaii Cloud Services\Clients\SpeechRecognitionClientLibrary\SpeechRecognitionClientLibrary.csproj", "{640E41EF-7F79-4388-93B2-7A2DCBDE4BD5}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +19,14 @@ Global
 		{4E5656BC-9292-45E3-AB2D-3710F9315505}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4E5656BC-9292-45E3-AB2D-3710F9315505}.Release|Any CPU.Build.0 = Release|Any CPU
 		{4E5656BC-9292-45E3-AB2D-3710F9315505}.Release|Any CPU.Deploy.0 = Release|Any CPU
+		{AC93C88D-4A95-48CD-BA6E-146A03AFEA53}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AC93C88D-4A95-48CD-BA6E-146A03AFEA53}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AC93C88D-4A95-48CD-BA6E-146A03AFEA53}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AC93C88D-4A95-48CD-BA6E-146A03AFEA53}.Release|Any CPU.Build.0 = Release|Any CPU
+		{640E41EF-7F79-4388-93B2-7A2DCBDE4BD5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{640E41EF-7F79-4388-93B2-7A2DCBDE4BD5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{640E41EF-7F79-4388-93B2-7A2DCBDE4BD5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{640E41EF-7F79-4388-93B2-7A2DCBDE4BD5}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

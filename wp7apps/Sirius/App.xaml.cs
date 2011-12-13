@@ -37,6 +37,8 @@ namespace Sirius
             // Phone-specific initialization
             InitializePhoneApplication();
 
+            this.ApplicationLifetimeObjects.Add(new XNAAsyncDispatcher(TimeSpan.FromMilliseconds(50)));
+
             // Show graphics profiling information while debugging.
             if(System.Diagnostics.Debugger.IsAttached)
             {
@@ -140,3 +142,20 @@ namespace Sirius
         #endregion
     }
 }
+
+/**
+ * ______SIRIUS______
+ * 
+ * Sirius is a speech recognition app which helps
+ * you manage your day. Features will be
+ *  - access calendar
+ *  - access weather
+ *  - read/write e-mail
+ *  
+ * 
+ * Todo:
+ *  - Implement any weather API
+ *  - Stop recording when volume goes down
+ *  - Ability to write/speak and read/hear e-mail
+ *  - Better oAuth authentication
+**/

@@ -53,11 +53,13 @@
     </Reference>
     <Reference Include="Microsoft.Phone" />
     <Reference Include="Microsoft.Phone.Interop" />
+    <Reference Include="Microsoft.Xna.Framework" />
     <Reference Include="Newtonsoft.Json">
       <HintPath>..\..\other\JSON.net\Bin\WindowsPhone\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="RestSharp.WindowsPhone, Version=102.0.0.0, Culture=neutral, processorArchitecture=MSIL" />
     <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.Servicemodel" />
     <Reference Include="System.Servicemodel.Web" />
     <Reference Include="System.Windows" />
     <Reference Include="system" />
@@ -73,11 +75,15 @@
     <Compile Include="Authentication.xaml.cs">
       <DependentUpon>Authentication.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Dictionary.cs" />
     <Compile Include="Google.Apis.Calendar.v3.cs" />
+    <Compile Include="GoogleCalendar.cs" />
+    <Compile Include="HawaiiClient.cs" />
     <Compile Include="MainPage.xaml.cs">
       <DependentUpon>MainPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SpeechRecognition.cs" />
   </ItemGroup>
   <ItemGroup>
     <ApplicationDefinition Include="App.xaml">
@@ -105,6 +111,16 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="SplashScreenImage.jpg" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\..\..\..\..\Program Files\Microsoft SDKs\Hawaii Cloud Services\Clients\ClientLibraryBase\ClientLibraryBase.csproj">
+      <Project>{AC93C88D-4A95-48CD-BA6E-146A03AFEA53}</Project>
+      <Name>ClientLibraryBase</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\..\..\..\Program Files\Microsoft SDKs\Hawaii Cloud Services\Clients\SpeechRecognitionClientLibrary\SpeechRecognitionClientLibrary.csproj">
+      <Project>{640E41EF-7F79-4388-93B2-7A2DCBDE4BD5}</Project>
+      <Name>SpeechRecognitionClientLibrary</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\Silverlight for Phone\$(TargetFrameworkVersion)\Microsoft.Silverlight.$(TargetFrameworkProfile).Overrides.targets" />
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\Silverlight for Phone\$(TargetFrameworkVersion)\Microsoft.Silverlight.CSharp.targets" />

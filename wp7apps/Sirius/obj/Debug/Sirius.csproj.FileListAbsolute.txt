@@ -22,3 +22,9 @@ C:\Users\Lukas\Documents\Programmieren\WP7\Sirius\Sirius\Bin\Debug\Newtonsoft.Js
 C:\Users\Lukas\Documents\Programmieren\WP7\Sirius\Sirius\Bin\Debug\Newtonsoft.Json.pdb
 C:\Users\Lukas\Documents\Programmieren\WP7\Sirius\Sirius\Bin\Debug\Newtonsoft.Json.xml
 C:\Users\Lukas\Documents\Programmieren\WP7\Sirius\Sirius\obj\Debug\Authentication.g.i.cs
+C:\Users\Lukas\Documents\Programmieren\WP7\Sirius\Sirius\Bin\Debug\ClientLibraryBase.dll
+C:\Users\Lukas\Documents\Programmieren\WP7\Sirius\Sirius\Bin\Debug\SpeechRecognitionClientLibrary.dll
+C:\Users\Lukas\Documents\Programmieren\WP7\Sirius\Sirius\Bin\Debug\ClientLibraryBase.pdb
+C:\Users\Lukas\Documents\Programmieren\WP7\Sirius\Sirius\Bin\Debug\ClientLibraryBase.xml
+C:\Users\Lukas\Documents\Programmieren\WP7\Sirius\Sirius\Bin\Debug\SpeechRecognitionClientLibrary.pdb
+C:\Users\Lukas\Documents\Programmieren\WP7\Sirius\Sirius\Bin\Debug\SpeechRecognitionClientLibrary.xml

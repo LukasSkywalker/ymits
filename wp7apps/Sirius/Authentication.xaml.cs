@@ -1,11 +1,11 @@
 ﻿using System;
-using System.Text.RegularExpressions;
+using System.Collections.Generic;
 using System.IO.IsolatedStorage;
-using System.Windows;
+using System.Text.RegularExpressions;
+using System.Windows.Threading;
 using Microsoft.Phone.Controls;
 using Newtonsoft.Json.Linq;
 using RestSharp;
-using System.Windows.Threading;
 
 namespace Sirius
 {
@@ -52,8 +52,31 @@ namespace Sirius
 
         private void webbrowser_Navigated( object sender, System.Windows.Navigation.NavigationEventArgs e )
         {
-            if(e.Uri.ToString().IndexOf("https://accounts.google.com/o/oauth2/approval") > -1)
+            
+            if(e.Uri.ToString().IndexOf("https://accounts.google.com/ServiceLogin?service=lso")==0)
             {
+                //been redirected to login page, neeed to login
+                System.Diagnostics.Debug.WriteLine("Login page detected.");
+            }
+            else if(e.Uri.ToString().IndexOf("https://accounts.google.com/o/oauth2/auth?response_type") == 0)
+            {
+                //approval page
+                System.Diagnostics.Debug.WriteLine("Approval page detected.");
+                System.Net.CookieCollection cc = webBrowser1.GetCookies();
+                List<System.Net.Cookie> cookies = new List<System.Net.Cookie>();
+                foreach(System.Net.Cookie c in cc)
+                {
+                    if(c.Name == "HSID" || c.Name == "SID" || c.Name == "LSOSID" || c.Name == "SSID")
+                    {
+                        System.Diagnostics.Debug.WriteLine("Cookie found: name=" + c.Name + ", val=" + c.Value);
+                        cookies.Add(c);
+                    }
+                }
+            }
+            else if(e.Uri.ToString().IndexOf("https://accounts.google.com/o/oauth2/approval") > -1)
+            {
+                //user clicked OK
+                System.Diagnostics.Debug.WriteLine("Approved page detected.");
                 var html = e.Content;
                 WebBrowser wb = sender as WebBrowser;
                 string body = wb.SaveToString();
@@ -77,6 +100,11 @@ namespace Sirius
                 request.AddParameter("client_secret", clientSecret, ParameterType.GetOrPost);
                 request.AddParameter("redirect_uri", redirect, ParameterType.GetOrPost);
                 request.AddParameter("grant_type", "authorization_code", ParameterType.GetOrPost);
+
+                request.AddParameter("id", "1234", ParameterType.Cookie);
+
+
+
                 /*
                  * POST to https://accounts.google.com/o/oauth2/token
                  * 'code': auth_code,
@@ -101,10 +129,10 @@ namespace Sirius
                     refreshTimer = new DispatcherTimer();
                     refreshTimer.Interval = new TimeSpan(0, 0, expires_in - 30);
                     System.Diagnostics.Debug.WriteLine("Refreshing token in " + (expires_in - 30) + " seconds.");
-                    refreshTimer.Tick +=new EventHandler(refreshToken);
+                    refreshTimer.Tick += new EventHandler(refreshToken);
                     refreshTimer.Start();
 
-                    System.Diagnostics.Debug.WriteLine("Key loaded, key is "+access_token+".");
+                    System.Diagnostics.Debug.WriteLine("Key loaded, key is " + access_token + ".");
 
                     var settings = IsolatedStorageSettings.ApplicationSettings;
                     if(settings.Contains("access_token"))

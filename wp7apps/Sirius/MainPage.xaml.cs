@@ -9,24 +9,45 @@ using Newtonsoft.Json.Linq;
 using System.IO.IsolatedStorage;
 using System.Net;
 using System.Text;
+using System.Threading;
+using System.ComponentModel;
+using System.Collections.ObjectModel;
 using System.IO;
 using System.Collections.Generic;
 using System.Runtime.Serialization.Json;
+using System.Runtime.Serialization;
+using Microsoft.Xna.Framework.Audio;
 
 namespace Sirius
 {
     public partial class MainPage : PhoneApplicationPage
     {
+        #region Class variables
+        BackgroundWorker worker = new BackgroundWorker();
+        #endregion
 
         private string access_token = "";
+
+        private Microphone _microphone = Microphone.Default;
+        private TimeSpan _fromMilliseconds = TimeSpan.FromMilliseconds(1000);
+        private byte[] _buffer;
+        private DynamicSoundEffectInstance _dynamicSound;
+        private MemoryStream _memoryStream = new MemoryStream();
 
         // Constructor
         public MainPage()
         {
             InitializeComponent();
-            Authentication auth = new Authentication();
-            auth.BrowserLoaded += new Authentication.BrowserLoadedEventHandler(auth_BrowserLoaded);
-            auth.TokenReceived += new Authentication.TokenReceivedEventHandler(auth_TokenReceived);
+            /*Authentication auth = new Authentication();
+             * auth.BrowserLoaded += new Authentication.BrowserLoadedEventHandler(auth_BrowserLoaded);
+             * auth.TokenReceived += new Authentication.TokenReceivedEventHandler(auth_TokenReceived);
+             */
+
+            // Set the features
+            worker.WorkerReportsProgress = false;
+            worker.WorkerSupportsCancellation = true;
+
+            
 
         }
 
@@ -44,74 +65,109 @@ namespace Sirius
 
         private void button1_Click( object sender, RoutedEventArgs e )
         {
-            updateToken();
-            getFreeBusyTimes(new DateTime(2011,12,11,00,00,00), new DateTime(2011,12,12,0,0,0));
+            if(_microphone.State == MicrophoneState.Stopped)
+            {
+                System.Diagnostics.Debug.WriteLine("Rec started...");
+                _microphone.BufferReady += new EventHandler<System.EventArgs>(_microphone_BufferReady);
+                _microphone.BufferDuration = _fromMilliseconds;
+                _buffer = new byte[_microphone.GetSampleSizeInBytes(_microphone.BufferDuration)];
+                _dynamicSound = new DynamicSoundEffectInstance(_microphone.SampleRate, AudioChannels.Mono);
+
+                _memoryStream.SetLength(0);
+
+                _microphone.Start();
+            }
+            else {
+                System.Diagnostics.Debug.WriteLine("Rec stopped.");
+                _microphone.BufferReady -= new EventHandler<System.EventArgs>(_microphone_BufferReady);
+                _microphone.Stop();
+                Dictionary.getActionAndTime("What's to do in my calendar today?");
+                Dictionary.getActionAndTime("What are the tasks today?");
+                recognizeVoice();   
+            }
+
         }
 
-        private void getFreeBusyTimes( DateTime start, DateTime end )
+        void _microphone_BufferReady( object sender, EventArgs e )
         {
-            String startString = start.ToString("yyyy-MM-ddTHH:mm:ssZ");
-            String endString = end.ToString("yyyy-MM-ddTHH:mm:ssZ");
+            System.Diagnostics.Debug.WriteLine("Buffer ready.");
+            System.Diagnostics.Debug.WriteLine("Buffer Ready at {0}", DateTime.Now);
+            _microphone.GetData(_buffer);
+            System.Diagnostics.Debug.WriteLine("Buffer Length {0}", _buffer.Length);
 
-            var client = new RestClient();
-            client.BaseUrl = "https://www.googleapis.com";
-
-            System.Diagnostics.Debug.WriteLine("Using auth key " + access_token);
-            var request2 = new RestRequest("calendar/v3/freeBusy?access_token=" + access_token, Method.POST);
-            String body = "{\"timeMin\":\""+startString+"\",\"timeMax\":\""+endString+"\",\"items\":[{\"id\":\"junglekiddy@gmail.com\"}]}";
-            request2.AddParameter("application/json", body, ParameterType.RequestBody);
-
-            client.ExecuteAsync(request2, ( response ) =>
+            int count = 0;
+            int buff = 0;
+            for(int i = 0 ; i < _buffer.Length ; i = i+10)
             {
-                string req = response.Content;
-                MessageBox.Show(req);
-                JObject o = JObject.Parse(req);
-                String st = (string)o["calendars"]["junglekiddy@gmail.com"]["busy"][0]["start"];
-                String en = (string)o["calendars"]["junglekiddy@gmail.com"]["busy"][0]["end"];
-                MessageBox.Show(st+" "+en);
-            });
-        }
-
-        private void updateToken() {
-            var settings = IsolatedStorageSettings.ApplicationSettings;
-            if(settings.Contains("access_token"))
-            {
-                String token = "";
-                if(settings.TryGetValue<String>("access_token", out token))
-                {
-                    access_token = token;
-                }
+                count++;
+                buff += Convert.ToInt32(_buffer[i].ToString());
             }
-            else
-            {
-                MessageBox.Show("Error getting token");
-            }
+            System.Diagnostics.Debug.WriteLine(buff/count);
+
+            prg.Value = buff / count;
+
+            _memoryStream.Write(_buffer, 0, _buffer.Length);
         }
 
-        private void getCalendarList() {
-            /*
-             * GET to https://www.googleapis.com/calendar/v3/users/me/calendarList
-             * maxResults=10
-             * minAccessRole=freeBusyReader
-             * showHidden=true
-             */
-        }
+        private void button2_Click( object sender, RoutedEventArgs e )
+        {
+            _dynamicSound.SubmitBuffer(_memoryStream.GetBuffer());
+            _dynamicSound.Play();
+        } 
 
-        private void getEvents(){
-            /*
-             * GET from https://www.googleapis.com/calendar/v3/calendars/junglekiddy@gmail.com/events
-             * timeMax=2011-12-11T21:47:14.000Z
-             * timeMin=2011-12-11T18:47:14.000Z
-             */
+
+        private void recognizeVoice() {
+            SpeechRecognition sr = new SpeechRecognition();
+            sr.start(_memoryStream);
         }
     }
 
+    [DataContract]
     public class FreeBusyItem {
+        [DataMember]
         public String startTime { get; set; }
+        [DataMember]
         public String endTime { get; set; }
         public FreeBusyItem(String start, String end) {
             this.startTime = start;
             this.endTime = end;
+        }
+    }
+
+    [DataContract]
+    public class CalendarListRequest2
+    {
+        [DataMember]
+        public int maxResults { get; set; }
+        [DataMember]
+        public string minAccessRole { get; set; }
+        [DataMember]
+        public bool showHidden { get; set; }
+        [DataMember]
+        public Id[] items { get; set; }
+        public CalendarListRequest2( int max, String minAccessRole, bool showHidden, Id[] items ) {
+            this.maxResults = max;
+            this.minAccessRole = minAccessRole;
+            this.showHidden = showHidden;
+            this.items = items;
+        }
+        public string toJSON() {
+            MemoryStream stream1 = new MemoryStream();
+            DataContractJsonSerializer ser = new DataContractJsonSerializer(Type.GetType("CalendarListRequest"));
+            ser.WriteObject(stream1, this);
+            stream1.Position = 0;
+            StreamReader sr = new StreamReader(stream1);
+            return sr.ReadToEnd();
+        }
+    }
+
+    [DataContract]
+    public class Id
+    {
+        [DataMember]
+        public String id { get; set; }
+        public Id(String id){
+            this.id = id;
         }
     }
 }
