@@ -4,6 +4,7 @@ using System.Windows.Threading;
 using Microsoft.Phone.Controls;
 using Google.Apis.Calendar.v3;
 using Google.Apis.Calendar.v3.Data;
+using System.Windows.Shapes;
 using RestSharp;
 using Newtonsoft.Json.Linq;
 using System.IO.IsolatedStorage;
@@ -29,10 +30,12 @@ namespace Sirius
         private string access_token = "";
 
         private Microphone _microphone = Microphone.Default;
-        private TimeSpan _fromMilliseconds = TimeSpan.FromMilliseconds(1000);
+        private TimeSpan _fromMilliseconds = TimeSpan.FromMilliseconds(100);
         private byte[] _buffer;
         private DynamicSoundEffectInstance _dynamicSound;
         private MemoryStream _memoryStream = new MemoryStream();
+        private int startTime;
+        private int canvasCounter = 0;
 
         // Constructor
         public MainPage()
@@ -75,11 +78,18 @@ namespace Sirius
 
                 _memoryStream.SetLength(0);
 
+                startTime = Environment.TickCount;
+                canvasCounter = 0;
+                                
+                canvas1.Children.Clear();
+                
                 _microphone.Start();
             }
             else {
                 System.Diagnostics.Debug.WriteLine("Rec stopped.");
                 _microphone.BufferReady -= new EventHandler<System.EventArgs>(_microphone_BufferReady);
+                canvasCounter = 0;
+                startTime = 0;
                 _microphone.Stop();
                 Dictionary.getActionAndTime("What's to do in my calendar today?");
                 Dictionary.getActionAndTime("What are the tasks today?");
@@ -95,18 +105,37 @@ namespace Sirius
             _microphone.GetData(_buffer);
             System.Diagnostics.Debug.WriteLine("Buffer Length {0}", _buffer.Length);
 
-            int count = 0;
-            int buff = 0;
-            for(int i = 0 ; i < _buffer.Length ; i = i+10)
-            {
-                count++;
-                buff += Convert.ToInt32(_buffer[i].ToString());
-            }
-            System.Diagnostics.Debug.WriteLine(buff/count);
+            short level = BitConverter.ToInt16(_buffer, 0);
 
-            prg.Value = buff / count;
+
+            Line line = new Line();
+            line.Stroke = new System.Windows.Media.SolidColorBrush(System.Windows.Media.Colors.Purple);
+            line.StrokeThickness = 4;
+
+            Point point1 = new Point();
+            point1.X = canvasCounter;
+            point1.Y = canvas1.ActualHeight / 2 - level;
+
+            Point point2 = new Point();
+            point2.X = point1.X;
+            point2.Y = canvas1.ActualHeight / 2 + level;
+
+            line.X1 = point1.X;
+            line.Y1 = point1.Y;
+            line.X2 = point2.X;
+            line.Y2 = point2.Y;
+
+            canvas1.Children.Add(line);
+
+            canvasCounter+=5;
+
 
             _memoryStream.Write(_buffer, 0, _buffer.Length);
+
+            if(Environment.TickCount - startTime>10000)
+            {
+                button1_Click(null, null);
+            }
         }
 
         private void button2_Click( object sender, RoutedEventArgs e )

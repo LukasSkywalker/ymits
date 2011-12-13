@@ -28,9 +28,9 @@
 
         <!--ContentPanel - place additional content here-->
         <Grid x:Name="ContentPanel" Grid.Row="1" Margin="0,0,0,0">
-            <Button Content="Button" Height="72" HorizontalAlignment="Left" Margin="310,80,0,0" Name="button1" VerticalAlignment="Top" Width="160" Click="button1_Click" />
-            <Button Content="Button" Height="72" HorizontalAlignment="Left" Margin="250,158,0,0" Name="button2" VerticalAlignment="Top" Width="160" Click="button2_Click" />
-            <ProgressBar x:Name="prg" IsIndeterminate="False" Value="0" Margin="0,0,0,0" Height="20" Maximum="200"/>
+            <Button Content="Start/Stop" Height="72" HorizontalAlignment="Left" Margin="154,210,0,0" Name="button1" VerticalAlignment="Top" Width="181" Click="button1_Click" />
+            <Button Content="Play" Height="72" HorizontalAlignment="Left" Margin="374,210,0,0" Name="button2" VerticalAlignment="Top" Width="100" Click="button2_Click" />
+            <Canvas Height="275" HorizontalAlignment="Left" Margin="24,314,0,0" Name="canvas1" VerticalAlignment="Top" Width="444" />
         </Grid>
     </Grid>
  

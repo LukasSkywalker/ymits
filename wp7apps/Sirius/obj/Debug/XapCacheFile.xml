@@ -1,8 +1,8 @@
-﻿<xapCache source="C:\Users\Lukas\Documents\Programmieren\WP7\Sirius\Sirius\Bin\Debug\Sirius.xap" wasSigned="False" certificateThumbprint="" TimeStampUrl="" lastWriteTime="13.12.2011 18:11:15">
+﻿<xapCache source="C:\Users\Lukas\Documents\Programmieren\WP7\Sirius\Sirius\Bin\Debug\Sirius.xap" wasSigned="False" certificateThumbprint="" TimeStampUrl="" lastWriteTime="13.12.2011 22:36:59">
   <file source="C:\Users\Lukas\Documents\Programmieren\WP7\Sirius\Sirius\Bin\Debug\WMAppManifest.xml" archivePath="WMAppManifest.xml" lastWriteTime="10.12.2011 16:23:21" />
   <file source="C:\Users\Lukas\Documents\Programmieren\WP7\Sirius\Sirius\Background.png" archivePath="Background.png" lastWriteTime="10.12.2011 16:17:14" />
   <file source="C:\Users\Lukas\Documents\Programmieren\WP7\Sirius\Sirius\ApplicationIcon.png" archivePath="ApplicationIcon.png" lastWriteTime="10.12.2011 16:17:14" />
-  <file source="C:\Users\Lukas\Documents\Programmieren\WP7\Sirius\Sirius\obj\Debug\Sirius.dll" archivePath="Sirius.dll" lastWriteTime="13.12.2011 18:11:14" />
+  <file source="C:\Users\Lukas\Documents\Programmieren\WP7\Sirius\Sirius\obj\Debug\Sirius.dll" archivePath="Sirius.dll" lastWriteTime="13.12.2011 22:36:58" />
   <file source="C:\Program Files\Microsoft SDKs\Hawaii Cloud Services\Clients\ClientLibraryBase\Bin\Debug\ClientLibraryBase.dll" archivePath="ClientLibraryBase.dll" lastWriteTime="09.12.2011 17:11:00" />
   <file source="C:\Users\Lukas\Documents\Programmieren\WP7\other\Google .NET Client library\Lib\Google.Apis.Silverlight.dll" archivePath="Google.Apis.Silverlight.dll" lastWriteTime="23.11.2011 19:00:02" />
   <file source="C:\Users\Lukas\Documents\Programmieren\WP7\other\JSON.net\Bin\WindowsPhone\Newtonsoft.Json.dll" archivePath="Newtonsoft.Json.dll" lastWriteTime="11.12.2011 01:12:52" />
