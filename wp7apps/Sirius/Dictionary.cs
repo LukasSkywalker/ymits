@@ -5,6 +5,10 @@ namespace Sirius
 {
     public class Dictionary
     {
+        public delegate void ResultParsedHandler( parseResult result );//ResultParsed
+        public event ResultParsedHandler ResultParsed;
+
+
         private static Dictionary<string, string> actionDictionary = new Dictionary<string, string>();
         private static Dictionary<string, string> dateDictionary = new Dictionary<string, string>();
 
@@ -16,6 +20,15 @@ namespace Sirius
             actionDictionary.Add("action", "calendar");
             actionDictionary.Add("task", "calendar");
             actionDictionary.Add("event", "calendar");
+            
+            actionDictionary.Add("weather", "weather");
+            actionDictionary.Add("temperature", "weather");
+            actionDictionary.Add("rain", "weather");
+            actionDictionary.Add("snow", "weather");
+            actionDictionary.Add("sun", "weather");
+            actionDictionary.Add("cold", "weather");
+            actionDictionary.Add("warm", "weather");
+            actionDictionary.Add("outside", "weather");
 
             dateDictionary.Add("today", "currentDay");
             dateDictionary.Add("now", "currentDay");
@@ -25,10 +38,10 @@ namespace Sirius
             
         }
 
-        public static object getActionAndTime(String sentence){
+        public void getActionAndTime(String sentence){
             String[] words = sentence.Split((" ").ToCharArray());
             String action = "";
-            String time = "";
+            String time = "today";
             
             //loop through keys and try to match...
             foreach(String word in words)
@@ -60,8 +73,11 @@ namespace Sirius
                     }
                 }
             }
-            parseResult result = new parseResult(action, time);
-            return result;
+
+            if(ResultParsed != null) {
+                parseResult result = new parseResult(action, time);
+                ResultParsed(result);
+            }
         }
     }
 

@@ -50,7 +50,7 @@ namespace Sirius
             worker.WorkerReportsProgress = false;
             worker.WorkerSupportsCancellation = true;
 
-            
+
 
         }
 
@@ -68,6 +68,7 @@ namespace Sirius
 
         private void button1_Click( object sender, RoutedEventArgs e )
         {
+
             if(_microphone.State == MicrophoneState.Stopped)
             {
                 System.Diagnostics.Debug.WriteLine("Rec started...");
@@ -80,30 +81,37 @@ namespace Sirius
 
                 startTime = Environment.TickCount;
                 canvasCounter = 0;
-                                
+
                 canvas1.Children.Clear();
-                
+
                 _microphone.Start();
             }
-            else {
+            else
+            {
                 System.Diagnostics.Debug.WriteLine("Rec stopped.");
                 _microphone.BufferReady -= new EventHandler<System.EventArgs>(_microphone_BufferReady);
                 canvasCounter = 0;
                 startTime = 0;
                 _microphone.Stop();
-                Dictionary.getActionAndTime("What's to do in my calendar today?");
-                Dictionary.getActionAndTime("What are the tasks today?");
-                recognizeVoice();   
+                //Dictionary.getActionAndTime("What's to do in my calendar today?");
+                //Dictionary.getActionAndTime("What are the tasks today?");
+                //parseResult res1 = Dictionary.getActionAndTime("I want to go outside today?");
+                //parseResult res2 = Dictionary.getActionAndTime("What's the weather today?");
+
+                //doAction(res1);
+                //doAction(res2);
+
+                recognizeVoice();
             }
 
         }
 
         void _microphone_BufferReady( object sender, EventArgs e )
         {
-            System.Diagnostics.Debug.WriteLine("Buffer ready.");
-            System.Diagnostics.Debug.WriteLine("Buffer Ready at {0}", DateTime.Now);
+            //System.Diagnostics.Debug.WriteLine("Buffer ready.");
+            //System.Diagnostics.Debug.WriteLine("Buffer Ready at {0}", DateTime.Now);
             _microphone.GetData(_buffer);
-            System.Diagnostics.Debug.WriteLine("Buffer Length {0}", _buffer.Length);
+            //System.Diagnostics.Debug.WriteLine("Buffer Length {0}", _buffer.Length);
 
             short level = BitConverter.ToInt16(_buffer, 0);
 
@@ -114,11 +122,11 @@ namespace Sirius
 
             Point point1 = new Point();
             point1.X = canvasCounter;
-            point1.Y = canvas1.ActualHeight / 2 - level;
+            point1.Y = canvas1.ActualHeight / 2 - (level - 50);
 
             Point point2 = new Point();
             point2.X = point1.X;
-            point2.Y = canvas1.ActualHeight / 2 + level;
+            point2.Y = canvas1.ActualHeight / 2 + (level - 50);
 
             line.X1 = point1.X;
             line.Y1 = point1.Y;
@@ -127,12 +135,12 @@ namespace Sirius
 
             canvas1.Children.Add(line);
 
-            canvasCounter+=5;
+            canvasCounter += 5;
 
 
             _memoryStream.Write(_buffer, 0, _buffer.Length);
 
-            if(Environment.TickCount - startTime>10000)
+            if(Environment.TickCount - startTime > 10000)
             {
                 button1_Click(null, null);
             }
@@ -142,14 +150,42 @@ namespace Sirius
         {
             _dynamicSound.SubmitBuffer(_memoryStream.GetBuffer());
             _dynamicSound.Play();
-        } 
+        }
 
 
-        private void recognizeVoice() {
+        private void recognizeVoice()
+        {
             SpeechRecognition sr = new SpeechRecognition();
+            sr.SpeechRecognized += new SpeechRecognition.SpeechRecognizedHandler(sr_SpeechRecognized);
             sr.start(_memoryStream);
         }
+
+        private void sr_SpeechRecognized( string result )
+        {
+            Dictionary dict = new Dictionary();
+            dict.ResultParsed += new Dictionary.ResultParsedHandler(dict_ResultParsed);
+            dict.getActionAndTime(result);
+        }
+
+        private void dict_ResultParsed( parseResult result ) {
+            doAction(result);
+        }
+
+        private void doAction( parseResult result )
+        {
+            switch(result.action)
+            {
+                case "calendar":
+                    break;
+                case "weather":
+                    Weather.getWeather("Bern");
+                    break;
+                default:
+                    break;
+            }
+        }
     }
+    
 
     [DataContract]
     public class FreeBusyItem {

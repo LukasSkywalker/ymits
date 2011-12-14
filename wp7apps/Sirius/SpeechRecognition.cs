@@ -27,6 +27,8 @@ namespace Sirius
 {
     public class SpeechRecognition
     {
+        public delegate void SpeechRecognizedHandler( String result );//ResultParsed
+        public event SpeechRecognizedHandler SpeechRecognized;
 
         public const string HawaiiApplicationId = "e8d2031f-030f-49f3-b86d-7309981f53b8";
         
@@ -69,7 +71,11 @@ namespace Sirius
                     foreach(String result in items)
                     {
                         System.Diagnostics.Debug.WriteLine(result);
+                        if(SpeechRecognized != null) {
+                            SpeechRecognized(result);
+                        }
                     }
+
                 }
                 else {
                     System.Diagnostics.Debug.WriteLine("SpeechRecognition: No results.");
