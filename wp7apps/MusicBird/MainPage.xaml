@@ -8,7 +8,7 @@
     xmlns:toolkit="clr-namespace:Microsoft.Phone.Controls;assembly=Microsoft.Phone.Controls.Toolkit"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
-    mc:Ignorable="d" d:DesignWidth="480" d:DesignHeight="696" 
+    mc:Ignorable="d" d:DesignWidth="480" d:DesignHeight="768" 
     FontFamily="{StaticResource PhoneFontFamilyNormal}"
     FontSize="{StaticResource PhoneFontSizeNormal}"
     Foreground="{StaticResource PhoneForegroundBrush}"
@@ -77,9 +77,8 @@
                     </ListBox>
                 </StackPanel>
             </controls:PivotItem>
-            <controls:PivotItem Header="playlist" x:Name="playlistItem">
-                <!--Double line list with text wrapping-->
-                <!--<Grid x:Name="playlistContentPanel" Grid.Row="1" Margin="12,0,12,100" Height="560">-->
+            <!--<controls:PivotItem Header="playlist" Visibility="Collapsed" x:Name="playlistItem">
+                <Grid x:Name="playlistContentPanel" Grid.Row="1" Margin="12,0,12,100" Height="560">
                     <ListBox Name="PlaylistElement" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
                         <ListBox.ItemTemplate>
                             <DataTemplate>
@@ -88,13 +87,10 @@
                                         <toolkit:ContextMenu IsZoomEnabled="False">
                                             <toolkit:MenuItem Header="play" Tag="play" Click="playlistItem_Hold" />
                                             <toolkit:MenuItem Header="delete" Tag="delete" Click="playlistItem_Hold" />
-                                            <!--<toolkit:MenuItem Header="favorite" Tag="favorite" Click="playlistItem_Hold" />-->
                                         </toolkit:ContextMenu>
                                     </toolkit:ContextMenuService.ContextMenu>
                                     <Button.Content>
                                         <StackPanel Orientation="Horizontal" Margin="0,0,0,17" x:Name="spItem">
-                                            <!--Replace rectangle with image-->
-
                                             <StackPanel Width="311">
                                                 <TextBlock TextWrapping="Wrap" Text="{Binding title}" Style="{StaticResource PhoneTextExtraLargeStyle}" FontSize="{StaticResource PhoneFontSizeMediumLarge}"/>
                                                 <TextBlock TextWrapping="Wrap" Text="{Binding artist}" Margin="12,-6,12,0" Style="{StaticResource PhoneTextSubtleStyle}"/>
@@ -105,11 +101,10 @@
                             </DataTemplate>
                         </ListBox.ItemTemplate>  
                     </ListBox>
-                <!--</Grid>-->
-            </controls:PivotItem>
+                </Grid>
+            </controls:PivotItem>-->
 
-            <controls:PivotItem Header="library" x:Name="libraryItem">
-                <!--Double line list with text wrapping-->
+            <!--<controls:PivotItem Header="library" Visibility="Collapsed" x:Name="libraryItem">
                     <ListBox Name="LibraryElement">
                         <ListBox.ItemTemplate>
                             <DataTemplate>
@@ -123,7 +118,6 @@
                                     </toolkit:ContextMenuService.ContextMenu>
                                     <Button.Content>
                                         <StackPanel Orientation="Horizontal" Margin="0,0,0,17" x:Name="spItem">
-                                            <!--Replace rectangle with image-->
 
                                             <StackPanel Width="311">
                                                 <TextBlock TextWrapping="Wrap" Text="{Binding filename}" Style="{StaticResource PhoneTextExtraLargeStyle}" FontSize="{StaticResource PhoneFontSizeMediumLarge}"/>
@@ -134,8 +128,8 @@
                             </DataTemplate>
                         </ListBox.ItemTemplate>
                     </ListBox>
-            </controls:PivotItem>
-            <controls:PivotItem Header="downloads" x:Name="downloadItem">
+            </controls:PivotItem>-->
+            <!--<controls:PivotItem Header="downloads" Visibility="Collapsed" x:Name="downloadItem">
                 <Grid x:Name="DownloadPanel" Grid.Row="1" >
                     <TextBlock Text="You have no running Downloads." Name="EmptyTextBlock" Visibility="Collapsed"/>
                     <ListBox Name="TransferListBox">
@@ -172,15 +166,15 @@
                         </ListBox.ItemTemplate>
                     </ListBox>
                 </Grid>
-            </controls:PivotItem>
+            </controls:PivotItem>-->
         </controls:Pivot>
     </Grid>
-    <phone:PhoneApplicationPage.ApplicationBar>
+    <!--<phone:PhoneApplicationPage.ApplicationBar>
          <shell:ApplicationBar IsVisible="True" IsMenuEnabled="False" x:Name="AppBar">
             <shell:ApplicationBarIconButton IconUri="/Images/appbar.transport.rew.rest.png" Text="previous" Click="prevButton_Click"/>
             <shell:ApplicationBarIconButton IconUri="/Images/appbar.transport.play.rest.png" Text="play" Click="playButton_Click"/>
             <shell:ApplicationBarIconButton IconUri="/Images/appbar.transport.ff.rest.png" Text="next" Click="nextButton_Click"/>
             <shell:ApplicationBarIconButton IconUri="/Images/appbar.transport.down.rest.png" Text="settings" Click="downButton_Click"/>
         </shell:ApplicationBar>
-    </phone:PhoneApplicationPage.ApplicationBar>
+    </phone:PhoneApplicationPage.ApplicationBar>-->
 </phone:PhoneApplicationPage>

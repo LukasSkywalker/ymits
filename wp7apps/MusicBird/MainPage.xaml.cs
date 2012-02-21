@@ -155,7 +155,7 @@ namespace MusicBird
         void UpdateButtons(bool prevBtnEnabled, bool? playBtnEnabled, bool nextBtnEnabled)
         {
             // Set the IsEnabled state of the ApplicationBar.Buttons array
-            ((ApplicationBarIconButton)(ApplicationBar.Buttons[prevButton])).IsEnabled = prevBtnEnabled;
+            /*((ApplicationBarIconButton)(ApplicationBar.Buttons[prevButton])).IsEnabled = prevBtnEnabled;
             if(playBtnEnabled.HasValue)
             {
                 if(playBtnEnabled.Value)
@@ -172,7 +172,7 @@ namespace MusicBird
             if(Page1.read("albumart"))
             {
                 getAlbumArt(BackgroundAudioPlayer.Instance.Track.Artist + " " + BackgroundAudioPlayer.Instance.Track.Title);
-            }
+            }*/
         }
 
 
@@ -650,7 +650,7 @@ namespace MusicBird
                     BackgroundTransferService.Add(transferRequest);
                     transferRequest.TransferStatusChanged += new EventHandler<BackgroundTransferEventArgs>(transfer_TransferStatusChanged);
                     transferRequest.TransferProgressChanged += new EventHandler<BackgroundTransferEventArgs>(transfer_TransferProgressChanged);
-                    Panorama.SelectedItem = downloadItem;
+                    //Panorama.SelectedItem = downloadItem;
                     UpdateUI();
                 }
                 catch (InvalidOperationException ex)
@@ -671,7 +671,7 @@ namespace MusicBird
                 foreach(var item in trackList){
                     tList.Add(new TrackListItem(item[0], item[1], item[2]));
                 }
-                PlaylistElement.ItemsSource = tList;
+                //PlaylistElement.ItemsSource = tList;
             }
 
             private void updateLibrary()
@@ -690,7 +690,7 @@ namespace MusicBird
                             if(item.filename.IndexOf(".mp3") != -1)
                             { trackList.Add(item); }
                         }
-                        LibraryElement.ItemsSource = trackList;
+                        //LibraryElement.ItemsSource = trackList;
                     }
                 } 
             }
@@ -706,7 +706,7 @@ namespace MusicBird
                 Panorama.SelectedItem = playerItem;
             }
 
-            private void playlistItem_Hold(object sender, RoutedEventArgs e)
+            /*private void playlistItem_Hold(object sender, RoutedEventArgs e)
             {
                 ListBoxItem selectedListBoxItem = PlaylistElement.ItemContainerGenerator.ContainerFromItem((sender as MenuItem).DataContext) as ListBoxItem;
                 if (selectedListBoxItem == null)
@@ -747,7 +747,7 @@ namespace MusicBird
                         break;
 
                 }
-            }
+            }*/
 
             private void libraryItem_Click(object sender, RoutedEventArgs e)
             {
@@ -761,7 +761,7 @@ namespace MusicBird
                 Panorama.SelectedItem = playerItem;
             }
 
-            private void libraryItem_Hold(object sender, RoutedEventArgs e)
+            /*private void libraryItem_Hold(object sender, RoutedEventArgs e)
             {
                 ListBoxItem selectedListBoxItem = LibraryElement.ItemContainerGenerator.ContainerFromItem((sender as MenuItem).DataContext) as ListBoxItem;
                 if (selectedListBoxItem == null)
@@ -801,7 +801,7 @@ namespace MusicBird
                         break;
 
                 }
-            }
+            }*/
 
             private bool IsolatedStorageFileExists(string name)
             {
@@ -852,15 +852,15 @@ namespace MusicBird
                 // TextBlock. IF there are zero transfers, show the TextBlock.
                 if (transferRequests.Count<BackgroundTransferRequest>() > 0)
                 {
-                    EmptyTextBlock.Visibility = Visibility.Collapsed;
+                    //EmptyTextBlock.Visibility = Visibility.Collapsed;
                 }
                 else
                 {
-                    EmptyTextBlock.Visibility = Visibility.Visible;
+                    //EmptyTextBlock.Visibility = Visibility.Visible;
                 }
 
                 // Update the TransferListBox with the list of transfer requests.
-                TransferListBox.ItemsSource = transferRequests;
+                //TransferListBox.ItemsSource = transferRequests;
 
             }
 
