@@ -103,5 +103,10 @@ namespace ReactionGame
             }
             startTimer();
         }
+
+        private void button1_Click( object sender, RoutedEventArgs e )
+        {
+            MessageBox.Show("Press your button as soon as the background changes color. The faster player gets a point. If you press too early, you will lose one point.");
+        }
     }
 }

@@ -25,16 +25,21 @@
         <Grid x:Name="ContentPanel" Grid.Row="1" Margin="12,0,12,0">
             <Canvas Height="604" HorizontalAlignment="Left" Margin="6,86,0,0" Name="canvas1" VerticalAlignment="Top" Width="444">
                 <Canvas.Background>
-                    <SolidColorBrush x:Name="canvasColor" Color="#FF0000FF">
+                    <SolidColorBrush x:Name="canvasColor" Color="Black">
                     </SolidColorBrush>
                 </Canvas.Background>
+                <Button Canvas.Left="2" Canvas.Top="352" Content="Help" Height="75" Name="button1" Width="110" Click="button1_Click">
+                    <Button.RenderTransform>
+                        <RotateTransform Angle="270"/>
+                    </Button.RenderTransform>
+                </Button>
             </Canvas>
             <TextBlock Height="285" Name="player1Score" Text="" Width="78" Canvas.Left="300" Canvas.Top="300" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="352,405,6,78" TextAlignment="Right" />
             <TextBlock Name="player2Score" Text="" Canvas.Left="300" Canvas.Top="300" Margin="440,400,-80,60" TextAlignment="Left">
                 <TextBlock.RenderTransform>
                     <ScaleTransform ScaleY="-1" ScaleX="-1" />
                 </TextBlock.RenderTransform></TextBlock>
-            <TextBlock Name="player2Time" Text="" Canvas.Left="300" Canvas.Top="300" Margin="75,54,321,674" TextAlignment="Left">
+            <TextBlock Name="player2Time" Text="" Canvas.Left="300" Canvas.Top="300" Margin="75,58,321,670" TextAlignment="Left">
                 <TextBlock.RenderTransform>
                     <ScaleTransform ScaleY="-1" ScaleX="-1" />
                 </TextBlock.RenderTransform></TextBlock>
@@ -44,7 +49,7 @@
                 </Button.RenderTransform>
             </Button>
             <Button Content="Stop" Height="72" HorizontalAlignment="Center" Margin="6,0" Name="player1Button" VerticalAlignment="Bottom" Width="300" Click="player1Button_Click" />
-            <TextBlock Height="44" HorizontalAlignment="Left" Margin="373,718,0,0" Name="player1Time" Text="" VerticalAlignment="Top" />
+            <TextBlock Height="44" HorizontalAlignment="Left" Margin="373,714,0,0" Name="player1Time" Text="" VerticalAlignment="Top" Width="67" />
         </Grid>
     </Grid>
  
