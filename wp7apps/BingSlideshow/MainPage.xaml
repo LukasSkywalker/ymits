@@ -25,6 +25,7 @@
                 <Grid x:Name="ContentPanel" Margin="6,100,6,6">
                     <TextBlock Height="30" HorizontalAlignment="Left" Margin="6,6,0,0" Name="TextBlock1" Text="Searchterm" VerticalAlignment="Top" Width="111" />
                     <TextBox Height="72" HorizontalAlignment="Left" Margin="6,42,0,0" Name="TextBox1" Text="" VerticalAlignment="Top" Width="395" />
+                    <ProgressBar IsIndeterminate="False" x:Name="queryProgress" Visibility="Collapsed"/>
                     <Button Content="Search" Height="72" HorizontalAlignment="Left" Margin="250,117,0,0" Name="Button1" VerticalAlignment="Top" Width="160" Click="Button1_Click" />
                 </Grid>
             </controls:PanoramaItem>

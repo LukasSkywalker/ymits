@@ -23,7 +23,7 @@ namespace BingSlideshow
     {
         private WebClient wc;
 
-        private DispatcherTimer myAnimation = new DispatcherTimer();
+        //private DispatcherTimer myAnimation = new DispatcherTimer();
         private DispatcherTimer myStep = new DispatcherTimer();
         private Stack<String> urls = new Stack<String>();
         private double imageWidth = 0;
@@ -80,6 +80,8 @@ namespace BingSlideshow
 
         private void Button1_Click(object sender, RoutedEventArgs e)
         {
+            queryProgress.Visibility = Visibility.Visible;
+            queryProgress.IsIndeterminate = true;
             getResults(TextBox1.Text);
         }
 
@@ -87,9 +89,6 @@ namespace BingSlideshow
             panoramaAdvanced = false;
             imageDownloadCounter = 0;
             urls.Clear();
-            if (myStep.IsEnabled) {
-                myStep.Stop();
-            }
             if (!NetworkInterface.GetIsNetworkAvailable()) {
                 MessageBox.Show("Please connect to the internet");
             }
@@ -131,7 +130,7 @@ namespace BingSlideshow
             image.ImageFailed += new EventHandler<ExceptionRoutedEventArgs>(onImageError);
             image.Source = img;
 
-            image.Stretch = Stretch.Uniform;
+            image.Stretch = Stretch.UniformToFill;
             grid.Children.Add(image);
 
             pi.Content = grid;
@@ -141,10 +140,11 @@ namespace BingSlideshow
         }
 
         private void onImageLoaded(Object sender, RoutedEventArgs e) {
-            if (!panoramaAdvanced) {
-                Pan.DefaultItem = Pan.Items[1];
+            /*if (!panoramaAdvanced) {
+                //Pan.DefaultItem = Pan.Items[1];
                 panoramaAdvanced = true;
-            }
+            }*/
+            startDownload();
         }
 
         private void onImageError(Object sender, RoutedEventArgs e) {
@@ -152,59 +152,33 @@ namespace BingSlideshow
             Grid grid = img.Parent as Grid;
             PanoramaItem pi = grid.Parent as PanoramaItem;
             Pan.Items.Remove(pi);
+            startDownload();
         }
 
-        private void downloadImages(Stack<String> urls) {
+        /*private void downloadImages(Stack<String> urls) {
             foreach (string s in urls)
             {
                 loadImage(s);
             }
             System.Diagnostics.Debug.WriteLine("Images downloaded");
-        }
+        }*/
 
         private void startDownload(){
-            myStep.Interval = new TimeSpan( 0, 0, 0, 2, 0);
-            myStep.Tick +=
+            //myStep.Interval = new TimeSpan( 0, 0, 0, 2, 0);
+            /*myStep.Tick +=
             delegate(object s, EventArgs args)
             {
-                if (imageDownloadCounter < urls.Count) {
+                */if (imageDownloadCounter < urls.Count) {
                     loadImage(urls.ElementAt(imageDownloadCounter));
                     imageDownloadCounter++;
                 }
-                else {
+                /*else {
                     myStep.Stop();
                 }
             };
-            myStep.Start();
+            myStep.Start();*/
         }
 
-        private void startAnimation()
-        {
-            imageWidthCounter = 0;
-            myAnimation.Interval = new TimeSpan(0, 0, 0, 0, 10);
-            myAnimation.Tick +=
-            delegate(object s, EventArgs args)
-            {
-                animate();
-            };
-            myAnimation.Start();
-        }
-
-        private void animate()
-        {
-            double totalWidth = imageWidth;
-            int currentWidth = imageWidthCounter;
-            double step = (totalWidth / 400)*currentWidth;
-            
-
-            Thickness margin = new Thickness(-step,0,0,0);
-            
-            PanoramaItem item = Pan.DefaultItem as PanoramaItem;
-            Grid grid = item.Content as Grid;
-            Image child = grid.Children[0] as Image;
-            child.Margin = margin;
-            imageWidthCounter = currentWidth+1;
-        }
 
 
         private void wc_OpenReadCompleted(object sender, OpenReadCompletedEventArgs e)
@@ -250,8 +224,11 @@ namespace BingSlideshow
             finally
             {
                 response.Close();
+                queryProgress.Visibility = Visibility.Collapsed;
+                queryProgress.IsIndeterminate = false;
             }
         }
+        
 
 
     }
