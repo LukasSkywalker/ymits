@@ -1,0 +1,16 @@
+C:\Users\Lukas\Documents\Programmieren\WP7\WakeUp\WakeUp\Bin\Release\ApplicationIcon.png
+C:\Users\Lukas\Documents\Programmieren\WP7\WakeUp\WakeUp\Bin\Release\Background.png
+C:\Users\Lukas\Documents\Programmieren\WP7\WakeUp\WakeUp\Bin\Release\WakeUp.dll
+C:\Users\Lukas\Documents\Programmieren\WP7\WakeUp\WakeUp\Bin\Release\WakeUp.pdb
+C:\Users\Lukas\Documents\Programmieren\WP7\WakeUp\WakeUp\Bin\Release\AppManifest.xaml
+C:\Users\Lukas\Documents\Programmieren\WP7\WakeUp\WakeUp\Bin\Release\WakeUp.xap
+C:\Users\Lukas\Documents\Programmieren\WP7\WakeUp\WakeUp\obj\Release\ResolveAssemblyReference.cache
+C:\Users\Lukas\Documents\Programmieren\WP7\WakeUp\WakeUp\obj\Release\App.g.i.cs
+C:\Users\Lukas\Documents\Programmieren\WP7\WakeUp\WakeUp\obj\Release\MainPage.g.i.cs
+C:\Users\Lukas\Documents\Programmieren\WP7\WakeUp\WakeUp\obj\Release\Page1.g.i.cs
+C:\Users\Lukas\Documents\Programmieren\WP7\WakeUp\WakeUp\obj\Release\WakeUp.g.resources
+C:\Users\Lukas\Documents\Programmieren\WP7\WakeUp\WakeUp\obj\Release\WakeUp.dll
+C:\Users\Lukas\Documents\Programmieren\WP7\WakeUp\WakeUp\obj\Release\WakeUp.pdb
+C:\Users\Lukas\Documents\Programmieren\WP7\WakeUp\WakeUp\obj\Release\XapCacheFile.xml
+C:\Users\Lukas\Documents\Programmieren\WP7\WakeUp\WakeUp\Bin\Release\wu_173.png
+C:\Users\Lukas\Documents\Programmieren\WP7\WakeUp\WakeUp\Bin\Release\wu_62.png

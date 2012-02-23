@@ -1,0 +1,13 @@
+C:\Users\Lukas\Documents\Programmieren\WP7\ChuckNorrisJokes\ChuckNorrisJokes\Bin\Debug\ApplicationIcon.png
+C:\Users\Lukas\Documents\Programmieren\WP7\ChuckNorrisJokes\ChuckNorrisJokes\Bin\Debug\Background.png
+C:\Users\Lukas\Documents\Programmieren\WP7\ChuckNorrisJokes\ChuckNorrisJokes\Bin\Debug\ChuckNorrisJokes.dll
+C:\Users\Lukas\Documents\Programmieren\WP7\ChuckNorrisJokes\ChuckNorrisJokes\Bin\Debug\ChuckNorrisJokes.pdb
+C:\Users\Lukas\Documents\Programmieren\WP7\ChuckNorrisJokes\ChuckNorrisJokes\Bin\Debug\AppManifest.xaml
+C:\Users\Lukas\Documents\Programmieren\WP7\ChuckNorrisJokes\ChuckNorrisJokes\Bin\Debug\ChuckNorrisJokes.xap
+C:\Users\Lukas\Documents\Programmieren\WP7\ChuckNorrisJokes\ChuckNorrisJokes\obj\Debug\ResolveAssemblyReference.cache
+C:\Users\Lukas\Documents\Programmieren\WP7\ChuckNorrisJokes\ChuckNorrisJokes\obj\Debug\App.g.i.cs
+C:\Users\Lukas\Documents\Programmieren\WP7\ChuckNorrisJokes\ChuckNorrisJokes\obj\Debug\MainPage.g.i.cs
+C:\Users\Lukas\Documents\Programmieren\WP7\ChuckNorrisJokes\ChuckNorrisJokes\obj\Debug\ChuckNorrisJokes.g.resources
+C:\Users\Lukas\Documents\Programmieren\WP7\ChuckNorrisJokes\ChuckNorrisJokes\obj\Debug\ChuckNorrisJokes.dll
+C:\Users\Lukas\Documents\Programmieren\WP7\ChuckNorrisJokes\ChuckNorrisJokes\obj\Debug\ChuckNorrisJokes.pdb
+C:\Users\Lukas\Documents\Programmieren\WP7\ChuckNorrisJokes\ChuckNorrisJokes\obj\Debug\XapCacheFile.xml

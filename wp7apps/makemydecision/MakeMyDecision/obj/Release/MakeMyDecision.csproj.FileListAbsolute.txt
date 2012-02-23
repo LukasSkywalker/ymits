@@ -1,0 +1,15 @@
+C:\Users\Lukas\Documents\Programmieren\WP7\MakeMyDecision\MakeMyDecision\Bin\Release\ApplicationIcon.png
+C:\Users\Lukas\Documents\Programmieren\WP7\MakeMyDecision\MakeMyDecision\Bin\Release\Background.png
+C:\Users\Lukas\Documents\Programmieren\WP7\MakeMyDecision\MakeMyDecision\Bin\Release\DM_62.png
+C:\Users\Lukas\Documents\Programmieren\WP7\MakeMyDecision\MakeMyDecision\Bin\Release\DM_173.png
+C:\Users\Lukas\Documents\Programmieren\WP7\MakeMyDecision\MakeMyDecision\Bin\Release\MakeMyDecision.dll
+C:\Users\Lukas\Documents\Programmieren\WP7\MakeMyDecision\MakeMyDecision\Bin\Release\MakeMyDecision.pdb
+C:\Users\Lukas\Documents\Programmieren\WP7\MakeMyDecision\MakeMyDecision\Bin\Release\AppManifest.xaml
+C:\Users\Lukas\Documents\Programmieren\WP7\MakeMyDecision\MakeMyDecision\Bin\Release\MakeMyDecision.xap
+C:\Users\Lukas\Documents\Programmieren\WP7\MakeMyDecision\MakeMyDecision\obj\Release\ResolveAssemblyReference.cache
+C:\Users\Lukas\Documents\Programmieren\WP7\MakeMyDecision\MakeMyDecision\obj\Release\App.g.i.cs
+C:\Users\Lukas\Documents\Programmieren\WP7\MakeMyDecision\MakeMyDecision\obj\Release\MainPage.g.i.cs
+C:\Users\Lukas\Documents\Programmieren\WP7\MakeMyDecision\MakeMyDecision\obj\Release\MakeMyDecision.g.resources
+C:\Users\Lukas\Documents\Programmieren\WP7\MakeMyDecision\MakeMyDecision\obj\Release\MakeMyDecision.dll
+C:\Users\Lukas\Documents\Programmieren\WP7\MakeMyDecision\MakeMyDecision\obj\Release\MakeMyDecision.pdb
+C:\Users\Lukas\Documents\Programmieren\WP7\MakeMyDecision\MakeMyDecision\obj\Release\XapCacheFile.xml
