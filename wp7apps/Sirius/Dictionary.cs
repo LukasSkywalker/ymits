@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text.RegularExpressions;
 
 namespace Sirius
 {
@@ -30,6 +31,10 @@ namespace Sirius
             actionDictionary.Add("warm", "weather");
             actionDictionary.Add("outside", "weather");
 
+            actionDictionary.Add("map", "map");
+            actionDictionary.Add("location", "map");
+            actionDictionary.Add("where", "map");
+
             dateDictionary.Add("today", "currentDay");
             dateDictionary.Add("now", "currentDay");
             dateDictionary.Add("tomorrow", "nextDay");
@@ -40,8 +45,26 @@ namespace Sirius
 
         public void getActionAndTime(String sentence){
             String[] words = sentence.Split((" ").ToCharArray());
+            Regex translationPattern = new Regex("^translate (.*?) to (.*?)$", RegexOptions.IgnoreCase);
+
             String action = "";
             String time = "today";
+            String data = "";
+
+            Match m = translationPattern.Match(sentence);
+            if(m.Success)
+            {
+                action = "translate";
+                time = m.Groups[2].ToString();
+                data = m.Groups[1].ToString();
+
+                parseResult res = new parseResult(action, time, data);
+
+                if(ResultParsed != null) {
+                    ResultParsed(res);
+                }
+                return;
+            }
             
             //loop through keys and try to match...
             foreach(String word in words)
@@ -75,7 +98,7 @@ namespace Sirius
             }
 
             if(ResultParsed != null) {
-                parseResult result = new parseResult(action, time);
+                parseResult result = new parseResult(action, time, data);
                 ResultParsed(result);
             }
         }

@@ -1,27 +1,11 @@
 ﻿using System;
-using System.Net;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Documents;
-using System.Windows.Ink;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Animation;
-using System.Windows.Shapes;
-using System.Windows.Threading;
-using System.Threading;
-using System.Collections;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
-using System.Linq;
+using System.Windows;
+using System.Windows.Threading;
 using Hawaii.Services.Client;
 using Hawaii.Services.Client.Speech;
-using Microsoft.Phone.Controls;
-using Microsoft.Phone.Shell;
 using Microsoft.Xna.Framework;
-using System.ComponentModel;
-using Microsoft.Xna.Framework.Audio;
 
 namespace Sirius
 {

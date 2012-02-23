@@ -4,7 +4,6 @@ using System.IO.IsolatedStorage;
 using System.Runtime.Serialization.Json;
 using System.Text;
 using System.Windows;
-using System.Windows.Navigation;
 using Newtonsoft.Json.Linq;
 using RestSharp;
 

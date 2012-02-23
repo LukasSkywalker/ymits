@@ -1,22 +1,12 @@
 ﻿using System;
-using System.Windows;
-using System.Windows.Threading;
-using Microsoft.Phone.Controls;
-using Google.Apis.Calendar.v3;
-using Google.Apis.Calendar.v3.Data;
-using System.Windows.Shapes;
-using RestSharp;
-using Newtonsoft.Json.Linq;
-using System.IO.IsolatedStorage;
-using System.Net;
-using System.Text;
-using System.Threading;
-using System.ComponentModel;
-using System.Collections.ObjectModel;
-using System.IO;
 using System.Collections.Generic;
-using System.Runtime.Serialization.Json;
+using System.ComponentModel;
+using System.IO;
 using System.Runtime.Serialization;
+using System.Runtime.Serialization.Json;
+using System.Windows;
+using System.Windows.Shapes;
+using Microsoft.Phone.Controls;
 using Microsoft.Xna.Framework.Audio;
 
 namespace Sirius
@@ -148,8 +138,17 @@ namespace Sirius
 
         private void button2_Click( object sender, RoutedEventArgs e )
         {
-            _dynamicSound.SubmitBuffer(_memoryStream.GetBuffer());
-            _dynamicSound.Play();
+            Dictionary dict = new Dictionary();
+            dict.ResultParsed += new Dictionary.ResultParsedHandler(dict_ResultParsed);
+            dict.getActionAndTime("Where am I?");
+            /* DICTIONARY TEST
+             * Translation.Translated += new Translation.TranslatedHandler(Translation_Translated);
+             * Translation.start("de", "en", "Was wollen wir heute tun?");
+             */
+            
+            
+            /*_dynamicSound.SubmitBuffer(_memoryStream.GetBuffer());
+            _dynamicSound.Play();*/
         }
 
 
@@ -178,11 +177,34 @@ namespace Sirius
                 case "calendar":
                     break;
                 case "weather":
+                    Weather.WeatherReceived += new Weather.WeatherReceivedHandler(Weather_WeatherReceived);
                     Weather.getWeather("Bern");
+                    break;
+                case "translate":
+                    Translation.Translated += new Translation.TranslatedHandler(Translation_Translated);
+                    Translation.start("en", result.time, result.data);
+                    break;
+                case "map":
+                    Location.LocationFound += new Location.LocationFoundHandler(Location_LocationFound);
+                    Location.start("empty");
                     break;
                 default:
                     break;
             }
+        }
+
+        void Location_LocationFound( string lat, string lon )
+        {
+            System.Diagnostics.Debug.WriteLine("Location received, lat="+lat+", lon="+lon);
+        }
+
+        private void Weather_WeatherReceived( List<WeatherData> forecast ) {
+            System.Diagnostics.Debug.WriteLine("Weather received.");
+        }
+
+        private void Translation_Translated( String result )
+        {
+            MessageBox.Show(result);
         }
     }
     
