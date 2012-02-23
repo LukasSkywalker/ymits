@@ -1,0 +1,322 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>ClientLibraryBase</name>
+    </assembly>
+    <members>
+        <member name="T:Hawaii.Services.Client.ServiceResult">
+            <summary>
+            A base class for all Hawaii service result classes. 
+            Various Hawaii service result classes will represent the result corresponding to different type of Hawaii service calls. 
+            This class contains functionality common to all Hawaii service result classes.
+            </summary>
+        </member>
+        <member name="M:Hawaii.Services.Client.ServiceResult.#ctor">
+            <summary>
+            Initializes a new instance of the ServiceResult class.
+            </summary>
+        </member>
+        <member name="M:Hawaii.Services.Client.ServiceResult.#ctor(System.Object)">
+            <summary>
+            Initializes a new instance of the ServiceResult class.
+            </summary>
+            <param name="stateObject">Specifies a user-defined object.</param>
+        </member>
+        <member name="M:Hawaii.Services.Client.ServiceResult.#ctor(System.Object,Hawaii.Services.Client.Status)">
+            <summary>
+            Initializes a new instance of the ServiceResult class.
+            </summary>
+            <param name="stateObject">Specifies a user-defined object.</param>
+            <param name="status">Specifies the status of the service call.</param>
+        </member>
+        <member name="M:Hawaii.Services.Client.ServiceResult.#ctor(System.Object,Hawaii.Services.Client.Status,System.Exception)">
+            <summary>
+            Initializes a new instance of the ServiceResult class.
+            </summary>
+            <param name="stateObject">Specifies a user-defined object.</param>
+            <param name="status">Specifies the status of the service call.</param>
+            <param name="exception">An exception instance used if an error occured during the service call.</param>
+        </member>
+        <member name="P:Hawaii.Services.Client.ServiceResult.Exception">
+            <summary>
+            Gets or sets the error exception.
+            </summary>
+        </member>
+        <member name="P:Hawaii.Services.Client.ServiceResult.Status">
+            <summary>
+            Gets or sets the status of the service call.
+            </summary>
+        </member>
+        <member name="P:Hawaii.Services.Client.ServiceResult.StateObject">
+            <summary>
+            Gets or sets a user-defined object.
+            </summary>
+        </member>
+        <member name="T:Hawaii.Services.Client.HttpMethod">
+            <summary>
+            Specifies the HTTP method that is used when communicating with the server.
+            </summary>
+        </member>
+        <member name="F:Hawaii.Services.Client.HttpMethod.Get">
+            <summary>
+            Represents the Http Get method.
+            </summary>
+        </member>
+        <member name="F:Hawaii.Services.Client.HttpMethod.Post">
+            <summary>
+            Represents the Http Post method.
+            </summary>
+        </member>
+        <member name="F:Hawaii.Services.Client.HttpMethod.Put">
+            <summary>
+            Represents the Http Put method.
+            </summary>
+        </member>
+        <member name="F:Hawaii.Services.Client.HttpMethod.Delete">
+            <summary>
+            Represents the Http Delete method.
+            </summary>
+        </member>
+        <member name="T:Hawaii.Services.Client.ServiceAgent`1">
+            <summary>
+            A base class for all Hawaii service agent classes. 
+            These agents are wrapping the communication tasks specific to each service.
+            ServiceAgent provides functionality common to all these clases.
+            </summary>
+        </member>
+        <member name="M:Hawaii.Services.Client.ServiceAgent`1.#ctor">
+            <summary>
+            Initializes a new instance of the ServiceAgent class.
+            </summary>
+        </member>
+        <member name="M:Hawaii.Services.Client.ServiceAgent`1.#ctor(Hawaii.Services.Client.HttpMethod,System.Object)">
+            <summary>
+            Initializes a new instance of the ServiceAgent class.
+            </summary>
+            <param name="requestMethod">Specifies a http request method.</param>
+            <param name="stateObject">Specifies a user-defined object.</param> 
+        </member>
+        <member name="M:Hawaii.Services.Client.ServiceAgent`1.ProcessRequest(Hawaii.Services.Client.ServiceAgent{`0}.OnCompleteDelegate)">
+            <summary>
+            This method initiates the asynchronous service call.
+            </summary>
+            <param name="handlerMethod">
+            The on complete" callback that will be invoked after the service call completes.
+            </param>
+        </member>
+        <member name="M:Hawaii.Services.Client.ServiceAgent`1.DeserializeResponse``1(System.IO.Stream)">
+            <summary>
+            Deserializes the response stream.
+            </summary>
+            <typeparam name="TResult">Result object.</typeparam>
+            <param name="responseStream">Server response stream.</param>
+            <returns>Deserailized object.</returns>
+        </member>
+        <member name="M:Hawaii.Services.Client.ServiceAgent`1.GetPostData">
+            <summary>
+            This method must be implemented by all classes that inherit from ServiceAgent. 
+            It will provide the POST data that has to be sent to the service if the Http Method used is POST.
+            </summary>
+            <returns>Returns the POST data in byte array format.</returns>
+        </member>
+        <member name="M:Hawaii.Services.Client.ServiceAgent`1.ParseOutput(System.IO.Stream)">
+            <summary>
+            This method is called after the response sent by the server is received by the client.
+            It allows classes that inherit from ServiceAgent to do their own processing of 
+            the data received from the server.
+            </summary>
+            <param name="responseStream">
+            The response stream containing response data that is received from the server.
+            </param>
+        </member>
+        <member name="M:Hawaii.Services.Client.ServiceAgent`1.OnCompleteRequest">
+            <summary>
+            A virtual method. It is invoked after completing the service request.
+            The implementation of this base class will invoke the client's "on complete" callback method.
+            Classes that inherit from ServiceAgent can oveerite this method to further process the service 
+            call result before calling the client's "on complete" callback method.
+            </summary>
+        </member>
+        <member name="M:Hawaii.Services.Client.ServiceAgent`1.RequestCallback(System.IAsyncResult)">
+            <summary>
+            Callback method called after request.BeginGetRequestStream completes.
+            </summary>
+            <param name="asyncResult">
+            An asyncResult object.
+            </param>
+        </member>
+        <member name="M:Hawaii.Services.Client.ServiceAgent`1.ResponseCallback(System.IAsyncResult)">
+            <summary>
+            Callback method called after request.BeginGetResponse completes.
+            </summary>
+            <param name="asyncResult">
+            An asyncResult object.
+            </param>
+        </member>
+        <member name="M:Hawaii.Services.Client.ServiceAgent`1.ConvertStatus(System.Net.HttpStatusCode)">
+            <summary>
+            Method converts HttpStatusCode to Status.
+            </summary>
+            <param name="statusCode">Service http status code.</param>
+            <returns>Hawaii Status code.</returns>
+        </member>
+        <member name="P:Hawaii.Services.Client.ServiceAgent`1.OnComplete">
+            <summary>
+            Gets or sets OnComplete handler.
+            </summary>
+        </member>
+        <member name="P:Hawaii.Services.Client.ServiceAgent`1.Result">
+            <summary>
+            Gets or sets service result.
+            </summary>
+        </member>
+        <member name="P:Hawaii.Services.Client.ServiceAgent`1.Uri">
+            <summary>
+            Gets or sets service Uri.
+            </summary>
+        </member>
+        <member name="P:Hawaii.Services.Client.ServiceAgent`1.RequestMethod">
+            <summary>
+            Gets or sets the HTTP method (GET, POST, PUT or DELETE).
+            </summary>
+        </member>
+        <member name="P:Hawaii.Services.Client.ServiceAgent`1.ClientIdentity">
+            <summary>
+            Gets or sets the client identity.
+            </summary>
+        </member>
+        <member name="T:Hawaii.Services.Client.ServiceAgent`1.OnCompleteDelegate">
+            <summary>
+            OnCompleteDelegate delegate type definition.
+            </summary>
+            <param name="result">
+            Returns nothing.
+            </param>
+        </member>
+        <member name="T:Hawaii.Services.Client.NamespaceDoc">
+            <summary>
+            The Hawaii.Services.Client provides common functionality for the 
+            client libraries classes that communicate over REST to Hawaii services.
+            </summary>
+        </member>
+        <member name="T:Hawaii.Services.Client.Status">
+            <summary>
+            Describes the status of a Hawaii service call.
+            </summary>
+        </member>
+        <member name="F:Hawaii.Services.Client.Status.Unspecified">
+            <summary>
+            Defaut status code.
+            </summary>
+        </member>
+        <member name="F:Hawaii.Services.Client.Status.Success">
+            <summary>
+            Specifies that the service call completed successfully.
+            </summary>
+        </member>
+        <member name="F:Hawaii.Services.Client.Status.InternalServerError">
+            <summary>
+            Specifies that the service call completed with an internal server error.
+            </summary>
+        </member>
+        <member name="F:Hawaii.Services.Client.Status.Error">
+            <summary>
+            Specifies that the service call completed with an error.
+            </summary>
+        </member>
+        <member name="T:Hawaii.Services.Client.ServiceUri">
+            <summary>
+            Helper class used to create a Service Uri during a service invocation.
+            </summary>
+        </member>
+        <member name="M:Hawaii.Services.Client.ServiceUri.#ctor">
+            <summary>
+            Initializes a new instance of the ServiceUri class.
+            </summary>
+        </member>
+        <member name="M:Hawaii.Services.Client.ServiceUri.#ctor(System.String,System.String)">
+            <summary>
+            Initializes a new instance of the ServiceUri class.
+            </summary>
+            <param name="hostUrl">Specifies the host url. For example: http://ocr2.hawaii-services.net.</param>
+            <param name="signature">Specifies the service signature.</param>
+        </member>
+        <member name="M:Hawaii.Services.Client.ServiceUri.AddQueryString(System.String,System.String)">
+            <summary>
+            A Helper method to add a query string key-value pair.
+            </summary>
+            <param name="key">
+            The key in the query string.
+            </param>
+            <param name="value">
+            The value corresponding to the key.
+            </param>
+        </member>
+        <member name="M:Hawaii.Services.Client.ServiceUri.ToString">
+            <summary>
+            Returns the service uri string.
+            </summary>
+            <returns>A valid Service Uri string.</returns>
+        </member>
+        <member name="P:Hawaii.Services.Client.ServiceUri.HostUrl">
+            <summary>
+            Gets or sets service host url.
+            </summary>
+        </member>
+        <member name="P:Hawaii.Services.Client.ServiceUri.Signature">
+            <summary>
+            Gets or sets service's REST signature
+            For Example :
+            Service Url : http://hawaiispeech/SpeechRecognition
+            Signature   : SpeechRecognition
+            Service Url : http://hawaiispeech/SpeechRecognition/GrammerName/
+            Signature   : SpeechRecognition/GrammarName.
+            </summary>
+        </member>
+        <member name="P:Hawaii.Services.Client.ServiceUri.Arguments">
+            <summary>
+            Gets or sets arguments used for the Query String part of the Service Url.
+            </summary>
+        </member>
+        <member name="T:Hawaii.Services.Client.ClientIdentity">
+            <summary>
+            ClientIdentity represents a client identity for the purposes of communicating with the server.
+            </summary>
+        </member>
+        <member name="M:Hawaii.Services.Client.ClientIdentity.#ctor(System.String)">
+            <summary>
+            Initializes a new instance of the ClientIdentity class.
+            </summary>
+            <param name="appId">Specifies an application id.</param>
+        </member>
+        <member name="M:Hawaii.Services.Client.ClientIdentity.#ctor(System.String,System.String,System.String)">
+            <summary>
+            Initializes a new instance of the ClientIdentity class.
+            </summary>
+            <param name="appId">Specifies the Hawaii Application Id.</param>
+            <param name="registrationId">Specifies a registration id.</param>
+            <param name="secretKey">Specifies a secret key.</param>
+        </member>
+        <member name="M:Hawaii.Services.Client.ClientIdentity.GetEncodedToken">
+            <summary>
+            Gets the identity token that is used when communicating with the server.
+            </summary>
+            <returns>Endcode token.</returns>
+        </member>
+        <member name="P:Hawaii.Services.Client.ClientIdentity.ApplicationId">
+            <summary>
+            Gets or sets the Hawaii Application Id.
+            </summary>
+        </member>
+        <member name="P:Hawaii.Services.Client.ClientIdentity.RegistrationId">
+            <summary>
+            Gets or sets the registration id.
+            </summary>
+        </member>
+        <member name="P:Hawaii.Services.Client.ClientIdentity.SecretKey">
+            <summary>
+            Gets or sets the secret key.
+            </summary>
+        </member>
+    </members>
+</doc>
