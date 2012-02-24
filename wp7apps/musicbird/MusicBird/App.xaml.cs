@@ -69,6 +69,7 @@ namespace MusicBird
         private void Application_Launching(object sender, LaunchingEventArgs e)
         {
             CheckLicense();
+            //IsolatedStorageExplorer.Explorer.Start("localhost");
         }
 
         // Code to execute when the application is activated (brought to foreground)
@@ -76,6 +77,7 @@ namespace MusicBird
         private void Application_Activated(object sender, ActivatedEventArgs e)
         {
             CheckLicense();
+            //IsolatedStorageExplorer.Explorer.RestoreFromTombstone();
         }
 
         // Code to execute when the application is deactivated (sent to background)

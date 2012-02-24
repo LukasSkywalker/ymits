@@ -80,16 +80,8 @@ namespace MusicBird
 
             BackgroundAudioPlayer.Instance.PlayStateChanged += new EventHandler(Instance_PlayStateChanged);
 
-            if (BackgroundAudioPlayer.Instance.PlayerState == PlayState.Playing)
-            {
-                // If audio was already playing when the app was launched, update the UI.
-                positionIndicator.IsIndeterminate = false;
-                positionIndicator.Maximum = BackgroundAudioPlayer.Instance.Track.Duration.TotalSeconds;
-                //positionSlider.Maximum = BackgroundAudioPlayer.Instance.Track.Duration.TotalSeconds;
-                UpdateButtons(true, false, true);
-                _timer.Start();
-                //UpdateState(null, null); this is called by _timer.Start()
-            }
+
+            Instance_PlayStateChanged(null, null);
 
             //DEBUG IsolatedStorageExplorer.Explorer.Start("localhost");
 
@@ -155,7 +147,7 @@ namespace MusicBird
         void UpdateButtons(bool prevBtnEnabled, bool? playBtnEnabled, bool nextBtnEnabled)
         {
             // Set the IsEnabled state of the ApplicationBar.Buttons array
-            /*((ApplicationBarIconButton)(ApplicationBar.Buttons[prevButton])).IsEnabled = prevBtnEnabled;
+            ((ApplicationBarIconButton)(ApplicationBar.Buttons[prevButton])).IsEnabled = prevBtnEnabled;
             if(playBtnEnabled.HasValue)
             {
                 if(playBtnEnabled.Value)
@@ -172,7 +164,7 @@ namespace MusicBird
             if(Page1.read("albumart"))
             {
                 getAlbumArt(BackgroundAudioPlayer.Instance.Track.Artist + " " + BackgroundAudioPlayer.Instance.Track.Title);
-            }*/
+            }
         }
 
 
@@ -204,7 +196,15 @@ namespace MusicBird
 
                 // Update the time remaining digits.
                 TimeSpan timeRemaining = new TimeSpan();
-                timeRemaining = BackgroundAudioPlayer.Instance.Track.Duration - position;
+                TimeSpan duration = new TimeSpan(0, 0, 0, 0, 0);
+                try
+                {
+                    duration = BackgroundAudioPlayer.Instance.Track.Duration;
+                }
+                catch(Exception ex) {
+                    System.Diagnostics.Debug.WriteLine(ex.Message);
+                }
+                timeRemaining = duration - position;
                 textRemaining.Text = String.Format("-{0:d2}:{1:d2}:{2:d2}", timeRemaining.Hours, timeRemaining.Minutes, timeRemaining.Seconds);
             }
         }
@@ -472,10 +472,17 @@ namespace MusicBird
             TrackListItem selectedTrack = (sender as FrameworkElement).DataContext as TrackListItem;
             AudioTrack current = new AudioTrack(new Uri(selectedTrack.url, UriKind.RelativeOrAbsolute), selectedTrack.artist, selectedTrack.title, "", null);
 
-            BackgroundAudioPlayer.Instance.Track = current;
-            BackgroundAudioPlayer.Instance.Play();
             addToPlaylist(selectedTrack.artist, selectedTrack.title, selectedTrack.url);
             updatePlaylist();
+            
+            AudioPlaybackAgent1.AudioPlayer.mut.WaitOne();
+            var settings = IsolatedStorageSettings.ApplicationSettings;
+            List<String[]> oldItems = getFromPlaylist();
+            int itemsCount = oldItems.Count;
+
+            AudioPlaybackAgent1.AudioPlayer.playAtPosition(itemsCount-1,BackgroundAudioPlayer.Instance);
+            Instance_PlayStateChanged(null, null);
+            positionIndicator.IsIndeterminate = true;
             Panorama.SelectedItem = playerItem;
         }
 
@@ -539,7 +546,9 @@ namespace MusicBird
                 {
                     count = BackgroundTransferService.Requests.Count();
                 }
-                catch(Exception ex) { }
+                catch(Exception ex) {
+                    System.Diagnostics.Debug.WriteLine(ex.Message);
+                }
 
                 try
                 {
@@ -552,7 +561,9 @@ namespace MusicBird
                         status = "Paused";
                     }
                 }
-                catch(Exception ex) { }
+                catch(Exception ex) {
+                    System.Diagnostics.Debug.WriteLine(ex.Message);
+                }
 
 
                 if(BackgroundAudioPlayer.Instance != null)
@@ -671,7 +682,7 @@ namespace MusicBird
                 foreach(var item in trackList){
                     tList.Add(new TrackListItem(item[0], item[1], item[2]));
                 }
-                //PlaylistElement.ItemsSource = tList;
+                PlaylistElement.ItemsSource = tList;
             }
 
             private void updateLibrary()
@@ -698,15 +709,30 @@ namespace MusicBird
             private void playlistItem_Click(object sender, RoutedEventArgs e) {
                 TrackListItem selectedTrack = (sender as FrameworkElement).DataContext as TrackListItem;
                 AudioTrack current = new AudioTrack(new Uri(selectedTrack.url, UriKind.RelativeOrAbsolute), selectedTrack.artist, selectedTrack.title, "", null);
+                String[] current2 = new String[] { selectedTrack.artist, selectedTrack.title, selectedTrack.url };
 
-                addToPlaylist(selectedTrack.artist, selectedTrack.title, selectedTrack.url);
-                BackgroundAudioPlayer.Instance.Track = current;
-                BackgroundAudioPlayer.Instance.Play();
-                updatePlaylist();
+                AudioPlaybackAgent1.AudioPlayer.mut.WaitOne();
+                var settings = IsolatedStorageSettings.ApplicationSettings;
+                List<String[]> oldItems = getFromPlaylist();
+                
+                int counter = -1;
+
+                foreach(String[] item in oldItems) {
+                    counter++;
+                    if(item[2].Equals(current2[2])){
+                        break;
+                    }
+                }
+
+                System.Diagnostics.Debug.WriteLine("MainPage.xaml.cs:playlistItem_Click ___ Found playlist item at index " + counter);
+                AudioPlaybackAgent1.AudioPlayer.playAtPosition(counter, BackgroundAudioPlayer.Instance);
+
+                Instance_PlayStateChanged(null, null);
+                positionIndicator.IsIndeterminate = true;
                 Panorama.SelectedItem = playerItem;
             }
 
-            /*private void playlistItem_Hold(object sender, RoutedEventArgs e)
+            private void playlistItem_Hold(object sender, RoutedEventArgs e)
             {
                 ListBoxItem selectedListBoxItem = PlaylistElement.ItemContainerGenerator.ContainerFromItem((sender as MenuItem).DataContext) as ListBoxItem;
                 if (selectedListBoxItem == null)
@@ -732,13 +758,6 @@ namespace MusicBird
                 var tag = menuItem.Tag.ToString();
                 switch (tag)
                 {
-                    case "play":
-                        addToPlaylist(selectedTrack.artist, selectedTrack.title, selectedTrack.url);
-                        BackgroundAudioPlayer.Instance.Track = current;
-                        BackgroundAudioPlayer.Instance.Play();
-                        updatePlaylist();
-                        Panorama.SelectedItem = playerItem;
-                        break;
                     case "delete":
                         removeFromPlaylist(selectedIndex);
                         updatePlaylist();
@@ -747,7 +766,7 @@ namespace MusicBird
                         break;
 
                 }
-            }*/
+            }
 
             private void libraryItem_Click(object sender, RoutedEventArgs e)
             {
@@ -1020,6 +1039,7 @@ namespace MusicBird
                 catch (Exception e)
                 {
                     // Handle the exception.
+                    System.Diagnostics.Debug.WriteLine(e.Message);
                 }
             }
 

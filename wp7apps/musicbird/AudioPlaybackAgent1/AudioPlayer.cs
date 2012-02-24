@@ -12,7 +12,7 @@ namespace AudioPlaybackAgent1
     {
         
         private static volatile bool _classInitialized;
-        static int currentTrackNumber = 0;
+        public static int currentTrackNumber = 0;
         public static Mutex mut = new Mutex(false, "playlistMutex");
 
         public static List<AudioTrack> _playList = new List<AudioTrack>
@@ -39,61 +39,30 @@ namespace AudioPlaybackAgent1
             }
         }
 
-        
-
-        private void PlayNextTrack(BackgroundAudioPlayer player)
-        {
-            if (++currentTrackNumber >= _playList.Count)
-            {
-                currentTrackNumber = 0;
-            }
-            
-            PlayTrack(player);
-        }
-
-        private void PlayPreviousTrack(BackgroundAudioPlayer player)
-        {
-            if (--currentTrackNumber < 0)
-            {
-                currentTrackNumber = _playList.Count - 1;
-            }
-
-            PlayTrack(player);
-        }
-
-        private void PlayTrack(BackgroundAudioPlayer player)
-        {
+        public static void playAtPosition( int position, BackgroundAudioPlayer player ) {
             updatePlaylist();
-            // Sets the track to play. When the TrackReady state is received, 
-            // playback begins from the OnPlayStateChanged handler.
-            if(_playList.Count == 0) {
-                if(player.PlayerState == PlayState.Playing)
-                {
-                    player.Stop();
-                }
-                else { 
-                    System.Diagnostics.Debug.WriteLine("Not playing");
-                }
-                return;
-            }
-            if(_playList.Count>=currentTrackNumber+1)
+            if(_playList.Count > position && position >= 0)
             {
-                System.Diagnostics.Debug.WriteLine("Index exists "+currentTrackNumber);
-                if(_playList[currentTrackNumber] != null)
+                System.Diagnostics.Debug.WriteLine("AudioPlayer.cs:playAtPosition ___ position exists: "+position);
+                if(_playList[position] != null)
                 {
-                    System.Diagnostics.Debug.WriteLine("Index is not null " + currentTrackNumber);
-                    player.Track = _playList[currentTrackNumber];
+                    System.Diagnostics.Debug.WriteLine("AudioPlayer.cs:playAtPosition ___ index is not null: " + position);
+                    System.Diagnostics.Debug.WriteLine("AudioPlayer.cs:playAtPosition ___ Starting playback...");
+                    player.Track = _playList[position];
+                    //The PlayStateChangedEventHandler will be called as soon as the track is loaded
+                    currentTrackNumber = position;
                 }
-                else {
-                    System.Diagnostics.Debug.WriteLine("Index does is null" + currentTrackNumber);
-                    GetNextTrack();
-                    PlayTrack(player);
+                else
+                {
+                    System.Diagnostics.Debug.WriteLine("AudioPlayer.cs:playAtPosition ___ index is null: " + position);
+                    System.Diagnostics.Debug.WriteLine("AudioPlayer.cs:playAtPosition ___ trying next index: " + position + 1);
+                    playAtPosition(position+1, player);
                 }
             }
             else {
-                System.Diagnostics.Debug.WriteLine("Index does not exist len<ctn+1; len=" + _playList.Count+", ctn+1=" + currentTrackNumber+1);
-                GetNextTrack();
-                PlayTrack(player);
+                System.Diagnostics.Debug.WriteLine("AudioPlayer.cs:playAtPosition ___ position out of _playlist bounds: "+position);
+                System.Diagnostics.Debug.WriteLine("AudioPlayer.cs:playAtPosition ___ trying index 0");
+                playAtPosition(0, player);
             }
         }
 
@@ -107,39 +76,38 @@ namespace AudioPlaybackAgent1
             }
         }
 
-        /// <summary>
-        /// Called when the playstate changes, except for the Error state (see OnError)
-        /// </summary>
-        /// <param name="player">The BackgroundAudioPlayer</param>
-        /// <param name="track">The track playing at the time the playstate changed</param>
-        /// <param name="playState">The new playstate of the player</param>
-        /// <remarks>
-        /// Play State changes cannot be cancelled. They are raised even if the application
-        /// caused the state change itself, assuming the application has opted-in to the callback.
-        /// 
-        /// Notable playstate events: 
-        /// (a) TrackEnded: invoked when the player has no current track. The agent can set the next track.
-        /// (b) TrackReady: an audio track has been set and it is now ready for playack.
-        /// 
-        /// Call NotifyComplete() only once, after the agent request has been completed, including async callbacks.
-        /// </remarks>
+        /* Called when the playstate changes, except for the Error state (see OnError)
+         * 
+         * Play State changes cannot be cancelled. They are raised even if the application
+         * caused the state change itself, assuming the application has opted-in to the callback.
+         * 
+         * Notable playstate events: 
+         * (a) TrackEnded: invoked when the player has no current track. The agent can set the next track.
+         * (b) TrackReady: an audio track has been set and it is now ready for playack.
+         * 
+         * Call NotifyComplete() only once, after the agent request has been completed, including async callbacks.
+         */
+
         protected override void OnPlayStateChanged(BackgroundAudioPlayer player, AudioTrack track, PlayState playState)
         {
-            updatePlaylist();
+            System.Diagnostics.Debug.WriteLine("AudioPlayer.cs:OnPlayStateChanged ___ PlayState changed; is now "+playState.ToString());
+            //updatePlaylist();
             switch (playState)
             {
                 case PlayState.TrackEnded:
-                    GetNextTrack();
-                    PlayTrack(player);
+                    playAtPosition(currentTrackNumber+1, player);
                     break;
                 case PlayState.TrackReady:
                     if(isTrial()){
+                        System.Diagnostics.Debug.WriteLine("AudioPlayer.cs:OnPlayStateChanged ___ Trial mode detected.");
                         if(isPlaybackLimitExceeded())
                         {
                             player.Pause();
+                            System.Diagnostics.Debug.WriteLine("AudioPlayer.cs:OnPlayStateChanged ___ Playback limit exceeded. Pausing.");
                             return;
                         }
                     }
+                    System.Diagnostics.Debug.WriteLine("AudioPlayer.cs:OnPlayStateChanged ___ Track loaded, playing.");
                     player.Play();
                     break;
                 case PlayState.Shutdown:
@@ -166,22 +134,12 @@ namespace AudioPlaybackAgent1
             NotifyComplete();
         }
 
+        /* Called when the user requests an action using application/system provided UI
+         * User actions do not automatically make any changes in system state; the agent is responsible
+         * for carrying out the user actions if they are supported.
+         * Call NotifyComplete() only once, after the agent request has been completed, including async callbacks.
+         */
 
-        /// <summary>
-        /// Called when the user requests an action using application/system provided UI
-        /// </summary>
-        /// <param name="player">The BackgroundAudioPlayer</param>
-        /// <param name="track">The track playing at the time of the user action</param>
-        /// <param name="action">The action the user has requested</param>
-        /// <param name="param">The data associated with the requested action.
-        /// In the current version this parameter is only for use with the Seek action,
-        /// to indicate the requested position of an audio track</param>
-        /// <remarks>
-        /// User actions do not automatically make any changes in system state; the agent is responsible
-        /// for carrying out the user actions if they are supported.
-        /// 
-        /// Call NotifyComplete() only once, after the agent request has been completed, including async callbacks.
-        /// </remarks>
         protected override void OnUserAction(BackgroundAudioPlayer player, AudioTrack track, UserAction action, object param)
         {
             updatePlaylist();
@@ -216,99 +174,25 @@ namespace AudioPlaybackAgent1
                     }
                     break;
                 case UserAction.SkipNext:
-                    GetNextTrack();
-                    System.Diagnostics.Debug.WriteLine("SkipNext; index is " + currentTrackNumber);
-                    //if(nextTrack != null)
-                    //{
-                        PlayTrack(player);
-                    //}
+                    playAtPosition(currentTrackNumber + 1, player);
                     break;
                 case UserAction.SkipPrevious:
-                    GetPreviousTrack();
-                    System.Diagnostics.Debug.WriteLine("SkipPrev; index is " + currentTrackNumber);
-                    //if (previousTrack != null)
-                    //{
-                        PlayTrack(player);
-                    //}
+                    playAtPosition(currentTrackNumber -1, player);
                     break;
             }
 
             NotifyComplete();
         }
 
+        /* Called whenever there is an error with playback, such as an AudioTrack not downloading correctly
+         * 
+         * This method is not guaranteed to be called in all cases. For example, if the background agent
+         * itself has an unhandled exception, it won't get called back to handle its own errors.
+         */
 
-        /// <summary>
-        /// Implements the logic to get the next AudioTrack instance.
-        /// In a playlist, the source can be from a file, a web request, etc.
-        /// </summary>
-        /// <remarks>
-        /// The AudioTrack URI determines the source, which can be:
-        /// (a) Isolated-storage file (Relative URI, represents path in the isolated storage)
-        /// (b) HTTP URL (absolute URI)
-        /// (c) MediaStreamSource (null)
-        /// </remarks>
-        /// <returns>an instance of AudioTrack, or null if the playback is completed</returns>
-        private void GetNextTrack()
-        {
-            // TODO: add logic to get the next audio track
-
-            updatePlaylist();
-
-            if(++currentTrackNumber >= _playList.Count)
-            {
-                currentTrackNumber = 0;
-            }
-
-            //AudioTrack track = _playList[currentTrackNumber];
-
-            // specify the track
-
-            //return currentTrackNumber;
-        }
-
-
-        /// <summary>
-        /// Implements the logic to get the previous AudioTrack instance.
-        /// </summary>
-        /// <remarks>
-        /// The AudioTrack URI determines the source, which can be:
-        /// (a) Isolated-storage file (Relative URI, represents path in the isolated storage)
-        /// (b) HTTP URL (absolute URI)
-        /// (c) MediaStreamSource (null)
-        /// </remarks>
-        /// <returns>an instance of AudioTrack, or null if previous track is not allowed</returns>
-        private void GetPreviousTrack()
-        {
-            // TODO: add logic to get the previous audio track
-
-            updatePlaylist();
-
-            if(--currentTrackNumber < 0)
-            {
-                currentTrackNumber = _playList.Count-1;
-            }
-
-            //AudioTrack track = _playList[currentTrackNumber];
-            
-
-            // specify the track
-
-            //return currentTrackNumber;
-        }
-
-        /// <summary>
-        /// Called whenever there is an error with playback, such as an AudioTrack not downloading correctly
-        /// </summary>
-        /// <param name="player">The BackgroundAudioPlayer</param>
-        /// <param name="track">The track that had the error</param>
-        /// <param name="error">The error that occured</param>
-        /// <param name="isFatal">If true, playback cannot continue and playback of the track will stop</param>
-        /// <remarks>
-        /// This method is not guaranteed to be called in all cases. For example, if the background agent 
-        /// itself has an unhandled exception, it won't get called back to handle its own errors.
-        /// </remarks>
         protected override void OnError(BackgroundAudioPlayer player, AudioTrack track, Exception error, bool isFatal)
         {
+            System.Diagnostics.Debug.WriteLine(error.Message);
             if (isFatal)
             {
                 Abort();
@@ -320,45 +204,44 @@ namespace AudioPlaybackAgent1
 
         }
 
-        /// <summary>
-        /// Called when the agent request is getting cancelled
-        /// </summary>
-        /// <remarks>
-        /// Once the request is Cancelled, the agent gets 5 seconds to finish its work,
-        /// by calling NotifyComplete()/Abort().
-        /// </remarks>
+        /* Called when the agent request is getting cancelled
+         * 
+         * Once the request is Cancelled, the agent gets 5 seconds to finish its work,
+         * by calling NotifyComplete()/Abort().
+         */
+
         protected override void OnCancel()
         {
 
         }
 
-        private List<String[]> getFromPlaylist()
+        private static List<String[]> getFromPlaylist()
         {
-            mut.WaitOne();
+            //mut.WaitOne();
             var settings = IsolatedStorageSettings.ApplicationSettings;
             if(settings.Contains("playlist"))
             {
                 List<String[]> items;
                 if(settings.TryGetValue<List<String[]>>("playlist", out items))
                 {
-                    mut.ReleaseMutex();
+                    //mut.ReleaseMutex();
                     return items;
                 }
                 else
                 {
-                    mut.ReleaseMutex();
+                    //mut.ReleaseMutex();
                     throw new IsolatedStorageException("Could not get Playlist from ApplicationSettings");
                 }
             }
             else
             {
-                mut.ReleaseMutex();
+                //mut.ReleaseMutex();
                 return (new List<String[]>());
             }
 
         }
 
-        private void updatePlaylist() {
+        private static void updatePlaylist() {
             List<string[]> strings = getFromPlaylist();
             List<AudioTrack> trackList = new List<AudioTrack>();
             foreach(var item in strings)

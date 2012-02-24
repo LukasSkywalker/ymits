@@ -8,7 +8,7 @@
     xmlns:toolkit="clr-namespace:Microsoft.Phone.Controls;assembly=Microsoft.Phone.Controls.Toolkit"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
-    mc:Ignorable="d" d:DesignWidth="480" d:DesignHeight="768" 
+    mc:Ignorable="d" d:DesignWidth="480" d:DesignHeight="696" 
     FontFamily="{StaticResource PhoneFontFamilyNormal}"
     FontSize="{StaticResource PhoneFontSizeNormal}"
     Foreground="{StaticResource PhoneForegroundBrush}"
@@ -77,7 +77,7 @@
                     </ListBox>
                 </StackPanel>
             </controls:PivotItem>
-            <!--<controls:PivotItem Header="playlist" Visibility="Collapsed" x:Name="playlistItem">
+            <controls:PivotItem Header="playlist" Visibility="Collapsed" x:Name="playlistItem">
                 <Grid x:Name="playlistContentPanel" Grid.Row="1" Margin="12,0,12,100" Height="560">
                     <ListBox Name="PlaylistElement" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
                         <ListBox.ItemTemplate>
@@ -102,7 +102,7 @@
                         </ListBox.ItemTemplate>  
                     </ListBox>
                 </Grid>
-            </controls:PivotItem>-->
+            </controls:PivotItem>
 
             <!--<controls:PivotItem Header="library" Visibility="Collapsed" x:Name="libraryItem">
                     <ListBox Name="LibraryElement">
@@ -169,12 +169,12 @@
             </controls:PivotItem>-->
         </controls:Pivot>
     </Grid>
-    <!--<phone:PhoneApplicationPage.ApplicationBar>
+    <phone:PhoneApplicationPage.ApplicationBar>
          <shell:ApplicationBar IsVisible="True" IsMenuEnabled="False" x:Name="AppBar">
             <shell:ApplicationBarIconButton IconUri="/Images/appbar.transport.rew.rest.png" Text="previous" Click="prevButton_Click"/>
             <shell:ApplicationBarIconButton IconUri="/Images/appbar.transport.play.rest.png" Text="play" Click="playButton_Click"/>
             <shell:ApplicationBarIconButton IconUri="/Images/appbar.transport.ff.rest.png" Text="next" Click="nextButton_Click"/>
             <shell:ApplicationBarIconButton IconUri="/Images/appbar.transport.down.rest.png" Text="settings" Click="downButton_Click"/>
         </shell:ApplicationBar>
-    </phone:PhoneApplicationPage.ApplicationBar>-->
+    </phone:PhoneApplicationPage.ApplicationBar>
 </phone:PhoneApplicationPage>
