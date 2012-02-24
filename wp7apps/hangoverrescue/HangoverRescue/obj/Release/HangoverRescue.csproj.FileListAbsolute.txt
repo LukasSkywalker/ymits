@@ -17,3 +17,4 @@ C:\Users\Lukas\Documents\Programmieren\WP7\HangoverRescue\HangoverRescue\obj\Rel
 C:\Users\Lukas\Documents\Programmieren\WP7\HangoverRescue\HangoverRescue\obj\Release\HangoverRescue.dll
 C:\Users\Lukas\Documents\Programmieren\WP7\HangoverRescue\HangoverRescue\obj\Release\HangoverRescue.pdb
 C:\Users\Lukas\Documents\Programmieren\WP7\HangoverRescue\HangoverRescue\obj\Release\XapCacheFile.xml
+C:\Users\Lukas\Documents\Programmieren\WP7\HangoverRescue\HangoverRescue\obj\Release\Settings.g.i.cs

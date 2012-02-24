@@ -1,9 +1,12 @@
-﻿using Microsoft.Phone.Controls.Maps;
+﻿using System.IO.IsolatedStorage;
+using Microsoft.Phone.Controls.Maps;
 using System;
 using Microsoft.Phone.UserData;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using Microsoft.Phone.Tasks;
+using System.Windows.Navigation;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Documents;
@@ -20,7 +23,8 @@ namespace HangoverRescue
     public partial class MainPage : PhoneApplicationPage
     {
         GeoCoordinateWatcher watcher;
-
+        GeoCoordinate coord;
+        String address;
 
 
         // Constructor
@@ -156,6 +160,8 @@ namespace HangoverRescue
                 point.Latitude = lat;
                 point.Longitude = lon;
 
+                coord = new GeoCoordinate(lat, lon);
+
                 reverseGeocodeRequest.Location = point;
 
                 // Make the reverse geocode request
@@ -199,6 +205,41 @@ namespace HangoverRescue
         private void stopLocationButton_Click( object sender, RoutedEventArgs e )
         {
             watcher.Stop();
+        }
+
+        private void button2_Click( object sender, RoutedEventArgs e )
+        {
+            address = getAddress();
+            if(address == "")
+            {
+                NavigationService.Navigate(new Uri("/Settings.xaml", UriKind.Relative));
+            }
+            else
+            {
+
+                BingMapsDirectionsTask Direction = new BingMapsDirectionsTask();
+                LabeledMapLocation start = new LabeledMapLocation();
+                start.Location = coord;
+                LabeledMapLocation End = new LabeledMapLocation(getAddress(), null);
+                Direction.Start = start;
+                Direction.End = End;
+                Direction.Show();
+            }
+        }
+
+        public String getAddress() {
+            var settings = IsolatedStorageSettings.ApplicationSettings;
+            if(!settings.Contains("address")){
+                return "";
+            }
+            String address;
+            settings.TryGetValue<String>("address", out address);
+            return address;
+        }
+
+        private void button3_Click( object sender, RoutedEventArgs e )
+        {
+            NavigationService.Navigate(new Uri("/Settings.xaml", UriKind.Relative));
         }
     }
 }
