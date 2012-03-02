@@ -208,6 +208,24 @@ namespace AudioPlaybackAgent1
             if(playlist.Count > position && position >= 0)
             {
                 String[] item = playlist[position];
+                String url = item[2];
+                System.Diagnostics.Debug.WriteLine(url);
+                if(!url.StartsWith("http")){
+                    try
+                    {
+                        using(IsolatedStorageFile myIsolatedStorage = IsolatedStorageFile.GetUserStoreForApplication())
+                        {
+                            if(!myIsolatedStorage.FileExists(url))
+                            {
+                                System.Diagnostics.Debug.WriteLine("File not found...");
+                                return new AudioTrack(null, null, null, null, null);
+                            }
+                        }
+                    }
+                    catch(Exception e) {
+                        System.Diagnostics.Debug.WriteLine(e.Message);
+                    }
+                }
                 return new AudioTrack(new Uri(item[2],UriKind.RelativeOrAbsolute), item[1], item[0], null, null);
 
             }
