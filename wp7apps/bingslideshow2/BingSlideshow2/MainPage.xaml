@@ -22,7 +22,7 @@
             <!--Pivot item one-->
             <controls:PivotItem>
                 <Grid x:Name="ContentPanel" Margin="8,4,12,12">
-                    <TextBlock Height="30" HorizontalAlignment="Left" Margin="24,100,0,0" Name="TextBlock1" Text="Search Bing" VerticalAlignment="Top" Width="111" />
+                    <TextBlock Height="30" HorizontalAlignment="Left" Margin="24,100,0,0" Name="TextBlock1" Text="Search Images" VerticalAlignment="Top" Width="135" />
                     <TextBox Height="72" HorizontalAlignment="Left" Margin="6,122,0,0" Name="TextBox1" Text="" VerticalAlignment="Top" Width="500" />
                     <ProgressBar IsIndeterminate="False" x:Name="queryProgress" Margin="6,105,0,0" Visibility="Collapsed" />
                     <Button Content="Search" Height="72" HorizontalAlignment="Left" Margin="506,122,0,0" Name="Button1" VerticalAlignment="Top" Width="160" Click="Button1_Click" />

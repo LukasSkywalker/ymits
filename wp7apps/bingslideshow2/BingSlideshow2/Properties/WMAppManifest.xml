@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Deployment xmlns="http://schemas.microsoft.com/windowsphone/2009/deployment" AppPlatformVersion="7.1">
-  <App xmlns="" ProductID="{fbfda928-a144-4311-a009-7e72cf4e4645}" Title="BingSlideshow" RuntimeType="Silverlight" Version="1.0.0.0" Genre="apps.normal" Author="BingSlideshow2 author" Description="Sample description" Publisher="BingSlideshow2">
+  <App xmlns="" ProductID="{fbfda928-a144-4311-a009-7e72cf4e4645}" Title="WebSlideshow" RuntimeType="Silverlight" Version="1.0.0.0" Genre="apps.normal" Author="BingSlideshow2 author" Description="Sample description" Publisher="BingSlideshow2">
     <IconPath IsRelative="true" IsResource="false">BS_62.png</IconPath>
     <Capabilities>
       <Capability Name="ID_CAP_GAMERSERVICES" />
@@ -26,7 +26,7 @@
         <TemplateType5>
           <BackgroundImageURI IsRelative="true" IsResource="false">BS_173.png</BackgroundImageURI>
           <Count>0</Count>
-          <Title>BingSlideshow</Title>
+          <Title>WebSlideshow</Title>
         </TemplateType5>
       </PrimaryToken>
     </Tokens>

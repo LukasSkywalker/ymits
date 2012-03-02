@@ -40,27 +40,13 @@ namespace AudioPlaybackAgent1
         }
 
         public static void playAtPosition( int position, BackgroundAudioPlayer player ) {
-            updatePlaylist();
-            if(_playList.Count > position && position >= 0)
-            {
-                System.Diagnostics.Debug.WriteLine("AudioPlayer.cs:playAtPosition ___ position exists: "+position);
-                if(_playList[position] != null)
-                {
-                    System.Diagnostics.Debug.WriteLine("AudioPlayer.cs:playAtPosition ___ index is not null: " + position);
-                    System.Diagnostics.Debug.WriteLine("AudioPlayer.cs:playAtPosition ___ Starting playback...");
-                    player.Track = _playList[position];
-                    //The PlayStateChangedEventHandler will be called as soon as the track is loaded
-                    currentTrackNumber = position;
-                }
-                else
-                {
-                    System.Diagnostics.Debug.WriteLine("AudioPlayer.cs:playAtPosition ___ index is null: " + position);
-                    System.Diagnostics.Debug.WriteLine("AudioPlayer.cs:playAtPosition ___ trying next index: " + position + 1);
-                    playAtPosition(position+1, player);
-                }
+            if(playlistHasIndex(position)) { 
+                System.Diagnostics.Debug.WriteLine("AudioPlayer.cs:playAtPosition ___ Starting playback...");
+                player.Track =  getAudioTrackAt(position);
+                //The PlayStateChangedEventHandler will be called as soon as the track is loaded
+                currentTrackNumber = position;
             }
             else {
-                System.Diagnostics.Debug.WriteLine("AudioPlayer.cs:playAtPosition ___ position out of _playlist bounds: "+position);
                 System.Diagnostics.Debug.WriteLine("AudioPlayer.cs:playAtPosition ___ trying index 0");
                 playAtPosition(0, player);
             }
@@ -142,7 +128,7 @@ namespace AudioPlaybackAgent1
 
         protected override void OnUserAction(BackgroundAudioPlayer player, AudioTrack track, UserAction action, object param)
         {
-            updatePlaylist();
+            //updatePlaylist(currentTrackNumber+1);
             switch (action)
             {
                 case UserAction.Play:
@@ -215,17 +201,14 @@ namespace AudioPlaybackAgent1
 
         }
 
-        private static List<String[]> getFromPlaylist()
-        {
-            //mut.WaitOne();
+        private static AudioTrack getAudioTrackAt(int position){
             var settings = IsolatedStorageSettings.ApplicationSettings;
             if(settings.Contains("playlist"))
             {
                 List<String[]> items;
                 if(settings.TryGetValue<List<String[]>>("playlist", out items))
                 {
-                    //mut.ReleaseMutex();
-                    return items;
+                    return new AudioTrack(new Uri(items[position][2]), items[position][1], items[position][0], null, null);
                 }
                 else
                 {
@@ -235,22 +218,48 @@ namespace AudioPlaybackAgent1
             }
             else
             {
-                //mut.ReleaseMutex();
-                return (new List<String[]>());
+                return null;
             }
-
         }
 
-        private static void updatePlaylist() {
-            List<string[]> strings = getFromPlaylist();
-            List<AudioTrack> trackList = new List<AudioTrack>();
-            foreach(var item in strings)
+        private static bool playlistHasIndex( int position ) {
+            List<String[]> items2;
+            var settings = IsolatedStorageSettings.ApplicationSettings;
+            if(settings.TryGetValue<List<String[]>>("playlist", out items2))
             {
-                trackList.Add(new AudioTrack(new Uri(item[2]), item[1], item[0], null, null));
+                System.Diagnostics.Debug.WriteLine("--items--- " + items2.Count);
             }
-            _playList.Clear();
-            _playList = new List<AudioTrack>();
-            _playList = trackList;
+            if(position < 0)
+            {
+                System.Diagnostics.Debug.WriteLine("AudioPlayer.cs:playlistHasIndex ___ position<0: position is "+position);
+                return false;
+            }
+            if(settings.Contains("playlist"))
+            {
+                List<String[]> items;
+                if(settings.TryGetValue<List<String[]>>("playlist", out items))
+                {
+                    System.Diagnostics.Debug.WriteLine("### "+items.Count);
+                    if(items.Count > position)
+                    {
+                        System.Diagnostics.Debug.WriteLine("AudioPlayer.cs:playlistHasIndex ___ position exists: " + position);
+                        return true;
+                    }
+                    else {
+                        System.Diagnostics.Debug.WriteLine("AudioPlayer.cs:playlistHasIndex ___ itemScount>position: count is "+items.Count+", position is " + position);
+                        return false;
+                    }
+                }
+                else
+                {
+                    //mut.ReleaseMutex();
+                    throw new IsolatedStorageException("Could not get Playlist from ApplicationSettings");
+                }
+            }
+            else
+            {
+                throw new IsolatedStorageException("Could not get Playlist from ApplicationSettings");
+            }
         }
 
         private bool isTrial() {

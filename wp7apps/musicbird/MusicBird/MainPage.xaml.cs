@@ -163,7 +163,13 @@ namespace MusicBird
 
             if(Page1.read("albumart"))
             {
-                getAlbumArt(BackgroundAudioPlayer.Instance.Track.Artist + " " + BackgroundAudioPlayer.Instance.Track.Title);
+                try
+                {
+                    getAlbumArt(BackgroundAudioPlayer.Instance.Track.Artist + " " + BackgroundAudioPlayer.Instance.Track.Title);
+                }
+                catch(Exception e) {
+                    System.Diagnostics.Debug.WriteLine(e.Message);
+                }
             }
         }
 
@@ -183,11 +189,26 @@ namespace MusicBird
 
             if (BackgroundAudioPlayer.Instance.Track != null)
             {
-                string[] arguments = new string[] { BackgroundAudioPlayer.Instance.Track.Title, BackgroundAudioPlayer.Instance.Track.Artist };
+                String artist="";
+                String title = "";
+                try
+                {
+                    title = BackgroundAudioPlayer.Instance.Track.Title;
+                }
+                catch(Exception ex) { }
+                try{
+                    artist = BackgroundAudioPlayer.Instance.Track.Artist;
+                }catch(Exception ex){}
+
+                string[] arguments = new string[] { title, artist };
                 txtTrack.Text = string.Format("Track: {1} - {0}", arguments);
 
                 // Set the current position on the ProgressBar.
-                positionIndicator.Value = BackgroundAudioPlayer.Instance.Position.TotalSeconds;
+                try
+                {
+                    positionIndicator.Value = BackgroundAudioPlayer.Instance.Position.TotalSeconds;
+                }
+                catch(Exception ex) { System.Diagnostics.Debug.WriteLine(ex.Message); }
 
                 // Update the current playback position.
                 TimeSpan position = new TimeSpan();
@@ -475,7 +496,7 @@ namespace MusicBird
             addToPlaylist(selectedTrack.artist, selectedTrack.title, selectedTrack.url);
             updatePlaylist();
             
-            AudioPlaybackAgent1.AudioPlayer.mut.WaitOne();
+            //AudioPlaybackAgent1.AudioPlayer.mut.WaitOne();
             var settings = IsolatedStorageSettings.ApplicationSettings;
             List<String[]> oldItems = getFromPlaylist();
             int itemsCount = oldItems.Count;
@@ -711,7 +732,7 @@ namespace MusicBird
                 AudioTrack current = new AudioTrack(new Uri(selectedTrack.url, UriKind.RelativeOrAbsolute), selectedTrack.artist, selectedTrack.title, "", null);
                 String[] current2 = new String[] { selectedTrack.artist, selectedTrack.title, selectedTrack.url };
 
-                AudioPlaybackAgent1.AudioPlayer.mut.WaitOne();
+                //AudioPlaybackAgent1.AudioPlayer.mut.WaitOne();
                 var settings = IsolatedStorageSettings.ApplicationSettings;
                 List<String[]> oldItems = getFromPlaylist();
                 
@@ -1071,15 +1092,23 @@ namespace MusicBird
 
             private void addToPlaylist( String artist, String title, String url )
             {
-                AudioPlaybackAgent1.AudioPlayer.mut.WaitOne();
                 var settings = IsolatedStorageSettings.ApplicationSettings;
+
+                List<String[]> items;
+                if(settings.TryGetValue<List<String[]>>("playlist", out items)) {
+                    System.Diagnostics.Debug.WriteLine("--before-- "+items.Count);
+                }
+
                 String[] newItem = new String[]{artist, title, url};
                 List<String[]> oldItems = getFromPlaylist();
                 oldItems.Add(newItem);
                 settings.Remove("playlist");
                 settings.Add("playlist", oldItems);
                 settings.Save();
-                AudioPlaybackAgent1.AudioPlayer.mut.ReleaseMutex();
+                if(settings.TryGetValue<List<String[]>>("playlist", out items))
+                {
+                    System.Diagnostics.Debug.WriteLine("--after--- " + items.Count);
+                }
             }
 
             private List<String[]> getFromPlaylist()
@@ -1106,6 +1135,12 @@ namespace MusicBird
 
             private void removeFromPlaylist( object item ) {
                 var settings = IsolatedStorageSettings.ApplicationSettings;
+
+                List<String[]> items2;
+                if(settings.TryGetValue<List<String[]>>("playlist", out items2))
+                {
+                    System.Diagnostics.Debug.WriteLine("--before-- " + items2.Count);
+                }
                 if(settings.Contains("playlist")) { 
                     List<String[]> items;
                     if(settings.TryGetValue<List<String[]>>("playlist", out items))
@@ -1123,6 +1158,11 @@ namespace MusicBird
                         settings.Add("playlist", items);
                         settings.Save();
                     }
+                }
+                List<String[]> items3;
+                if(settings.TryGetValue<List<String[]>>("playlist", out items3))
+                {
+                    System.Diagnostics.Debug.WriteLine("--after--- " + items3.Count);
                 }
             }
 
