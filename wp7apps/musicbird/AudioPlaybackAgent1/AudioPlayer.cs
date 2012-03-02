@@ -1,10 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO.IsolatedStorage;
+using System.IO;
 using System.Threading;
 using System.Windows;
 using Microsoft.Phone.BackgroundAudio;
 using Microsoft.Phone.Marketplace;
+using System.Xml;
+using System.Xml.Serialization;
 
 namespace AudioPlaybackAgent1
 {
@@ -40,16 +43,14 @@ namespace AudioPlaybackAgent1
         }
 
         public static void playAtPosition( int position, BackgroundAudioPlayer player ) {
-            if(playlistHasIndex(position)) { 
-                System.Diagnostics.Debug.WriteLine("AudioPlayer.cs:playAtPosition ___ Starting playback...");
-                player.Track =  getAudioTrackAt(position);
-                //The PlayStateChangedEventHandler will be called as soon as the track is loaded
-                currentTrackNumber = position;
-            }
-            else {
-                System.Diagnostics.Debug.WriteLine("AudioPlayer.cs:playAtPosition ___ trying index 0");
-                playAtPosition(0, player);
-            }
+            List<string[]> playlist = readPlaylist();
+            if(playlist.Count <= position) position = 0;
+            if(position < 0) position = playlist.Count-1;
+            
+            System.Diagnostics.Debug.WriteLine("AudioPlayer.cs:playAtPosition _______ Starting playback...");
+            player.Track =  getAudioTrackAt(position);
+            //The PlayStateChangedEventHandler will be called as soon as the track is loaded
+            currentTrackNumber = position;
         }
 
         /// Code to execute on Unhandled Exceptions
@@ -202,63 +203,42 @@ namespace AudioPlaybackAgent1
         }
 
         private static AudioTrack getAudioTrackAt(int position){
-            var settings = IsolatedStorageSettings.ApplicationSettings;
-            if(settings.Contains("playlist"))
+            System.Diagnostics.Debug.WriteLine("AudioPlayer.cs:getAudioTrackAt ______ Playing at position " + position);
+            List<string[]> playlist = readPlaylist();
+            if(playlist.Count > position && position >= 0)
             {
-                List<String[]> items;
-                if(settings.TryGetValue<List<String[]>>("playlist", out items))
-                {
-                    return new AudioTrack(new Uri(items[position][2]), items[position][1], items[position][0], null, null);
-                }
-                else
-                {
-                    //mut.ReleaseMutex();
-                    throw new IsolatedStorageException("Could not get Playlist from ApplicationSettings");
-                }
+                String[] item = playlist[position];
+                return new AudioTrack(new Uri(item[2]), item[1], item[0], null, null);
+
             }
             else
             {
-                return null;
+                throw new Exception("Damn wrong array index in getAudioTrackAt()...");
             }
         }
 
-        private static bool playlistHasIndex( int position ) {
-            List<String[]> items2;
-            var settings = IsolatedStorageSettings.ApplicationSettings;
-            if(settings.TryGetValue<List<String[]>>("playlist", out items2))
+        private  static List<String[]> readPlaylist()
+        {
+            try
             {
-                System.Diagnostics.Debug.WriteLine("--items--- " + items2.Count);
-            }
-            if(position < 0)
-            {
-                System.Diagnostics.Debug.WriteLine("AudioPlayer.cs:playlistHasIndex ___ position<0: position is "+position);
-                return false;
-            }
-            if(settings.Contains("playlist"))
-            {
-                List<String[]> items;
-                if(settings.TryGetValue<List<String[]>>("playlist", out items))
+                using(IsolatedStorageFile myIsolatedStorage = IsolatedStorageFile.GetUserStoreForApplication())
                 {
-                    System.Diagnostics.Debug.WriteLine("### "+items.Count);
-                    if(items.Count > position)
+                    if(!myIsolatedStorage.FileExists("Playlist.xml"))
                     {
-                        System.Diagnostics.Debug.WriteLine("AudioPlayer.cs:playlistHasIndex ___ position exists: " + position);
-                        return true;
+                        return new List<string[]>();
                     }
-                    else {
-                        System.Diagnostics.Debug.WriteLine("AudioPlayer.cs:playlistHasIndex ___ itemScount>position: count is "+items.Count+", position is " + position);
-                        return false;
+                    using(IsolatedStorageFileStream stream = myIsolatedStorage.OpenFile("Playlist.xml", FileMode.Open))
+                    {
+                        XmlSerializer serializer = new XmlSerializer(typeof(List<String[]>));
+                        List<String[]> data = (List<String[]>)serializer.Deserialize(stream);
+                        return data;
                     }
-                }
-                else
-                {
-                    //mut.ReleaseMutex();
-                    throw new IsolatedStorageException("Could not get Playlist from ApplicationSettings");
                 }
             }
-            else
+            catch
             {
-                throw new IsolatedStorageException("Could not get Playlist from ApplicationSettings");
+                //add some code here
+                throw new IsolatedStorageException("Could not get Playlist file from UserStore");
             }
         }
 
@@ -269,7 +249,7 @@ namespace AudioPlaybackAgent1
             {
                 settings.TryGetValue<bool>("isTrial", out isTrial);
             }
-            System.Diagnostics.Debug.WriteLine("isTrial in AP is "+isTrial.ToString());
+            System.Diagnostics.Debug.WriteLine("AudioPlayer.cs:isTrial ______________ isTrial: "+isTrial.ToString());
             return isTrial;
         }
 

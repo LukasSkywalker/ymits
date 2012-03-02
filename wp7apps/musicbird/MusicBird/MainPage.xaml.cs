@@ -1,4 +1,5 @@
-﻿using System;
+﻿
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.IO.IsolatedStorage;
@@ -16,6 +17,8 @@ using Microsoft.Phone.BackgroundTransfer;
 using Microsoft.Phone.Controls;
 using Microsoft.Phone.Shell;
 using Microsoft.Phone.Tasks;
+using System.Xml;
+using System.Xml.Serialization;
 
 
 
@@ -99,7 +102,7 @@ namespace MusicBird
         /// <param name="e"></param>
         void Instance_PlayStateChanged(object sender, EventArgs e)
         {
-            if(getFromPlaylist().Count == 0) {
+            if(readPlaylist().Count == 0) {
                 UpdateButtons(false, null, false);
             }
 
@@ -498,7 +501,7 @@ namespace MusicBird
             
             //AudioPlaybackAgent1.AudioPlayer.mut.WaitOne();
             var settings = IsolatedStorageSettings.ApplicationSettings;
-            List<String[]> oldItems = getFromPlaylist();
+            List<String[]> oldItems = readPlaylist();
             int itemsCount = oldItems.Count;
 
             AudioPlaybackAgent1.AudioPlayer.playAtPosition(itemsCount-1,BackgroundAudioPlayer.Instance);
@@ -697,9 +700,8 @@ namespace MusicBird
             }
 
             private void updatePlaylist() {
-                List<String[]> trackList = new List<String[]>();
                 List<TrackListItem> tList = new List<TrackListItem>();
-                trackList = getFromPlaylist();
+                List<String[]> trackList = readPlaylist();
                 foreach(var item in trackList){
                     tList.Add(new TrackListItem(item[0], item[1], item[2]));
                 }
@@ -732,9 +734,7 @@ namespace MusicBird
                 AudioTrack current = new AudioTrack(new Uri(selectedTrack.url, UriKind.RelativeOrAbsolute), selectedTrack.artist, selectedTrack.title, "", null);
                 String[] current2 = new String[] { selectedTrack.artist, selectedTrack.title, selectedTrack.url };
 
-                //AudioPlaybackAgent1.AudioPlayer.mut.WaitOne();
-                var settings = IsolatedStorageSettings.ApplicationSettings;
-                List<String[]> oldItems = getFromPlaylist();
+                List<string[]> oldItems = readPlaylist();
                 
                 int counter = -1;
 
@@ -1092,77 +1092,70 @@ namespace MusicBird
 
             private void addToPlaylist( String artist, String title, String url )
             {
-                var settings = IsolatedStorageSettings.ApplicationSettings;
-
-                List<String[]> items;
-                if(settings.TryGetValue<List<String[]>>("playlist", out items)) {
-                    System.Diagnostics.Debug.WriteLine("--before-- "+items.Count);
-                }
-
-                String[] newItem = new String[]{artist, title, url};
-                List<String[]> oldItems = getFromPlaylist();
-                oldItems.Add(newItem);
-                settings.Remove("playlist");
-                settings.Add("playlist", oldItems);
-                settings.Save();
-                if(settings.TryGetValue<List<String[]>>("playlist", out items))
-                {
-                    System.Diagnostics.Debug.WriteLine("--after--- " + items.Count);
-                }
+                List<String[]> pl = readPlaylist();
+                pl.Add(new String[]{artist, title, url});
+                writePlaylist(pl);
             }
 
             private List<String[]> getFromPlaylist()
             {
-                var settings = IsolatedStorageSettings.ApplicationSettings;
-                if(settings.Contains("playlist"))
-                {
-
-                    List<String[]> items;
-                    if(settings.TryGetValue<List<String[]>>("playlist", out items))
-                    {
-                        return items;
-                    }
-                    else
-                    {
-                        throw new IsolatedStorageException("Could not get Playlist from ApplicationSettings");
-                    }
-                }
-                else { 
-                    return (new List<String[]>());
-                }
-                
+                return readPlaylist();
             }
 
             private void removeFromPlaylist( object item ) {
-                var settings = IsolatedStorageSettings.ApplicationSettings;
-
-                List<String[]> items2;
-                if(settings.TryGetValue<List<String[]>>("playlist", out items2))
-                {
-                    System.Diagnostics.Debug.WriteLine("--before-- " + items2.Count);
+                List<String[]> pl = readPlaylist();
+                if(item is int){
+                    int index = (int) item;
+                    pl.RemoveAt(index);
                 }
-                if(settings.Contains("playlist")) { 
-                    List<String[]> items;
-                    if(settings.TryGetValue<List<String[]>>("playlist", out items))
+                else if(item is string[])
+                {
+                    string[] part = (string[])item;
+                    pl.Remove(part);
+                }
+                writePlaylist(pl);
+            }
+
+            private void writePlaylist( List<String[]> playlist ) {
+                XmlWriterSettings xmlWriterSettings = new XmlWriterSettings();
+                xmlWriterSettings.Indent = true;
+
+                using(IsolatedStorageFile myIsolatedStorage = IsolatedStorageFile.GetUserStoreForApplication())
+                {
+                    if(myIsolatedStorage.FileExists("Playlist.xml")) {
+                        myIsolatedStorage.DeleteFile("Playlist.xml");
+                    }
+                    using(IsolatedStorageFileStream stream = myIsolatedStorage.OpenFile("Playlist.xml", FileMode.Create))
                     {
-                        if(item is int)
+                        XmlSerializer serializer = new XmlSerializer(typeof(List<String[]>));
+                        using(XmlWriter xmlWriter = XmlWriter.Create(stream, xmlWriterSettings))
                         {
-                            int index = (int) item;
-                            items.RemoveAt(index);
-                        }else if(item is string[]){
-                            string[] part = (string[]) item;
-                            items.Remove(part);
+                            serializer.Serialize(xmlWriter, playlist);
                         }
-                        settings.Remove("playlist");
-                        settings.Save();
-                        settings.Add("playlist", items);
-                        settings.Save();
                     }
                 }
-                List<String[]> items3;
-                if(settings.TryGetValue<List<String[]>>("playlist", out items3))
+            }
+
+            private List<String[]> readPlaylist() {
+                try
                 {
-                    System.Diagnostics.Debug.WriteLine("--after--- " + items3.Count);
+                    using(IsolatedStorageFile myIsolatedStorage = IsolatedStorageFile.GetUserStoreForApplication())
+                    {
+                        if(!myIsolatedStorage.FileExists("Playlist.xml")) {
+                            return new List<string[]>();
+                        }
+                        using(IsolatedStorageFileStream stream = myIsolatedStorage.OpenFile("Playlist.xml", FileMode.Open))
+                        {
+                            XmlSerializer serializer = new XmlSerializer(typeof(List<String[]>));
+                            List<String[]> data = (List<String[]>)serializer.Deserialize(stream);
+                            return data;
+                        }
+                    }
+                }
+                catch
+                {
+                    //add some code here
+                    throw new IsolatedStorageException("Could not get Playlist file from UserStore"); 
                 }
             }
 
