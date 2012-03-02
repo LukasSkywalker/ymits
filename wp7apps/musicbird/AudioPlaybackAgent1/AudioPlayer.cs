@@ -208,7 +208,7 @@ namespace AudioPlaybackAgent1
             if(playlist.Count > position && position >= 0)
             {
                 String[] item = playlist[position];
-                return new AudioTrack(new Uri(item[2]), item[1], item[0], null, null);
+                return new AudioTrack(new Uri(item[2],UriKind.RelativeOrAbsolute), item[1], item[0], null, null);
 
             }
             else

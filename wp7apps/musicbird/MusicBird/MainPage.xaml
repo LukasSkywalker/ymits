@@ -104,15 +104,15 @@
                 </Grid>
             </controls:PivotItem>
 
-            <!--<controls:PivotItem Header="library" Visibility="Collapsed" x:Name="libraryItem">
+            <controls:PivotItem Header="library" Visibility="Collapsed" x:Name="libraryItem">
                     <ListBox Name="LibraryElement">
                         <ListBox.ItemTemplate>
                             <DataTemplate>
                                 <Button Click="libraryItem_Click">
                                     <toolkit:ContextMenuService.ContextMenu>
                                         <toolkit:ContextMenu IsZoomEnabled="False">
-                                            <toolkit:MenuItem Header="play" Tag="play" Click="libraryItem_Hold" />
-                                            <toolkit:MenuItem Header="add to playlist" Tag="add" Click="libraryItem_Hold" />
+                                        <toolkit:MenuItem Header="play" Tag="play" Click="libraryItem_Hold" />
+                                        <toolkit:MenuItem Header="add to playlist" Tag="add" Click="libraryItem_Hold" />
                                             <toolkit:MenuItem Header="delete" Tag="delete" Click="libraryItem_Hold" />
                                         </toolkit:ContextMenu>
                                     </toolkit:ContextMenuService.ContextMenu>
@@ -128,8 +128,8 @@
                             </DataTemplate>
                         </ListBox.ItemTemplate>
                     </ListBox>
-            </controls:PivotItem>-->
-            <!--<controls:PivotItem Header="downloads" Visibility="Collapsed" x:Name="downloadItem">
+            </controls:PivotItem>
+            <controls:PivotItem Header="downloads" Visibility="Collapsed" x:Name="downloadItem">
                 <Grid x:Name="DownloadPanel" Grid.Row="1" >
                     <TextBlock Text="You have no running Downloads." Name="EmptyTextBlock" Visibility="Collapsed"/>
                     <ListBox Name="TransferListBox">
@@ -166,7 +166,7 @@
                         </ListBox.ItemTemplate>
                     </ListBox>
                 </Grid>
-            </controls:PivotItem>-->
+            </controls:PivotItem>
         </controls:Pivot>
     </Grid>
     <phone:PhoneApplicationPage.ApplicationBar>

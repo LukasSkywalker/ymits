@@ -28,7 +28,7 @@ namespace MusicBird
     {
         public static bool IsTrial{get; private set;}
 
-        //background transfer object container
+        // background transfer object container
         IEnumerable<BackgroundTransferRequest> transferRequests;
 
         // Booleans for tracking if any transfers are waiting for user action.
@@ -56,8 +56,6 @@ namespace MusicBird
         {
             InitializeComponent();
 
-            // Set the data context of the listbox control to the sample data
-            //DataContext = App.ViewModel;
             this.Loaded += new RoutedEventHandler(MainPage_Loaded);
         }
 
@@ -86,8 +84,6 @@ namespace MusicBird
 
             Instance_PlayStateChanged(null, null);
 
-            //DEBUG IsolatedStorageExplorer.Explorer.Start("localhost");
-
             showNagScreen();
 
             updatePlaylist();
@@ -114,7 +110,6 @@ namespace MusicBird
                     // Update the UI.
                     positionIndicator.IsIndeterminate = false;
                     positionIndicator.Maximum = BackgroundAudioPlayer.Instance.Track.Duration.TotalSeconds;
-                    //positionSlider.Maximum = BackgroundAudioPlayer.Instance.Track.Duration.TotalSeconds;
                     UpdateButtons(true, false, true);
                     UpdateState(null, null);
 
@@ -198,10 +193,11 @@ namespace MusicBird
                 {
                     title = BackgroundAudioPlayer.Instance.Track.Title;
                 }
-                catch(Exception ex) { }
+                catch(Exception ex) { System.Diagnostics.Debug.WriteLine(ex.Message); }
                 try{
                     artist = BackgroundAudioPlayer.Instance.Track.Artist;
-                }catch(Exception ex){}
+                }
+                catch(Exception ex) { System.Diagnostics.Debug.WriteLine(ex.Message); }
 
                 string[] arguments = new string[] { title, artist };
                 txtTrack.Text = string.Format("Track: {1} - {0}", arguments);
@@ -260,7 +256,6 @@ namespace MusicBird
         /// <param name="e"></param>
         private void playButton_Click(object sender, EventArgs e)
         {
-            //AudioPlaybackAgent1.AudioPlayer.isPlaybackLimitExceeded();
             if (PlayState.Playing == BackgroundAudioPlayer.Instance.PlayerState)
             {
                 BackgroundAudioPlayer.Instance.Pause();
@@ -372,7 +367,6 @@ namespace MusicBird
                 // Match the regular expression pattern against a text string.
                 Match m = pattern.Match(s);
                 Match n = pattern2.Match(s);
-                //Dim urls(m.Length) As String
                 int matchCount = 0;
                 
                 List<TrackListItem> trackList = new List<TrackListItem>();
@@ -386,7 +380,6 @@ namespace MusicBird
                     string[] data = getArtistAndTitle(name);
                     TrackListItem item = new TrackListItem(data[0], data[1], g.ToString());
                     trackList.Add(item);
-                    //urls.Push(g.ToString());
                     matchCount += 1;
                     m = m.NextMatch();
                     n = n.NextMatch();
@@ -416,27 +409,13 @@ namespace MusicBird
             String artist = "";
             String title = "";
 
-            string pattern = "^[0-9]{1,3}?\\.(\\s+)?";                     //replace leading track number (01. or 1. or 12. )
-            Regex rgx = new Regex(pattern);
-            name = rgx.Replace(name, "");
-
-            string pattern2 = "[0-9]{1,3}?[\\s]*-(\\s+)?";                 //replace leading track number (01- or 1 - or 12- )
-            Regex rgx2 = new Regex(pattern2);
-            name = rgx2.Replace(name, "");
-
-            string pattern3 = "(\\.wma|\\.mp3|\\.mid)";                        //replace file ext. (.mp3)
-            Regex rgx3 = new Regex(pattern3,RegexOptions.IgnoreCase);
-            name = rgx3.Replace(name, "");
-
-            string pattern4 = "\\([0-9]+[|\\.|-]?\\)";                  //replace number in brackets ((13.) (09) (11))
-            Regex rgx4 = new Regex(pattern4);
-            name = rgx4.Replace(name, "");
+            replaceNumbersAndExtension(name);
 
             name = HttpUtility.HtmlDecode(name);
 
             name = name.Trim();
 
-            int count = name.Length - name.Replace("-", "").Length+1;     //count parts of string separated by dash
+            int count = name.Length - name.Replace("-", "").Length+1;     // count parts of string separated by dash
 
             if (count == 1) {                                           // John Wayne Heaven
                 int len = name.Split((char)32).Length;                  // split at space
@@ -488,7 +467,38 @@ namespace MusicBird
             artist = artist.Trim();
             title = title.Trim();
 
+            artist = replaceNumbersAndExtension(artist);
+            title = replaceNumbersAndExtension(title);
+
+            artist = artist.Trim();
+            title = title.Trim();
+
             return new String[] { artist, title };
+        }
+
+        private string replaceNumbersAndExtension( string name ) {
+            string pattern = "^[0-9]{1,3}?\\.(\\s+)?";                     // replace leading track number (01. or 1. or 12. )
+            Regex rgx = new Regex(pattern);
+            name = rgx.Replace(name, "");
+
+            string pattern2 = "[0-9]{1,3}?[\\s]*-(\\s+)?";                 // replace leading track number (01- or 1 - or 12- )
+            Regex rgx2 = new Regex(pattern2);
+            name = rgx2.Replace(name, "");
+
+            string pattern3 = "(\\.wma|\\.mp3|\\.mid)";                        // replace file ext. (.mp3)
+            Regex rgx3 = new Regex(pattern3, RegexOptions.IgnoreCase);
+            name = rgx3.Replace(name, "");
+
+            string pattern4 = "\\([0-9]+[|\\.|-]?\\)";                  // replace number in brackets ((13.) (09) (11))
+            Regex rgx4 = new Regex(pattern4);
+            name = rgx4.Replace(name, "");
+
+            string pattern1 = "^[0-9]{1,3}(\\s+)?";                     // replace leading track number (01 or 1 or 12 )
+            Regex rgx1 = new Regex(pattern1);
+            name = rgx1.Replace(name, "");
+
+
+            return name;
         }
 
         private void trackItem_Click(object sender, RoutedEventArgs e)
@@ -499,8 +509,6 @@ namespace MusicBird
             addToPlaylist(selectedTrack.artist, selectedTrack.title, selectedTrack.url);
             updatePlaylist();
             
-            //AudioPlaybackAgent1.AudioPlayer.mut.WaitOne();
-            var settings = IsolatedStorageSettings.ApplicationSettings;
             List<String[]> oldItems = readPlaylist();
             int itemsCount = oldItems.Count;
 
@@ -512,17 +520,17 @@ namespace MusicBird
 
         private void trackItem_Hold(object sender, RoutedEventArgs e) {
             
-            //get selected Item
+            // get selected Item
             ListBoxItem selectedListBoxItem = getListBoxItem(sender);
             if (selectedListBoxItem == null)
             {
                 return;
             }
-            //get selected Track
+            // get selected Track
             TrackListItem selectedTrack = selectedListBoxItem.DataContext as TrackListItem;
             AudioTrack current = new AudioTrack(new Uri(selectedTrack.url, UriKind.RelativeOrAbsolute), selectedTrack.artist, selectedTrack.title, "", null);
 
-            //get selected Context menu item
+            // get selected Context menu item
             var menuItem = (MenuItem) sender;
             var tag = menuItem.Tag.ToString();
             switch (tag) { 
@@ -685,8 +693,8 @@ namespace MusicBird
                     BackgroundTransferService.Add(transferRequest);
                     transferRequest.TransferStatusChanged += new EventHandler<BackgroundTransferEventArgs>(transfer_TransferStatusChanged);
                     transferRequest.TransferProgressChanged += new EventHandler<BackgroundTransferEventArgs>(transfer_TransferProgressChanged);
-                    //Panorama.SelectedItem = downloadItem;
                     UpdateUI();
+                    Panorama.SelectedItem = downloadItem;
                 }
                 catch (InvalidOperationException ex)
                 {
@@ -721,10 +729,12 @@ namespace MusicBird
                         for (int i = 0; i < files.Length; i++)
                         {
                             LibraryItem item = new LibraryItem(files[i]);
-                            if(item.filename.IndexOf(".mp3") != -1)
-                            { trackList.Add(item); }
+                            if(item.filename.IndexOf(".mp3") == item.filename.Length-4)
+                            {
+                                trackList.Add(item);
+                            }
                         }
-                        //LibraryElement.ItemsSource = trackList;
+                        LibraryElement.ItemsSource = trackList;
                     }
                 } 
             }
@@ -761,11 +771,11 @@ namespace MusicBird
                     System.Diagnostics.Debug.WriteLine("Selected LB is null");
                     return;
                 }
-                //get selected Track
+                // get selected Track
                 TrackListItem selectedTrack = selectedListBoxItem.Content as TrackListItem;
                 AudioTrack current = new AudioTrack(new Uri(selectedTrack.url, UriKind.RelativeOrAbsolute), selectedTrack.artist, selectedTrack.title, "", null);
                 
-                //loop through items and check if item matches selectedItem (selectedIndex is not updated with context menu...)
+                // loop through items and check if item matches selectedItem (selectedIndex is not updated with context menu...)
                 int i = 0;
                 TrackListItem currentTrack = (PlaylistElement.ItemContainerGenerator.ContainerFromIndex(0) as ListBoxItem).Content as TrackListItem;
                 while (currentTrack != selectedTrack) {
@@ -774,7 +784,7 @@ namespace MusicBird
                 }
                 int selectedIndex = i;
 
-                //get selected Context menu item
+                // get selected Context menu item
                 var menuItem = (MenuItem)sender;
                 var tag = menuItem.Tag.ToString();
                 switch (tag)
@@ -782,6 +792,9 @@ namespace MusicBird
                     case "delete":
                         removeFromPlaylist(selectedIndex);
                         updatePlaylist();
+                        break;
+                    case "play":
+                        playlistItem_Click(sender, e);
                         break;
                     default:
                         break;
@@ -793,26 +806,37 @@ namespace MusicBird
             {
                 LibraryItem selectedTrack = (sender as FrameworkElement).DataContext as LibraryItem;
                 AudioTrack current = new AudioTrack(new Uri(selectedTrack.filename, UriKind.Relative), selectedTrack.filename, "", "", null);
-                
-                BackgroundAudioPlayer.Instance.Track = current;
-                addToPlaylist(selectedTrack.filename,"", selectedTrack.filename);
+
+                String[] name = getArtistAndTitle(selectedTrack.filename);
+
+                addToPlaylist(name[0] ,name[1], selectedTrack.filename);
+                updatePlaylist();
+
                 BackgroundAudioPlayer.Instance.Play();
                 updatePlaylist();
+               
+                List<String[]> oldItems = readPlaylist();
+                int itemsCount = oldItems.Count;
+
+                AudioPlaybackAgent1.AudioPlayer.playAtPosition(itemsCount - 1, BackgroundAudioPlayer.Instance);
+                Instance_PlayStateChanged(null, null);
+                positionIndicator.IsIndeterminate = true;
                 Panorama.SelectedItem = playerItem;
+
             }
 
-            /*private void libraryItem_Hold(object sender, RoutedEventArgs e)
+            private void libraryItem_Hold(object sender, RoutedEventArgs e)
             {
                 ListBoxItem selectedListBoxItem = LibraryElement.ItemContainerGenerator.ContainerFromItem((sender as MenuItem).DataContext) as ListBoxItem;
                 if (selectedListBoxItem == null)
                 {
                     return;
                 }
-                //get selected Track
+                // get selected Track
                 LibraryItem selectedTrack = selectedListBoxItem.DataContext as LibraryItem;
                 AudioTrack current = new AudioTrack(new Uri(selectedTrack.filename, UriKind.RelativeOrAbsolute), selectedTrack.filename, "", "", null);
 
-                //get selected Context menu item
+                // get selected Context menu item
                 var menuItem = (MenuItem)sender;
                 var tag = menuItem.Tag.ToString();
                 switch (tag)
@@ -829,7 +853,11 @@ namespace MusicBird
                         {
                             if (store.FileExists(selectedTrack.filename))
                             {
-                                store.DeleteFile(selectedTrack.filename);
+                                if(HttpUtility.UrlDecode(BackgroundAudioPlayer.Instance.Track.Source.ToString()).Equals(selectedTrack.filename)) {
+                                    MessageBox.Show("The track is currently played. Please try again later.");
+                                }else{
+                                    store.DeleteFile(selectedTrack.filename);    
+                                }
                             }
                             else {
                                 MessageBox.Show(selectedTrack.filename);
@@ -841,7 +869,7 @@ namespace MusicBird
                         break;
 
                 }
-            }*/
+            }
 
             private bool IsolatedStorageFileExists(string name)
             {
@@ -892,15 +920,15 @@ namespace MusicBird
                 // TextBlock. IF there are zero transfers, show the TextBlock.
                 if (transferRequests.Count<BackgroundTransferRequest>() > 0)
                 {
-                    //EmptyTextBlock.Visibility = Visibility.Collapsed;
+                    EmptyTextBlock.Visibility = Visibility.Collapsed;
                 }
                 else
                 {
-                    //EmptyTextBlock.Visibility = Visibility.Visible;
+                    EmptyTextBlock.Visibility = Visibility.Visible;
                 }
 
                 // Update the TransferListBox with the list of transfer requests.
-                //TransferListBox.ItemsSource = transferRequests;
+                TransferListBox.ItemsSource = transferRequests;
 
             }
 
@@ -989,6 +1017,7 @@ namespace MusicBird
                             }
 
                             updateLibrary();
+                            Panorama.SelectedItem = libraryItem;
                         }
                         else
                         {
@@ -1030,7 +1059,7 @@ namespace MusicBird
 
             void transfer_TransferProgressChanged(object sender, BackgroundTransferEventArgs e)
             {
-                System.Diagnostics.Debug.WriteLine("Downloaded " + e.Request.BytesReceived/e.Request.TotalBytesToReceive);
+                System.Diagnostics.Debug.WriteLine("Downloaded " + e.Request.BytesReceived/e.Request.TotalBytesToReceive*100+" %");
                 UpdateUI();
             }
 
@@ -1154,7 +1183,7 @@ namespace MusicBird
                 }
                 catch
                 {
-                    //add some code here
+                    // add some code here
                     throw new IsolatedStorageException("Could not get Playlist file from UserStore"); 
                 }
             }
