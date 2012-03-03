@@ -113,8 +113,9 @@
                                         <toolkit:ContextMenu IsZoomEnabled="False">
                                         <toolkit:MenuItem Header="play" Tag="play" Click="libraryItem_Hold" />
                                         <toolkit:MenuItem Header="add to playlist" Tag="add" Click="libraryItem_Hold" />
-                                            <toolkit:MenuItem Header="delete" Tag="delete" Click="libraryItem_Hold" />
-                                        </toolkit:ContextMenu>
+                                        <toolkit:MenuItem Header="properties" Tag="properties" Click="libraryItem_Hold" />
+                                        <toolkit:MenuItem Header="delete" Tag="delete" Click="libraryItem_Hold" />
+                                    </toolkit:ContextMenu>
                                     </toolkit:ContextMenuService.ContextMenu>
                                     <Button.Content>
                                         <StackPanel Orientation="Horizontal" Margin="0,0,0,17" x:Name="spItem">

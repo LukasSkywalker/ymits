@@ -854,6 +854,9 @@ namespace MusicBird
                     case "play":
                         libraryItem_Click(sender, e);
                         break;
+                    case "properties":
+                        NavigationService.Navigate(new Uri("/Properties.xaml?filename="+selectedTrack.filename, UriKind.Relative));
+                        break;
                     case "delete":
                         using (var store = IsolatedStorageFile.GetUserStoreForApplication())
                         {
@@ -953,6 +956,7 @@ namespace MusicBird
                 // When the page loads, refresh the list of file transfers.
                 InitialTransferStatusCheck();
                 UpdateUI();
+                updateLibrary();
             }
 
             private void showNagScreen() {

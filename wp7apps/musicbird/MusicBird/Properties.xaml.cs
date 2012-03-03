@@ -1,0 +1,82 @@
+﻿using System;
+using System.IO.IsolatedStorage;
+using System.Windows;
+using System.Windows.Navigation;
+using Microsoft.Phone.Controls;
+
+namespace MusicBird
+{
+    public partial class Properties : PhoneApplicationPage
+    {
+        String oldFilename = "";
+
+        public Properties()
+        {
+            InitializeComponent();
+        }
+
+        protected override void OnNavigatedTo( NavigationEventArgs e)
+        {
+            base.OnNavigatedTo(e);
+            init(NavigationContext.QueryString["filename"]);
+        }
+
+        private void init( String filename ) {
+            this.oldFilename = filename;
+            try
+            {
+                using(IsolatedStorageFile myIsolatedStorage = IsolatedStorageFile.GetUserStoreForApplication())
+                {
+                    if(!myIsolatedStorage.FileExists(filename))
+                    {
+                        throw new IsolatedStorageException("File " + filename + " not found");
+                    }else{
+                        DateTimeOffset creation = myIsolatedStorage.GetCreationTime(filename);
+                        DateTimeOffset access = myIsolatedStorage.GetLastAccessTime(filename);
+                        DateTimeOffset write = myIsolatedStorage.GetLastWriteTime(filename);
+                        long free = myIsolatedStorage.AvailableFreeSpace;
+                        long quota = myIsolatedStorage.Quota;
+
+                        fileName.Text = filename;
+                        creationDate.Text = creation.LocalDateTime.ToLongDateString() + " " + creation.LocalDateTime.ToLongTimeString();
+                        accessDate.Text = write.LocalDateTime.ToLongDateString() + " " + write.LocalDateTime.ToLongTimeString();
+
+
+                        //memoryBar.Maximum = quota;
+                        //memoryBar.Value = quota - free;
+                        freeMemory.Text = "Free: " + free / 1024 / 1024 + " MB";
+                        //usedMemory.Text = "Used: " + (quota - free) / 1024 / 1024 + "MB";
+                        //System.Diagnostics.Debug.WriteLine("quota:" + quota + "\nfree:" + free);
+                    }
+                }
+            }
+            catch(Exception e) {
+                System.Diagnostics.Debug.WriteLine("Properties.xaml.cs:init ___ IsolatedStorageException: "+e.Message);
+            }
+        }
+
+        private void button1_Click( object sender, RoutedEventArgs e )
+        {
+            try
+            {
+                using(IsolatedStorageFile myIsolatedStorage = IsolatedStorageFile.GetUserStoreForApplication())
+                {
+                    if(myIsolatedStorage.FileExists(oldFilename))
+                    {
+                        try
+                        {
+                            myIsolatedStorage.MoveFile(oldFilename, fileName.Text);
+                        }
+                        catch(Exception exc) {
+                            System.Diagnostics.Debug.WriteLine(exc.Message);
+                        }
+                    }
+                }
+            }
+            catch(Exception ex) {
+                System.Diagnostics.Debug.WriteLine(ex.Message);
+            }
+            NavigationService.Navigate(new Uri("/MainPage.xaml", UriKind.Relative));
+        }
+    }
+}
