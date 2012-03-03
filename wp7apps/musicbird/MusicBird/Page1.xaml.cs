@@ -80,5 +80,16 @@ namespace MusicBird
             allowBattery.IsChecked = read("allowBattery");
         }
 
+        private void button1_Click( object sender, RoutedEventArgs e )
+        {
+            using(IsolatedStorageFile myIsolatedStorage = IsolatedStorageFile.GetUserStoreForApplication())
+            {
+                if(myIsolatedStorage.FileExists("Playlist.xml"))
+                {
+                    myIsolatedStorage.DeleteFile("Playlist.xml");
+                }
+            }
+        }
+
     }
 }

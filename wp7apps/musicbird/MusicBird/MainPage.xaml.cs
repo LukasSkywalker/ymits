@@ -41,6 +41,7 @@ namespace MusicBird
         DispatcherTimer _timer;
         DispatcherTimer _tileTimer;
         DispatcherTimer _pendingTimer;
+        DispatcherTimer _downloadTimer;
 
         // Indexes into the array of ApplicationBar.Buttons
         const int prevButton = 0;
@@ -74,6 +75,10 @@ namespace MusicBird
             _pendingTimer = new DispatcherTimer();
             _pendingTimer.Interval = TimeSpan.FromSeconds(8);
             _pendingTimer.Tick += new EventHandler(playbackTimeoutFinished);
+
+            _downloadTimer = new DispatcherTimer();
+            _downloadTimer.Interval = TimeSpan.FromSeconds(1);
+            _downloadTimer.Tick += new EventHandler(UpdateRequestsList);
 
             NetworkChange.NetworkAddressChanged += NetworkAddress_Changed;
 
@@ -705,6 +710,7 @@ namespace MusicBird
                     MessageBox.Show("Unable to add background transfer request.");
                 }
                 setAppTile(null, null);
+                _downloadTimer.Start();
             }
 
             private void updatePlaylist() {
@@ -896,7 +902,7 @@ namespace MusicBird
                 return TrackListElement.ItemContainerGenerator.ContainerFromItem((sender as MenuItem).DataContext) as ListBoxItem;
             }
 
-            private void UpdateRequestsList()
+            private void UpdateRequestsList(Object sender, EventArgs e)
             {
                 // The Requests property returns new references, so make sure that
                 // you dispose of the old references to avoid memory leaks.
@@ -908,13 +914,14 @@ namespace MusicBird
                     }
                 }
                 transferRequests = BackgroundTransferService.Requests;
+                UpdateUI();
             }
 
             private void UpdateUI()
             {
                 System.Diagnostics.Debug.WriteLine("Updating UI");
                 // Update the list of transfer requests
-                UpdateRequestsList();
+                //TODO UpdateRequestsList();
 
                 // If there are 1 or more transfers, hide the "no transfers"
                 // TextBlock. IF there are zero transfers, show the TextBlock.
@@ -925,6 +932,7 @@ namespace MusicBird
                 else
                 {
                     EmptyTextBlock.Visibility = Visibility.Visible;
+                    if(_downloadTimer != null) _downloadTimer.Stop();
                 }
 
                 // Update the TransferListBox with the list of transfer requests.
@@ -962,7 +970,7 @@ namespace MusicBird
 
             private void InitialTransferStatusCheck()
             {
-                UpdateRequestsList();
+                UpdateRequestsList(null, null);
 
                 foreach (var transfer in transferRequests)
                 {
@@ -1017,7 +1025,7 @@ namespace MusicBird
                             }
 
                             updateLibrary();
-                            Panorama.SelectedItem = libraryItem;
+                            if(Panorama.SelectedItem.Equals(downloadItem)) Panorama.SelectedItem = libraryItem;
                         }
                         else
                         {
@@ -1060,7 +1068,7 @@ namespace MusicBird
             void transfer_TransferProgressChanged(object sender, BackgroundTransferEventArgs e)
             {
                 System.Diagnostics.Debug.WriteLine("Downloaded " + e.Request.BytesReceived/e.Request.TotalBytesToReceive*100+" %");
-                UpdateUI();
+                //UpdateUI();
             }
 
             private void CancelButton_Click(object sender, EventArgs e)
@@ -1187,9 +1195,6 @@ namespace MusicBird
                     throw new IsolatedStorageException("Could not get Playlist file from UserStore"); 
                 }
             }
-
-            
-
 
             private void getAlbumArt( string searchterm )
             {

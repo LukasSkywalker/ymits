@@ -33,6 +33,7 @@
             <CheckBox Content="on a mobile network" Height="72" HorizontalAlignment="Left" Margin="12,123,0,0" Name="allowCellular" VerticalAlignment="Top" Width="302" Checked="allowCellular_Checked" Unchecked="allowCellular_Unchecked" />
             <CheckBox Content="on battery power" Height="72" HorizontalAlignment="Left" Margin="12,201,0,0" Name="allowBattery" VerticalAlignment="Top" Width="260" Unchecked="allowBattery_Unchecked" Checked="allowBattery_Checked" />
             <TextBlock Height="30" HorizontalAlignment="Left" Margin="12,84,0,0" Name="textBlock1" Text="Allow Downloads even when" VerticalAlignment="Top" />
+            <Button Content="Fix playlist errors" Height="72" HorizontalAlignment="Left" Margin="12,279,0,0" Name="button1" VerticalAlignment="Top" Width="294" Click="button1_Click" />
         </Grid>
     </Grid>
  
