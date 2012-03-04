@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO.IsolatedStorage;
+using System.IO;
 using System.Windows;
 using System.Windows.Navigation;
 using Microsoft.Phone.Controls;
@@ -32,14 +33,21 @@ namespace MusicBird
                         throw new IsolatedStorageException("File " + filename + " not found");
                     }else{
                         DateTimeOffset creation = myIsolatedStorage.GetCreationTime(filename);
-                        DateTimeOffset access = myIsolatedStorage.GetLastAccessTime(filename);
-                        DateTimeOffset write = myIsolatedStorage.GetLastWriteTime(filename);
+                        //DateTimeOffset access = myIsolatedStorage.GetLastAccessTime(filename);
+                        //DateTimeOffset write = myIsolatedStorage.GetLastWriteTime(filename);
                         long free = myIsolatedStorage.AvailableFreeSpace;
-                        long quota = myIsolatedStorage.Quota;
+                        //long quota = myIsolatedStorage.Quota;
+
+                        long size = 0;
+
+                        using(IsolatedStorageFileStream stream = myIsolatedStorage.OpenFile(filename, FileMode.Open))
+                        {
+                            size = stream.Length;
+                        }
 
                         fileName.Text = filename;
                         creationDate.Text = creation.LocalDateTime.ToLongDateString() + " " + creation.LocalDateTime.ToLongTimeString();
-                        accessDate.Text = write.LocalDateTime.ToLongDateString() + " " + write.LocalDateTime.ToLongTimeString();
+                        fileSize.Text = (size/1024/1024).ToString()+" MB";
 
 
                         //memoryBar.Maximum = quota;

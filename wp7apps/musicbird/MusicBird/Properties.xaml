@@ -32,8 +32,8 @@
             <TextBox Height="72" HorizontalAlignment="Left" Margin="6,42,0,0" Name="fileName" Text="" VerticalAlignment="Top" Width="444" />
             <TextBlock Height="30" HorizontalAlignment="Left" Margin="6,133,0,0" Name="textBlock2" Text="Creation date" VerticalAlignment="Top" />
             <TextBlock Height="30" HorizontalAlignment="Left" Margin="6,169,0,0" Name="creationDate" Text="" VerticalAlignment="Top" Width="444" />
-            <TextBlock Height="30" HorizontalAlignment="Left" Margin="6,229,0,0" Name="textBlock3" Text="Access date" VerticalAlignment="Top" />
-            <TextBlock Height="30" HorizontalAlignment="Left" Margin="6,265,0,0" Name="accessDate" Text="" VerticalAlignment="Top" Width="444" />
+            <TextBlock Height="30" HorizontalAlignment="Left" Margin="6,229,0,0" Name="textBlock3" Text="Size" VerticalAlignment="Top" />
+            <TextBlock Height="30" HorizontalAlignment="Left" Margin="6,265,0,0" Name="fileSize" Text="" VerticalAlignment="Top" Width="444" />
             <Button Content="Save" Height="72" HorizontalAlignment="Left" Margin="290,327,0,0" Name="button1" VerticalAlignment="Top" Width="160" Click="button1_Click" />
             <ProgressBar HorizontalAlignment="Stretch" Margin="0,510,0,0" x:Name="memoryBar" VerticalAlignment="Top" Height="27" />
             <TextBlock Height="30" HorizontalAlignment="Left" Margin="6,543,0,0" Name="usedMemory" Text="" VerticalAlignment="Top" Width="220" />

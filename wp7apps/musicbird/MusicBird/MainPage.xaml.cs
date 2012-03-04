@@ -12,13 +12,13 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media.Imaging;
 using System.Windows.Threading;
+using System.Xml;
+using System.Xml.Serialization;
 using Microsoft.Phone.BackgroundAudio;
 using Microsoft.Phone.BackgroundTransfer;
 using Microsoft.Phone.Controls;
 using Microsoft.Phone.Shell;
 using Microsoft.Phone.Tasks;
-using System.Xml;
-using System.Xml.Serialization;
 
 
 
@@ -917,7 +917,6 @@ namespace MusicBird
                     }
                 }
                 transferRequests = BackgroundTransferService.Requests;
-                UpdateUI();
             }
 
             private void UpdateUI()
@@ -940,6 +939,14 @@ namespace MusicBird
 
                 // Update the TransferListBox with the list of transfer requests.
                 TransferListBox.ItemsSource = transferRequests;
+
+                /*Dictionary<String,String> prefs = MySystem.readPrefs();
+
+                if(!prefs.ContainsKey("shuffle") || prefs["shuffle"].Equals("false")) button1.Opacity = 0.5;
+                else button1.Opacity = 1;
+
+                if(!prefs.ContainsKey("repeat") || prefs["repeat"].Equals("false")) button2.Opacity = 0.5;
+                else button2.Opacity = 1;*/
 
             }
 
@@ -1229,6 +1236,16 @@ namespace MusicBird
                 positionIndicator.IsIndeterminate = false;
                 UpdateButtons(false, true, false);
                 _pendingTimer.Stop();
+            }
+
+            private void toggleRepeat( object sender, RoutedEventArgs e )
+            {
+                
+            }
+
+            private void toggleShuffle( object sender, RoutedEventArgs e )
+            {
+                
             }
 
     }

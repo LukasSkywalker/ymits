@@ -1,13 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO.IsolatedStorage;
 using System.IO;
+using System.IO.IsolatedStorage;
 using System.Threading;
 using System.Windows;
-using Microsoft.Phone.BackgroundAudio;
-using Microsoft.Phone.Marketplace;
-using System.Xml;
 using System.Xml.Serialization;
+using Microsoft.Phone.BackgroundAudio;
 
 namespace AudioPlaybackAgent1
 {
@@ -82,6 +80,25 @@ namespace AudioPlaybackAgent1
             switch (playState)
             {
                 case PlayState.TrackEnded:
+                    /*Dictionary<String,String> prefs = readPrefs();
+                    try
+                    {
+                        if(prefs["repeat"].Equals("true"))
+                        {
+                            playAtPosition(currentTrackNumber, player);
+                            break;
+                        }
+                        if(prefs["shuffle"].Equals("true"))
+                        {
+                            Random rand = new Random(DateTime.Now.Millisecond);
+                            int pos = rand.Next() % _playList.Count;
+                            playAtPosition(pos, player);
+                            break;
+                        }
+                    }
+                    catch(Exception e) {
+                        System.Diagnostics.Debug.WriteLine(e.Message);
+                    }*/
                     playAtPosition(currentTrackNumber+1, player);
                     break;
                 case PlayState.TrackReady:
@@ -129,6 +146,7 @@ namespace AudioPlaybackAgent1
 
         protected override void OnUserAction(BackgroundAudioPlayer player, AudioTrack track, UserAction action, object param)
         {
+            //Dictionary<String, String> prefs = readPrefs();
             //updatePlaylist(currentTrackNumber+1);
             switch (action)
             {
@@ -161,9 +179,47 @@ namespace AudioPlaybackAgent1
                     }
                     break;
                 case UserAction.SkipNext:
+                    /*try
+                    {
+                        if(prefs["repeat"].Equals("true"))
+                        {
+                            playAtPosition(currentTrackNumber, player);
+                            break;
+                        }
+                        if(prefs["shuffle"].Equals("true"))
+                        {
+                            Random rand = new Random(DateTime.Now.Millisecond);
+                            int pos = rand.Next() % _playList.Count;
+                            playAtPosition(pos, player);
+                            break;
+                        }
+                    }
+                    catch(Exception e)
+                    {
+                        System.Diagnostics.Debug.WriteLine(e.Message);
+                    }*/
                     playAtPosition(currentTrackNumber + 1, player);
                     break;
                 case UserAction.SkipPrevious:
+                    /*try
+                    {
+                        if(prefs["repeat"].Equals("true"))
+                        {
+                            playAtPosition(currentTrackNumber, player);
+                            break;
+                        }
+                        if(prefs["shuffle"].Equals("true"))
+                        {
+                            Random rand = new Random(DateTime.Now.Millisecond);
+                            int pos = rand.Next() % _playList.Count;
+                            playAtPosition(pos, player);
+                            break;
+                        }
+                    }
+                    catch(Exception e)
+                    {
+                        System.Diagnostics.Debug.WriteLine(e.Message);
+                    }*/
                     playAtPosition(currentTrackNumber -1, player);
                     break;
             }
@@ -259,6 +315,31 @@ namespace AudioPlaybackAgent1
                 throw new IsolatedStorageException("Could not get Playlist file from UserStore");
             }
         }
+
+        /*public static Dictionary<String, String> readPrefs()
+        {
+            try
+            {
+                using(IsolatedStorageFile myIsolatedStorage = IsolatedStorageFile.GetUserStoreForApplication())
+                {
+                    if(!myIsolatedStorage.FileExists("Preferences.xml"))
+                    {
+                        return new Dictionary<String, String>();
+                    }
+                    using(IsolatedStorageFileStream stream = myIsolatedStorage.OpenFile("Preferences.xml", FileMode.Open))
+                    {
+                        XmlSerializer serializer = new XmlSerializer(typeof(Dictionary<String, String>));
+                        Dictionary<String, String> data = (Dictionary<String, String>)serializer.Deserialize(stream);
+                        return data;
+                    }
+                }
+            }
+            catch
+            {
+                // add some code here
+                throw new IsolatedStorageException("Could not get Playlist file from UserStore");
+            }
+        }*/
 
         private bool isTrial() {
             bool isTrial = true;

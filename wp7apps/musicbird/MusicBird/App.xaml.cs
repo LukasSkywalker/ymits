@@ -4,7 +4,6 @@ using System.Windows.Navigation;
 using Microsoft.Phone.Controls;
 using Microsoft.Phone.Marketplace;
 using Microsoft.Phone.Shell;
-using Microsoft.Phone.Tasks;
 
 namespace MusicBird
 {
@@ -20,6 +19,8 @@ namespace MusicBird
         private static LicenseInformation _licenseInfo = new LicenseInformation();
 
         private static bool _isTrial = true;
+        public static bool shuffle = false;
+        public static bool repeat = false;
         public bool IsTrial
         {
             get
