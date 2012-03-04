@@ -8,6 +8,7 @@ using System.Net;
 using System.Net.NetworkInformation;
 using System.Text.RegularExpressions;
 using System.Windows;
+using System.Windows.Resources;
 using System.Windows.Controls;
 using System.Windows.Input;
 using Microsoft.Xna.Framework.Media;
@@ -967,7 +968,8 @@ namespace MusicBird
                 UpdateUI();
                 updateLibrary();
 
-                const String _playSongKey = "keyString";
+                const String _playSongKey = "playSong";
+                const String _showPlayerKey = "showPlayer";
 
                 MediaLibrary library = new MediaLibrary();
 
@@ -980,7 +982,7 @@ namespace MusicBird
                     // Use the navigation context to find the song by name.
                     String songToPlay = NavigationContext.QueryString[_playSongKey];
 
-                    MessageBox.Show("Trying to play song: "+songToPlay);
+                    System.Diagnostics.Debug.WriteLine("Trying to play song: "+songToPlay);
 
                     String[] name = getArtistAndTitle(songToPlay);
 
@@ -993,20 +995,10 @@ namespace MusicBird
                     Instance_PlayStateChanged(null, null);
                     positionIndicator.IsIndeterminate = true;
                     Panorama.SelectedItem = playerItem;
-
-                    /*foreach(Song song in library.Songs)
-                    {
-                        if(0 == String.Compare(songToPlay, song.Name))
-                        {
-                            _playingSong = song;
-                            break;
-                        }
-                    }*/
-
-                    // Set a flag to indicate that we were started from a 
-                    // history item and that we should immediately start 
-                    // playing the song after the UI has finished loading.
-                    //_historyItemLaunch = true;
+                }
+                else if(NavigationContext.QueryString.ContainsKey(_showPlayerKey))
+                {
+                    Panorama.SelectedItem = playerItem;
                 }
 
             }
@@ -1084,7 +1076,13 @@ namespace MusicBird
                             updateLibrary();
                             if(Panorama.SelectedItem.Equals(downloadItem)) Panorama.SelectedItem = libraryItem;
 
-                            WriteableBitmap wb = new WriteableBitmap(playerItem, null);
+                            StreamResourceInfo sri = null;
+                            Uri imageUri = new Uri("MB_173.png", UriKind.Relative);
+                            sri = Application.GetResourceStream(imageUri);
+
+                            WriteableBitmap wb = new WriteableBitmap(173, 173);
+                            wb.SetSource(sri.Stream);
+
                             MemoryStream stream = new MemoryStream();
                             wb.SaveJpeg(stream, 173, 173, 0, 90);
                             stream.Seek(0, SeekOrigin.Begin);
@@ -1094,8 +1092,8 @@ namespace MusicBird
                             //<hubTileImageStream> must be a valid ImageStream.
                             mediaHistoryItem.ImageStream = stream; 
                             //mediaHistoryItem.Source = "asdfasdf";
-                            mediaHistoryItem.Title = filename;
-                            mediaHistoryItem.PlayerContext.Add("keyString", filename);
+                            mediaHistoryItem.Title = getArtistAndTitle(filename)[0];
+                            mediaHistoryItem.PlayerContext.Add("playSong", filename);
                             MediaHistory.Instance.WriteAcquiredItem(mediaHistoryItem);
 
                         }

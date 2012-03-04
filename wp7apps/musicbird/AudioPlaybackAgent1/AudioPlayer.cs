@@ -1,12 +1,13 @@
-﻿using System.Windows.Media.Imaging;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.IO.IsolatedStorage;
 using System.Threading;
 using System.Windows;
-using Microsoft.Devices;
+using System.Windows.Media.Imaging;
+using System.Windows.Resources;
 using System.Xml.Serialization;
+using Microsoft.Devices;
 using Microsoft.Phone.BackgroundAudio;
 
 namespace AudioPlaybackAgent1
@@ -63,17 +64,22 @@ namespace AudioPlaybackAgent1
             var info = Application.GetResourceStream(uri);*/
 
             Deployment.Current.Dispatcher.BeginInvoke(() =>
-            {
-                WriteableBitmap wb = new WriteableBitmap(173,173);
+            {                
+                StreamResourceInfo sri = null;
+                Uri imageUri = new Uri("MB_173.png", UriKind.Relative);
+                sri = Application.GetResourceStream(imageUri);
+
+                WriteableBitmap wb = new WriteableBitmap(173, 173);
+                wb.SetSource(sri.Stream);
 
                 MemoryStream stream = new MemoryStream();
                 wb.SaveJpeg(stream, 173, 173, 0, 90);
                 stream.Seek(0, SeekOrigin.Begin);
 
                 mediaHistoryItem.ImageStream = stream;
-                mediaHistoryItem.Source = "";
-                mediaHistoryItem.Title = "NowPlaying";
-                mediaHistoryItem.PlayerContext.Add("keyString", currentTrack.Title);
+                //mediaHistoryItem.Source = currentTrack.Title;
+                mediaHistoryItem.Title = currentTrack.Title;
+                mediaHistoryItem.PlayerContext.Add("showPlayer", currentTrack.Artist+" - "+currentTrack.Title+".mp3");
                 MediaHistory.Instance.NowPlaying = mediaHistoryItem;
             });
 
