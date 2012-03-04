@@ -81,6 +81,10 @@ namespace AudioPlaybackAgent1
                 mediaHistoryItem.Title = currentTrack.Title;
                 mediaHistoryItem.PlayerContext.Add("showPlayer", currentTrack.Artist+" - "+currentTrack.Title+".mp3");
                 MediaHistory.Instance.NowPlaying = mediaHistoryItem;
+                stream.Seek(0, SeekOrigin.Begin);
+
+                //add to the history
+                MediaHistory.Instance.WriteRecentPlay(mediaHistoryItem);
             });
 
 
