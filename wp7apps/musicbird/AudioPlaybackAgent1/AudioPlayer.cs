@@ -1,9 +1,11 @@
-﻿using System;
+﻿using System.Windows.Media.Imaging;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.IO.IsolatedStorage;
 using System.Threading;
 using System.Windows;
+using Microsoft.Devices;
 using System.Xml.Serialization;
 using Microsoft.Phone.BackgroundAudio;
 
@@ -46,9 +48,37 @@ namespace AudioPlaybackAgent1
             if(position < 0) position = playlist.Count-1;
             
             System.Diagnostics.Debug.WriteLine("AudioPlayer.cs:playAtPosition _______ Starting playback...");
-            player.Track =  getAudioTrackAt(position);
+            AudioTrack currentTrack = getAudioTrackAt(position);
+            player.Track = currentTrack;
             //The PlayStateChangedEventHandler will be called as soon as the track is loaded
             currentTrackNumber = position;
+
+            MediaHistoryItem mediaHistoryItem = new MediaHistoryItem();
+
+            //<hubTileImageStream> must be a valid ImageStream.
+
+            //WriteableBitmap wb = new WriteableBitmap(173,173);
+
+            /*var uri = new Uri("/MB_173.png", UriKind.Relative);
+            var info = Application.GetResourceStream(uri);*/
+
+            Deployment.Current.Dispatcher.BeginInvoke(() =>
+            {
+                WriteableBitmap wb = new WriteableBitmap(173,173);
+
+                MemoryStream stream = new MemoryStream();
+                wb.SaveJpeg(stream, 173, 173, 0, 90);
+                stream.Seek(0, SeekOrigin.Begin);
+
+                mediaHistoryItem.ImageStream = stream;
+                mediaHistoryItem.Source = "";
+                mediaHistoryItem.Title = "NowPlaying";
+                mediaHistoryItem.PlayerContext.Add("keyString", currentTrack.Title);
+                MediaHistory.Instance.NowPlaying = mediaHistoryItem;
+            });
+
+
+            
         }
 
         /// Code to execute on Unhandled Exceptions

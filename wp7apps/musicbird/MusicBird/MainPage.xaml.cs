@@ -10,9 +10,11 @@ using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using Microsoft.Xna.Framework.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Threading;
 using System.Xml;
+using Microsoft.Devices;
 using System.Xml.Serialization;
 using Microsoft.Phone.BackgroundAudio;
 using Microsoft.Phone.BackgroundTransfer;
@@ -818,8 +820,8 @@ namespace MusicBird
                 addToPlaylist(name[0] ,name[1], selectedTrack.filename);
                 updatePlaylist();
 
-                BackgroundAudioPlayer.Instance.Play();
-                updatePlaylist();
+                //BackgroundAudioPlayer.Instance.Play();
+                //updatePlaylist();
                
                 List<String[]> oldItems = readPlaylist();
                 int itemsCount = oldItems.Count;
@@ -964,6 +966,49 @@ namespace MusicBird
                 InitialTransferStatusCheck();
                 UpdateUI();
                 updateLibrary();
+
+                const String _playSongKey = "keyString";
+
+                MediaLibrary library = new MediaLibrary();
+
+                if(NavigationContext.QueryString.ContainsKey(_playSongKey))
+                {
+                    // We were launched from a history item.
+                    // Change _playingSong even if something was already playing 
+                    // because the user directly chose a song history item.
+
+                    // Use the navigation context to find the song by name.
+                    String songToPlay = NavigationContext.QueryString[_playSongKey];
+
+                    MessageBox.Show("Trying to play song: "+songToPlay);
+
+                    String[] name = getArtistAndTitle(songToPlay);
+
+                    addToPlaylist(name[0], name[1], songToPlay);
+
+                    List<String[]> oldItems = readPlaylist();
+                    int itemsCount = oldItems.Count;
+
+                    AudioPlaybackAgent1.AudioPlayer.playAtPosition(itemsCount - 1, BackgroundAudioPlayer.Instance);
+                    Instance_PlayStateChanged(null, null);
+                    positionIndicator.IsIndeterminate = true;
+                    Panorama.SelectedItem = playerItem;
+
+                    /*foreach(Song song in library.Songs)
+                    {
+                        if(0 == String.Compare(songToPlay, song.Name))
+                        {
+                            _playingSong = song;
+                            break;
+                        }
+                    }*/
+
+                    // Set a flag to indicate that we were started from a 
+                    // history item and that we should immediately start 
+                    // playing the song after the UI has finished loading.
+                    //_historyItemLaunch = true;
+                }
+
             }
 
             private void showNagScreen() {
@@ -1025,9 +1070,10 @@ namespace MusicBird
 
                             // In this example, the downloaded file is moved into the root
                             // Isolated Storage directory
+                            string filename = "";
                             using (IsolatedStorageFile isoStore = IsolatedStorageFile.GetUserStoreForApplication())
                             {
-                                string filename = transfer.Tag;
+                                filename = transfer.Tag;
                                 if (isoStore.FileExists(filename))
                                 {
                                     isoStore.DeleteFile(filename);
@@ -1037,6 +1083,21 @@ namespace MusicBird
 
                             updateLibrary();
                             if(Panorama.SelectedItem.Equals(downloadItem)) Panorama.SelectedItem = libraryItem;
+
+                            WriteableBitmap wb = new WriteableBitmap(playerItem, null);
+                            MemoryStream stream = new MemoryStream();
+                            wb.SaveJpeg(stream, 173, 173, 0, 90);
+                            stream.Seek(0, SeekOrigin.Begin);
+
+                            MediaHistoryItem mediaHistoryItem = new MediaHistoryItem();
+
+                            //<hubTileImageStream> must be a valid ImageStream.
+                            mediaHistoryItem.ImageStream = stream; 
+                            //mediaHistoryItem.Source = "asdfasdf";
+                            mediaHistoryItem.Title = filename;
+                            mediaHistoryItem.PlayerContext.Add("keyString", filename);
+                            MediaHistory.Instance.WriteAcquiredItem(mediaHistoryItem);
+
                         }
                         else
                         {
