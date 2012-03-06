@@ -43,7 +43,6 @@ namespace MusicBird
         // Timer for updating the UI
         DispatcherTimer _timer;
         DispatcherTimer _tileTimer;
-        DispatcherTimer _pendingTimer;
         DispatcherTimer _downloadTimer;
 
         // Indexes into the array of ApplicationBar.Buttons
@@ -52,14 +51,13 @@ namespace MusicBird
         const int downButton = 3;
         const int nextButton = 2;
 
-        
-        
+        List<TrackListItem> trackList = new List<TrackListItem>();
+        String query = "";
 
         // Constructor
         public MainPage()
         {
             InitializeComponent();
-
             this.Loaded += new RoutedEventHandler(MainPage_Loaded);
         }
 
@@ -75,13 +73,9 @@ namespace MusicBird
             _tileTimer.Tick += new EventHandler(setAppTile);
             _tileTimer.Start();
 
-            _pendingTimer = new DispatcherTimer();
-            _pendingTimer.Interval = TimeSpan.FromSeconds(8);
-            _pendingTimer.Tick += new EventHandler(playbackTimeoutFinished);
-
             _downloadTimer = new DispatcherTimer();
-            _downloadTimer.Interval = TimeSpan.FromSeconds(1);
-            _downloadTimer.Tick += new EventHandler(UpdateRequestsList);
+            _downloadTimer.Interval = TimeSpan.FromSeconds(2);
+            _downloadTimer.Tick += new EventHandler(UpdateUI);
 
             NetworkChange.NetworkAddressChanged += NetworkAddress_Changed;
 
@@ -96,6 +90,11 @@ namespace MusicBird
 
             updatePlaylist();
             updateLibrary();
+        }
+
+        public void test(object s, EventArgs e) {
+            System.Diagnostics.Debug.WriteLine("test");
+            UpdateUI(null, null);
         }
 
 
@@ -336,18 +335,30 @@ namespace MusicBird
                 queryProgress.IsIndeterminate = true;
                 queryProgress.Visibility = Visibility.Visible;
                 searchItem.Focus();
-                getResults(queryTextbox.Text);
+                query = queryTextbox.Text;
+                getResults();
             }
         }
 
-        private void getResults(string query)
+        private void getResults()
         {
+            trackList.Clear();
+
             string url = "http://mp3skull.com/mp3/" + query.Trim().Replace(" ", "_") + ".html";
             System.Diagnostics.Debug.WriteLine("Opening URL "+url);
             WebClient wc = new WebClient();
             wc.OpenReadCompleted += new OpenReadCompletedEventHandler(wc_OpenReadCompleted);
             NetworkAddress_Changed(null, null);
             wc.OpenReadAsync(new Uri(url));
+        }
+
+        private void getResultsFromVpleer() {
+            string url = "http://de.vpleer.ru/?q=" + query.Trim().Replace(" ", "+");
+            System.Diagnostics.Debug.WriteLine("Opening URL " + url);
+            WebClient wc2 = new WebClient();
+            wc2.OpenReadCompleted += new OpenReadCompletedEventHandler(wc2_OpenReadCompleted);
+            NetworkAddress_Changed(null, null);
+            wc2.OpenReadAsync(new Uri(url));
         }
 
         private void wc_OpenReadCompleted(object sender, OpenReadCompletedEventArgs e)
@@ -377,7 +388,6 @@ namespace MusicBird
                 Match n = pattern2.Match(s);
                 int matchCount = 0;
                 
-                List<TrackListItem> trackList = new List<TrackListItem>();
                 while (m.Success)
                 {
                     Group g = m.Groups[1];
@@ -393,9 +403,85 @@ namespace MusicBird
                     n = n.NextMatch();
                 }
 
-                TrackListElement.ItemsSource = trackList;
+                System.Diagnostics.Debug.WriteLine("mp3skull: Results found: "+matchCount);
+                if(matchCount < 5)
+                {
+                    getResultsFromVpleer();
+                }
+                else {
+                    stopThrobber();
+                }
 
-                System.Diagnostics.Debug.WriteLine("Results found.");
+            }
+            catch(WebException ex)
+            {
+                String status = ex.Status.ToString();
+                String msg = ex.Message;
+                String statCode = ((HttpWebResponse)ex.Response).StatusCode.ToString();
+                String statDescr = ((HttpWebResponse)ex.Response).StatusDescription.ToString();
+                stopThrobber();
+            }
+            finally
+            {
+                TrackListElement.ItemsSource = null;
+                TrackListElement.ItemsSource = trackList;
+            }
+        }
+
+        private void stopThrobber() {
+            queryProgress.Visibility = Visibility.Collapsed;
+            queryProgress.IsIndeterminate = false;
+        }
+
+        private void wc2_OpenReadCompleted( object sender, OpenReadCompletedEventArgs e )
+        {
+
+            //Regex pattern = new Regex("getSize([0-9]+, '(.*?)', '(.*?)', '0', '(.*?)', '(.*?)', 'vpeer.ru');", RegexOptions.IgnoreCase);
+            Regex pattern = new Regex("getSize((.*?), '(.*?)', '(.*?)', '0', '(.*?)', '(.*?)'(.*?));", RegexOptions.IgnoreCase);
+            String s;
+            try
+            {
+                Stream response = e.Result;
+                StreamReader sr = new StreamReader(response, System.Text.Encoding.UTF8);
+                try
+                {
+                    s = sr.ReadToEnd();
+                    s = s.Replace("\\/", "/");
+                }
+                finally
+                {
+                    sr.Close();
+                    response.Close();
+                }
+
+
+                // Match the regular expression pattern against a text string.
+                Match m = pattern.Match(s);
+                int matchCount = 0;
+
+                while(m.Success)
+                {
+                    string artist = HttpUtility.HtmlDecode(Uri.UnescapeDataString(m.Groups[5].ToString())).Replace("_", " ");
+                    string title = HttpUtility.HtmlDecode(Uri.UnescapeDataString(m.Groups[6].ToString())).Replace("_", " ");
+                    string hash = m.Groups[4].ToString();
+                    string path = m.Groups[3].ToString();
+
+                    String[] paths = path.Split('/');
+
+                    string url = "http://vpleer.ru/download/0/" + paths[2] + "/" + paths[3] + "/" + paths[4] + "/" + artist + " - " + title + ".mp3";
+                    //string asdf = m.Groups[0].ToString();
+                    //System.Diagnostics.Debug.WriteLine(url);
+                    //System.Diagnostics.Debug.WriteLine(asdf);
+
+                    TrackListItem item = new TrackListItem(artist, title, url);
+                    trackList.Add(item);
+                    //System.Diagnostics.Debug.WriteLine(trackList.Count);
+                    matchCount += 1;
+                    m = m.NextMatch();
+                }
+
+
+                System.Diagnostics.Debug.WriteLine("vpleer: Results found: " + matchCount);
 
             }
             catch(WebException ex)
@@ -407,8 +493,10 @@ namespace MusicBird
             }
             finally
             {
-                queryProgress.Visibility = Visibility.Collapsed;
-                queryProgress.IsIndeterminate = false;
+                stopThrobber();
+
+                TrackListElement.ItemsSource = null;
+                TrackListElement.ItemsSource = trackList;
             }
         }
 
@@ -701,8 +789,9 @@ namespace MusicBird
                     BackgroundTransferService.Add(transferRequest);
                     transferRequest.TransferStatusChanged += new EventHandler<BackgroundTransferEventArgs>(transfer_TransferStatusChanged);
                     transferRequest.TransferProgressChanged += new EventHandler<BackgroundTransferEventArgs>(transfer_TransferProgressChanged);
-                    UpdateUI();
+                    UpdateUI(null, null);
                     Panorama.SelectedItem = downloadItem;
+                    _downloadTimer.Start();
                 }
                 catch (InvalidOperationException ex)
                 {
@@ -713,7 +802,6 @@ namespace MusicBird
                     MessageBox.Show("Unable to add background transfer request.");
                 }
                 setAppTile(null, null);
-                _downloadTimer.Start();
             }
 
             private void updatePlaylist() {
@@ -912,21 +1000,25 @@ namespace MusicBird
             {
                 // The Requests property returns new references, so make sure that
                 // you dispose of the old references to avoid memory leaks.
-                if (transferRequests != null)
+                /*if (transferRequests != null)
                 {
                     foreach (var request in transferRequests)
                     {
                         request.Dispose();
                     }
-                }
+                }*/
+                // this is apparently not necessary. Works without disposing,
+                // the memory goes down again after the req. is finished.
+
                 transferRequests = BackgroundTransferService.Requests;
+                System.Diagnostics.Debug.WriteLine(Microsoft.Phone.Info.DeviceStatus.ApplicationCurrentMemoryUsage.ToString());
             }
 
-            private void UpdateUI()
+            private void UpdateUI( object sender, EventArgs e )
             {
                 System.Diagnostics.Debug.WriteLine("Updating UI");
                 // Update the list of transfer requests
-                //TODO UpdateRequestsList();
+                UpdateRequestsList(null, null);
 
                 // If there are 1 or more transfers, hide the "no transfers"
                 // TextBlock. IF there are zero transfers, show the TextBlock.
@@ -937,7 +1029,6 @@ namespace MusicBird
                 else
                 {
                     EmptyTextBlock.Visibility = Visibility.Visible;
-                    if(_downloadTimer != null) _downloadTimer.Stop();
                 }
 
                 // Update the TransferListBox with the list of transfer requests.
@@ -965,7 +1056,7 @@ namespace MusicBird
 
                 // When the page loads, refresh the list of file transfers.
                 InitialTransferStatusCheck();
-                UpdateUI();
+                UpdateUI(null, null);
                 updateLibrary();
 
                 const String _playSongKey = "playSong";
@@ -1049,6 +1140,10 @@ namespace MusicBird
             {
                 switch (transfer.TransferStatus)
                 {
+                    case TransferStatus.Transferring:
+                        System.Diagnostics.Debug.WriteLine("Transferring");
+                        _downloadTimer.Start();
+                        break;
                     case TransferStatus.Completed:
 
                         // If the status code of a completed transfer is 200 or 206, the
@@ -1059,6 +1154,11 @@ namespace MusicBird
                             // queue for more transfers. Transfers are not automatically
                             // removed by the system.
                             RemoveTransferRequest(transfer.RequestId);
+                            UpdateUI(null, null);
+
+                            if(transferRequests.Count<BackgroundTransferRequest>() > 0) {
+                                _downloadTimer.Stop();
+                            }
 
                             // In this example, the downloaded file is moved into the root
                             // Isolated Storage directory
@@ -1074,7 +1174,13 @@ namespace MusicBird
                             }
 
                             updateLibrary();
-                            if(Panorama.SelectedItem.Equals(downloadItem)) Panorama.SelectedItem = libraryItem;
+                            try
+                            {
+                                if(Panorama.SelectedItem.Equals(downloadItem)) Panorama.SelectedItem = libraryItem;
+                            }
+                            catch(NullReferenceException e) {
+                                System.Diagnostics.Debug.WriteLine(e.Message);
+                            }
 
                             StreamResourceInfo sri = null;
                             Uri imageUri = new Uri("MB_173.png", UriKind.Relative);
@@ -1132,7 +1238,7 @@ namespace MusicBird
             void transfer_TransferStatusChanged(object sender, BackgroundTransferEventArgs e)
             {
                 ProcessTransfer(e.Request);
-                UpdateUI();
+                UpdateUI(null, null);
             }
 
             void transfer_TransferProgressChanged(object sender, BackgroundTransferEventArgs e)
@@ -1151,7 +1257,7 @@ namespace MusicBird
                 RemoveTransferRequest(transferID);
 
                 // Refresh the list of file transfers
-                UpdateUI();
+                UpdateUI(null, null);
             }
 
             private void RemoveTransferRequest(string transferID)
@@ -1278,23 +1384,24 @@ namespace MusicBird
             {
                 lock(this)
                 {
-                    string s = e.Result;
-                    s = s.Replace("\\/", "/");
-                    //"MediaUrl":"http:\/\/plasticosydecibelios.com\/coldplay-paradise-cover.jpg"
-                    Regex pattern = new Regex("\"MediaUrl\":\"(.*?)\"",RegexOptions.IgnoreCase);
-                    Match m = pattern.Match(s);
-                    if(m.Success) {
-                        Group g = m.Groups[1];
-                        string url = g.ToString();
-                        albumartImage.Source = new BitmapImage(new Uri(url,UriKind.Absolute));
+                    try
+                    {
+                        string s = e.Result;
+                        s = s.Replace("\\/", "/");
+                        //"MediaUrl":"http:\/\/plasticosydecibelios.com\/coldplay-paradise-cover.jpg"
+                        Regex pattern = new Regex("\"MediaUrl\":\"(.*?)\"", RegexOptions.IgnoreCase);
+                        Match m = pattern.Match(s);
+                        if(m.Success)
+                        {
+                            Group g = m.Groups[1];
+                            string url = g.ToString();
+                            albumartImage.Source = new BitmapImage(new Uri(url, UriKind.Absolute));
+                        }
+                    }
+                    catch(WebException ex) {
+                        System.Diagnostics.Debug.WriteLine(ex.Message);
                     }
                 }
-            }
-
-            private void playbackTimeoutFinished( object sender, EventArgs e ) {
-                positionIndicator.IsIndeterminate = false;
-                UpdateButtons(false, true, false);
-                _pendingTimer.Stop();
             }
 
             private void toggleRepeat( object sender, RoutedEventArgs e )
