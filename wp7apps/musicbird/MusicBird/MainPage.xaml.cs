@@ -953,10 +953,20 @@ namespace MusicBird
                         {
                             if (store.FileExists(selectedTrack.filename))
                             {
-                                if(HttpUtility.UrlDecode(BackgroundAudioPlayer.Instance.Track.Source.ToString()).Equals(selectedTrack.filename)) {
-                                    MessageBox.Show("The track is currently played. Please try again later.");
-                                }else{
-                                    store.DeleteFile(selectedTrack.filename);    
+                                try
+                                {
+                                    if(HttpUtility.UrlDecode(BackgroundAudioPlayer.Instance.Track.Source.ToString()).Equals(selectedTrack.filename))
+                                    {
+                                        MessageBox.Show("The track is currently played. Please try again later.");
+                                    }
+                                    else
+                                    {
+                                        store.DeleteFile(selectedTrack.filename);
+                                    }
+                                }
+                                catch(Exception ex)
+                                {
+                                    store.DeleteFile(selectedTrack.filename);
                                 }
                             }
                             else {
