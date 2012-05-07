@@ -13,6 +13,7 @@ using System.Windows.Controls;
 using System.IO;
 using OAuth;
 using System.Text;
+using System.Threading;
 
 namespace MusicBird
 {
@@ -29,21 +30,15 @@ namespace MusicBird
         private string user = "me";
         private string albums = "me/albums";
 
-        private static readonly string DBRequestTokenUri = "https://api.dropbox.com/1/oauth/request_token";
-        private static readonly string DBAuthorizeUri = "https://www.dropbox.com/1/oauth/authorize";
-        private static readonly string DBAccessTokenUri = "https://api.dropbox.com/1/oauth/access_token";
-        private static readonly string DBConsumerKey = "b8eahgi7u8ziyah";
-        private static readonly string DBSecretKey = "3r7s2wpnd1jesfz";
-        private string DBtoken;
-        private string DBtokenSecret;
+        private static ManualResetEvent allDone = new ManualResetEvent(false);
 
-        //private static readonly string 
 
         public Page1()
         {
             InitializeComponent();
         }
 
+        #region settings
         private void albumart_Checked( object sender, RoutedEventArgs e )
         {
             save("albumart", true);
@@ -72,9 +67,12 @@ namespace MusicBird
         private void allowBattery_Checked( object sender, RoutedEventArgs e )
         {
             save("allowBattery", true);
-        }
+        } 
+        #endregion
 
-        public static void save( string name, Boolean value ) {
+        #region readwritePrefs
+        public static void save( string name, Boolean value )
+        {
             var settings = IsolatedStorageSettings.ApplicationSettings;
             if(settings.Contains(name))
             {
@@ -84,7 +82,8 @@ namespace MusicBird
             //settings.Save();
         }
 
-        public static bool read( string name ) {
+        public static bool read( string name )
+        {
             var settings = IsolatedStorageSettings.ApplicationSettings;
             Boolean item;
             if(settings.Contains(name))
@@ -93,8 +92,9 @@ namespace MusicBird
                 {
                     return item;
                 }
-                else {
-                    throw new IsolatedStorageException("could not read value of "+name+" from IsoStore. tryGetValue failed.");
+                else
+                {
+                    throw new IsolatedStorageException("could not read value of " + name + " from IsoStore. tryGetValue failed.");
                 }
             }
             else
@@ -103,7 +103,8 @@ namespace MusicBird
                 //settings.Save();
                 return false;
             }
-        }
+        } 
+        #endregion
 
         private void PhoneApplicationPage_Loaded( object sender, RoutedEventArgs e )
         {
@@ -136,6 +137,15 @@ namespace MusicBird
             }
         }
 
+        private void OnSignInButtonClicked( object sender, RoutedEventArgs e )
+        {
+            Button btn = sender as Button;
+            if(btn.Tag.ToString().Equals("dropbox")) { this.getRequestToken(); }
+            if(btn.Tag.ToString().Equals("skydrive")) { this.LaunchOAuthFlow(); }
+
+        }
+
+        #region Skydrive
         private void LaunchOAuthFlow()
         {
             this.loadingGrid.Visibility = Visibility.Visible;
@@ -238,140 +248,6 @@ namespace MusicBird
             return processedFragments;
         }
 
-        private void OnSignInButtonClicked( object sender, RoutedEventArgs e )
-        {
-            Button btn = sender as Button;
-            if(btn.Tag.ToString().Equals("dropbox")) { this.getRequestToken(); }
-            if(btn.Tag.ToString().Equals("skydrive")) { this.LaunchOAuthFlow(); }
-            
-        }
-
-        private void getRequestToken()
-        {
-            System.Diagnostics.Debug.WriteLine("DB OAuth started");
-            string consumerKey = DBConsumerKey;
-            string consumerSecret = DBSecretKey;
-
-            OAuthBase oAuth = new OAuthBase();
-            string nonce = oAuth.GenerateNonce();
-            string timeStamp = oAuth.GenerateTimeStamp();
-            string signature = generateSig(DBSecretKey, String.Empty);
-
-            signature = HttpUtility.UrlEncode(signature);
-
-            StringBuilder requestUri = new StringBuilder(DBRequestTokenUri);
-            requestUri.AppendFormat("?oauth_consumer_key={0}&", consumerKey);
-            requestUri.AppendFormat("oauth_nonce={0}&", nonce);
-            requestUri.AppendFormat("oauth_timestamp={0}&", timeStamp);
-            requestUri.AppendFormat("oauth_signature_method={0}&", "PLAINTEXT");
-            requestUri.AppendFormat("oauth_version={0}&", "1.0");
-            requestUri.AppendFormat("oauth_signature={0}", signature);
-
-            string auth_url = requestUri.ToString();
-            
-            WebClient wc = new WebClient();
-            wc.DownloadStringCompleted += getRequestTokenCompleted;
-            wc.DownloadStringAsync(new Uri(auth_url));
-        }
-
-        private void getRequestTokenCompleted( Object sender, DownloadStringCompletedEventArgs e ) { 
-            DBtokenSecret = e.Result.Substring(19, 15);
-            DBtoken = e.Result.Substring(47, 15);
-
-            System.Diagnostics.Debug.WriteLine("TokenSecret: "+DBtokenSecret + " for token: " + DBtoken);
-
-            string url = DBAuthorizeUri;
-            url += "?oauth_token=" + DBtoken + "&oauth_callback=http%3A%2F%2Fwww.lukasdiener.tk&locale=en-US";
-
-
-            this.loadingGrid.Visibility = Visibility.Visible;
-            this.authorizationBrowser.Navigating += this.OnDBAuthorizationBrowserNavigating;
-            this.authorizationBrowser.Navigated += this.OnDBAuthorizationBrowserNavigated;
-            this.authorizationBrowser.Navigate(new Uri(url));
-        }
-
-        private void OnDBAuthorizationBrowserNavigated( object sender, NavigationEventArgs e )
-        {
-            this.authorizationBrowser.Navigated -= this.OnDBAuthorizationBrowserNavigated;
-            this.loadingGrid.Visibility = Visibility.Collapsed;
-            this.authorizationBrowser.Visibility = Visibility.Visible;
-        }
-
-        private void OnDBAuthorizationBrowserNavigating( object sender, NavigatingEventArgs e )
-        {
-            Uri uri = e.Uri;
-
-            if(uri != null && uri.AbsoluteUri.StartsWith("http://www.lukasdiener.tk"))
-            {
-                string url = uri.ToString();
-                int uidStart = url.IndexOf("uid=")+4;
-                int uidEnd = url.IndexOf("&oauth_token=");
-                int tokenStart = uidEnd + 13;
-
-                string uid = url.Substring(uidStart, uidEnd - uidStart);
-                string token = url.Substring(tokenStart);
-
-                System.Diagnostics.Debug.WriteLine("UID: "+uid + " for token:" + token);
-
-                this.authorizationBrowser.Navigated -= this.OnAuthorizationBrowserNavigated;
-                this.authorizationBrowser.Navigating -= this.OnAuthorizationBrowserNavigating;
-
-                this.authorizationBrowser.NavigateToString(String.Empty);
-                this.authorizationBrowser.Visibility = Visibility.Collapsed;
-
-                getAccessToken();
-            }
-        }
-
-        private void getAccessToken()
-        {
-            string url = DBAccessTokenUri;
-            OAuthBase oAuth = new OAuthBase();
-            string nonce = oAuth.GenerateNonce();
-            string timeStamp = oAuth.GenerateTimeStamp();
-            string sig = generateSig(DBSecretKey, DBtoken);
-
-            string signature = HttpUtility.UrlEncode(sig);
-
-            StringBuilder requestUri = new StringBuilder(url);
-            requestUri.AppendFormat("?oauth_consumer_key={0}&", DBConsumerKey);
-            requestUri.AppendFormat("oauth_nonce={0}&", nonce);
-            requestUri.AppendFormat("oauth_token={0}&", DBtoken);
-            requestUri.AppendFormat("oauth_timestamp={0}&", timeStamp);
-            requestUri.AppendFormat("oauth_signature_method={0}&", "PLAINTEXT");
-            requestUri.AppendFormat("oauth_version={0}&", "1.0");
-            requestUri.AppendFormat("oauth_signature={0}", signature);
-
-            string auth_url = requestUri.ToString();
-
-            WebClient wc = new WebClient();
-            wc.DownloadStringCompleted += getAccessTokenCompleted;
-            wc.DownloadStringAsync(new Uri(auth_url));
-
-        }
-
-        private void getAccessTokenCompleted( Object sender, DownloadStringCompletedEventArgs e )
-        {
-            System.Diagnostics.Debug.WriteLine(e.Result);
-        }
-
-        private string generateRandomString( int length )
-        {
-            Random rand = new Random();
-            Char[] allowableChars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLOMNOPQRSTUVWXYZ0123456789".ToCharArray();
-            string final = "";
-            for(int i = 0 ; i < length ; i++)
-            {
-                final += allowableChars[rand.Next(allowableChars.Length - 1)];
-            }
-            return final;
-        }
-
-        private string generateSig( string DBSecretKey, string DBsecretToken )
-        {
-            return HttpUtility.UrlEncode(string.Format("{0}&{1}", DBSecretKey, DBsecretToken));
-        }
-
         private void client_UploadStringCompleted( object sender, UploadStringCompletedEventArgs e )
         {
             System.Diagnostics.Debug.WriteLine("DB OAuth result");
@@ -420,6 +296,80 @@ namespace MusicBird
                 Albums albumInfo = (Albums)deserializer.ReadObject(e.Result);
                 this.GetAlbumDataComplete(albumInfo);
             }
+        } 
+        #endregion
+
+
+        #region Dropbox
+        private void getRequestToken()
+        {
+            System.Diagnostics.Debug.WriteLine("DB OAuth started");
+            string requestTokenUrl = DropboxAuth.buildRequestTokenUri();
+
+            WebClient wc = new WebClient();
+            wc.DownloadStringCompleted += getRequestTokenCompleted;
+            wc.DownloadStringAsync(new Uri(requestTokenUrl));
         }
+
+        private void getRequestTokenCompleted( Object sender, DownloadStringCompletedEventArgs e )
+        {
+            DropboxAuth.storeRequestToken(e.Result);
+            string authorizeUrl = DropboxAuth.buildAuthorizeUri();
+
+            this.loadingGrid.Visibility = Visibility.Visible;
+            this.authorizationBrowser.Navigating += this.OnDBAuthorizationBrowserNavigating;
+            this.authorizationBrowser.Navigated += this.OnDBAuthorizationBrowserNavigated;
+            this.authorizationBrowser.Navigate(new Uri(authorizeUrl));
+        }
+
+        private void OnDBAuthorizationBrowserNavigated( object sender, NavigationEventArgs e )
+        {
+            this.authorizationBrowser.Navigated -= this.OnDBAuthorizationBrowserNavigated;
+            this.loadingGrid.Visibility = Visibility.Collapsed;
+            this.authorizationBrowser.Visibility = Visibility.Visible;
+        }
+
+        private void OnDBAuthorizationBrowserNavigating( object sender, NavigatingEventArgs e )
+        {
+            Uri uri = e.Uri;
+
+            if(uri != null && uri.AbsoluteUri.StartsWith("http://www.lukasdiener.tk"))
+            {
+                string url = uri.ToString();
+                DropboxAuth.storeAuthorization(url);
+
+                this.authorizationBrowser.Navigated -= this.OnAuthorizationBrowserNavigated;
+                this.authorizationBrowser.Navigating -= this.OnAuthorizationBrowserNavigating;
+
+                this.authorizationBrowser.NavigateToString(String.Empty);
+                this.authorizationBrowser.Visibility = Visibility.Collapsed;
+
+                getAccessToken();
+            }
+        }
+
+        private void getAccessToken()
+        {
+            string accessTokenUrl = DropboxAuth.buildAccessTokenUri();
+            string accessTokenBody = DropboxAuth.buildAccessTokenBody();
+
+            
+            WebClient wc = new WebClient();
+            wc.DownloadStringCompleted += new DownloadStringCompletedEventHandler(getAccessTokenReceived);
+            //wc.UploadStringCompleted += new UploadStringCompletedEventHandler();
+
+            System.Diagnostics.Debug.WriteLine(accessTokenUrl);
+            System.Diagnostics.Debug.WriteLine(accessTokenBody);
+
+            wc.DownloadStringAsync(new Uri(accessTokenUrl+"?"+accessTokenBody));
+            //wc.UploadStringAsync(new Uri(accessTokenUrl), "POST", accessTokenBody);
+        }
+
+        private void getAccessTokenReceived( object sender, DownloadStringCompletedEventArgs e ) {
+            System.Diagnostics.Debug.WriteLine(e.Result);
+        }
+
+        #endregion
+
     }
 }

@@ -21,7 +21,6 @@ using Microsoft.Phone.BackgroundTransfer;
 using Microsoft.Phone.Controls;
 using Microsoft.Phone.Shell;
 using Microsoft.Phone.Tasks;
-using BoxFiles;
 
 
 
@@ -102,22 +101,6 @@ namespace MusicBird
             System.Diagnostics.Debug.WriteLine("test");
             UpdateUI(null, null);
         }
-
-        private void initDropbox(){
-           string API_KEY = "b8eahgi7u8ziyah";
-           string API_SECRET = "3r7s2wpnd1jesfz";
-           DropBoxClient client = new DropBoxClient(API_KEY, API_SECRET);
-           client.getToken("lukas.diener@hispeed.ch", "!Qh7gR5W2");
-           client.AccountInfo += new DropBoxClient.AccountInfoHandler(client_AccountInfo);
-           client.getAccountInfo();
-            
-        }
-
-        private void client_AccountInfo( AccountInfo handler )
-        {
-            System.Diagnostics.Debug.WriteLine("Quota: "+handler.quota_info.quota);
-        }
-
 
         /// <summary>
         /// PlayStateChanged event handler.
