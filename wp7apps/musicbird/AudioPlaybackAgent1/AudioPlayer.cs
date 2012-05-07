@@ -7,6 +7,7 @@ using System.Windows;
 using System.Windows.Media.Imaging;
 using System.Windows.Resources;
 using System.Xml.Serialization;
+using Microsoft.Phone.Marketplace;
 using Microsoft.Devices;
 using Microsoft.Phone.BackgroundAudio;
 
@@ -50,6 +51,11 @@ namespace AudioPlaybackAgent1
             
             System.Diagnostics.Debug.WriteLine("AudioPlayer.cs:playAtPosition _______ Starting playback...");
             AudioTrack currentTrack = getAudioTrackAt(position);
+            if(currentTrack.Source == null) {
+                player.Stop();
+                setFlag("NotFound");
+                return;
+            }
             player.Track = currentTrack;
             //The PlayStateChangedEventHandler will be called as soon as the track is loaded
             currentTrackNumber = position;
@@ -66,19 +72,20 @@ namespace AudioPlaybackAgent1
             Deployment.Current.Dispatcher.BeginInvoke(() =>
             {                
                 StreamResourceInfo sri = null;
-                Uri imageUri = new Uri("MB_173.png", UriKind.Relative);
+                Uri imageUri = new Uri("MB_358.png", UriKind.Relative);
                 sri = Application.GetResourceStream(imageUri);
 
-                WriteableBitmap wb = new WriteableBitmap(173, 173);
+                WriteableBitmap wb = new WriteableBitmap(358, 358);
                 wb.SetSource(sri.Stream);
 
                 MemoryStream stream = new MemoryStream();
-                wb.SaveJpeg(stream, 173, 173, 0, 90);
+                wb.SaveJpeg(stream, 358, 358, 0, 90);
                 stream.Seek(0, SeekOrigin.Begin);
 
                 mediaHistoryItem.ImageStream = stream;
-                //mediaHistoryItem.Source = currentTrack.Title;
+                mediaHistoryItem.Source = String.Empty;
                 mediaHistoryItem.Title = currentTrack.Title;
+                System.Diagnostics.Debug.WriteLine("Setting current track to " + currentTrack.Title);
                 mediaHistoryItem.PlayerContext.Add("showPlayer", currentTrack.Artist+" - "+currentTrack.Title+".mp3");
                 MediaHistory.Instance.NowPlaying = mediaHistoryItem;
                 stream.Seek(0, SeekOrigin.Begin);
@@ -148,6 +155,7 @@ namespace AudioPlaybackAgent1
                         {
                             player.Pause();
                             System.Diagnostics.Debug.WriteLine("AudioPlayer.cs:OnPlayStateChanged ___ Playback limit exceeded. Pausing.");
+                            setFlag("LimitExceeded");
                             return;
                         }
                     }
@@ -314,6 +322,7 @@ namespace AudioPlaybackAgent1
                             if(!myIsolatedStorage.FileExists(url))
                             {
                                 System.Diagnostics.Debug.WriteLine("File not found...");
+                                setFlag("NotFound");
                                 return new AudioTrack(null, null, null, null, null);
                             }
                         }
@@ -328,6 +337,23 @@ namespace AudioPlaybackAgent1
             else
             {
                 throw new Exception("Damn wrong array index in getAudioTrackAt()...");
+            }
+        }
+
+        private static void setFlag(String type){
+            //type is Limit or NotFound
+            try
+            {
+                using(IsolatedStorageFile myIsolatedStorage = IsolatedStorageFile.GetUserStoreForApplication())
+                {
+                    if(!myIsolatedStorage.FileExists(type+".txt"))
+                    {
+                        myIsolatedStorage.CreateFile(type+".txt");
+                    }
+                }
+            }
+            catch(Exception e) { 
+            
             }
         }
 
@@ -382,12 +408,7 @@ namespace AudioPlaybackAgent1
         }*/
 
         private bool isTrial() {
-            bool isTrial = true;
-            var settings = IsolatedStorageSettings.ApplicationSettings;
-            if(settings.Contains("isTrial"))
-            {
-                settings.TryGetValue<bool>("isTrial", out isTrial);
-            }
+            bool isTrial = (new LicenseInformation()).IsTrial();
             System.Diagnostics.Debug.WriteLine("AudioPlayer.cs:isTrial ______________ isTrial: "+isTrial.ToString());
             return isTrial;
         }
@@ -415,7 +436,7 @@ namespace AudioPlaybackAgent1
                     else
                     {
                         //already played today
-                        if(Convert.ToInt32(items[1]) >= 5)
+                        if(Convert.ToInt32(items[1]) >= 4)
                         {
                             //more than or exactly 5 playbacks. Exceeded.
                             System.Diagnostics.Debug.WriteLine("Playback limit exceeded. "+Convert.ToInt32(items[1])+" plays.");

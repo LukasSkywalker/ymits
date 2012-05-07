@@ -19,8 +19,10 @@ namespace MusicBird
         private static LicenseInformation _licenseInfo = new LicenseInformation();
 
         private static bool _isTrial = true;
+
         public static bool shuffle = false;
         public static bool repeat = false;
+
         public bool IsTrial
         {
             get
@@ -133,13 +135,13 @@ namespace MusicBird
         #else
             _isTrial = _licenseInfo.IsTrial();
         #endif
-            var settings = IsolatedStorageSettings.ApplicationSettings;
+            /*var settings = IsolatedStorageSettings.ApplicationSettings;
             if(settings.Contains("isTrial"))
             {
                 settings.Remove("isTrial");
             }
             settings.Add("isTrial", _isTrial);
-            settings.Save();
+            settings.Save();*/
         }
 
         #region Phone application initialization

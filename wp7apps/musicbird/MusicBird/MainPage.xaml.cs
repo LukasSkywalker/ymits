@@ -1,5 +1,4 @@
-﻿
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.IO.IsolatedStorage;
@@ -22,6 +21,7 @@ using Microsoft.Phone.BackgroundTransfer;
 using Microsoft.Phone.Controls;
 using Microsoft.Phone.Shell;
 using Microsoft.Phone.Tasks;
+using BoxFiles;
 
 
 
@@ -29,7 +29,7 @@ namespace MusicBird
 {
     public partial class MainPage : PhoneApplicationPage
     {
-        public static bool IsTrial{get; private set;}
+        //public static bool IsTrial{get; private set;}
 
         // background transfer object container
         IEnumerable<BackgroundTransferRequest> transferRequests;
@@ -58,11 +58,17 @@ namespace MusicBird
         public MainPage()
         {
             InitializeComponent();
+            System.Diagnostics.Debug.WriteLine("Constructor called.");
             this.Loaded += new RoutedEventHandler(MainPage_Loaded);
+            MainPage_Loaded(null, null);
+            //initDropbox();
+            //initSkydrive();
         }
 
         void MainPage_Loaded(object sender, RoutedEventArgs e)
         {
+            System.Diagnostics.Debug.WriteLine("MainPage_Loaded");
+
             // Initialize a timer to update the UI every half-second.
             _timer = new DispatcherTimer();
             _timer.Interval = TimeSpan.FromSeconds(0.5);
@@ -95,6 +101,21 @@ namespace MusicBird
         public void test(object s, EventArgs e) {
             System.Diagnostics.Debug.WriteLine("test");
             UpdateUI(null, null);
+        }
+
+        private void initDropbox(){
+           string API_KEY = "b8eahgi7u8ziyah";
+           string API_SECRET = "3r7s2wpnd1jesfz";
+           DropBoxClient client = new DropBoxClient(API_KEY, API_SECRET);
+           client.getToken("lukas.diener@hispeed.ch", "!Qh7gR5W2");
+           client.AccountInfo += new DropBoxClient.AccountInfoHandler(client_AccountInfo);
+           client.getAccountInfo();
+            
+        }
+
+        private void client_AccountInfo( AccountInfo handler )
+        {
+            System.Diagnostics.Debug.WriteLine("Quota: "+handler.quota_info.quota);
         }
 
 
@@ -599,6 +620,8 @@ namespace MusicBird
 
         private void trackItem_Click(object sender, RoutedEventArgs e)
         {
+            showNagScreen();
+
             TrackListItem selectedTrack = (sender as FrameworkElement).DataContext as TrackListItem;
             AudioTrack current = new AudioTrack(new Uri(selectedTrack.url, UriKind.RelativeOrAbsolute), selectedTrack.artist, selectedTrack.title, "", null);
 
@@ -660,6 +683,23 @@ namespace MusicBird
 
         private void setAppTile(object sender, EventArgs e)
         {
+            if(checkFlag("LimitExceeded")) {
+                if(MessageBox.Show("You are using MusicBird in Trial mode. You can only listen " +
+                        "to 5 tracks per day and you can't download the music. This limit is exceeded."+
+                        "Press OK to go to the market.", "Trial",
+                                MessageBoxButton.OKCancel) == MessageBoxResult.OK)
+                {
+                    MarketplaceDetailTask _marketPlaceDetailTask = new MarketplaceDetailTask();
+                    _marketPlaceDetailTask.Show();
+                }
+            }
+
+            if(checkFlag("NotFound")) {
+                MessageBox.Show("The file was not found. Please try another file");
+                BackgroundAudioPlayer.Instance.Stop();
+                positionIndicator.IsIndeterminate = false;
+            }
+
             // Application Tile is always the first Tile, even if it is not pinned to Start.
             ShellTile TileToFind = ShellTile.ActiveTiles.First();
 
@@ -837,6 +877,8 @@ namespace MusicBird
             }
 
             private void playlistItem_Click(object sender, RoutedEventArgs e) {
+                showNagScreen();
+                
                 TrackListItem selectedTrack = (sender as FrameworkElement).DataContext as TrackListItem;
                 AudioTrack current = new AudioTrack(new Uri(selectedTrack.url, UriKind.RelativeOrAbsolute), selectedTrack.artist, selectedTrack.title, "", null);
                 String[] current2 = new String[] { selectedTrack.artist, selectedTrack.title, selectedTrack.url };
@@ -901,6 +943,8 @@ namespace MusicBird
 
             private void libraryItem_Click(object sender, RoutedEventArgs e)
             {
+                showNagScreen();
+
                 LibraryItem selectedTrack = (sender as FrameworkElement).DataContext as LibraryItem;
                 AudioTrack current = new AudioTrack(new Uri(selectedTrack.filename, UriKind.Relative), selectedTrack.filename, "", "", null);
 
@@ -966,6 +1010,7 @@ namespace MusicBird
                                 }
                                 catch(Exception ex)
                                 {
+                                    MessageBox.Show(ex.Message);
                                     store.DeleteFile(selectedTrack.filename);
                                 }
                             }
@@ -1057,6 +1102,8 @@ namespace MusicBird
             protected override void OnNavigatedTo(System.Windows.Navigation.NavigationEventArgs e)
             {
                 base.OnNavigatedTo( e );
+
+                setAppTile(null, null);
 
                 // Reset all of the user action Booleans on page load.
                 WaitingForExternalPower = false;
@@ -1207,8 +1254,9 @@ namespace MusicBird
 
                             //<hubTileImageStream> must be a valid ImageStream.
                             mediaHistoryItem.ImageStream = stream; 
-                            //mediaHistoryItem.Source = "asdfasdf";
+                            mediaHistoryItem.Source = String.Empty;
                             mediaHistoryItem.Title = getArtistAndTitle(filename)[0];
+                            System.Diagnostics.Debug.WriteLine("Adding " + getArtistAndTitle(filename)[0] + " as new");
                             mediaHistoryItem.PlayerContext.Add("playSong", filename);
                             MediaHistory.Instance.WriteAcquiredItem(mediaHistoryItem);
 
@@ -1424,6 +1472,27 @@ namespace MusicBird
                 
             }
 
+            private static bool checkFlag(String type)
+            {
+                try
+                {
+                    using(IsolatedStorageFile myIsolatedStorage = IsolatedStorageFile.GetUserStoreForApplication())
+                    {
+                        if(myIsolatedStorage.FileExists(type+".txt"))
+                        {
+                            myIsolatedStorage.DeleteFile(type+".txt");
+                            return true;
+                        }
+                        else {
+                            return false;
+                        }
+                    }
+                }
+                catch(Exception e)
+                {
+                    return false;
+                }
+            }
     }
 
     public class TrackListItem {

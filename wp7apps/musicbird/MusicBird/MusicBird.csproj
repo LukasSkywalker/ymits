@@ -53,14 +53,17 @@
     <Reference Include="Microsoft.Phone.Controls" />
     <Reference Include="Microsoft.Phone.Controls.Toolkit, Version=7.0.0.0, Culture=neutral, PublicKeyToken=b772ad94eb9ca604, processorArchitecture=MSIL" />
     <Reference Include="Microsoft.Phone.Interop" />
+    <Reference Include="Microsoft.Phone.Reactive" />
     <Reference Include="Microsoft.Xna.Framework" />
+    <Reference Include="Newtonsoft.Json.Silverlight">
+      <HintPath>..\Newtonsoft.Json.Silverlight.dll</HintPath>
+    </Reference>
     <Reference Include="PhonePerformance">
       <HintPath>..\..\PhonePerformance.dll</HintPath>
     </Reference>
-    <Reference Include="Polenter.SharpSerializer.Silverlight">
-      <HintPath>..\..\..\..\..\..\Desktop\Polenter.SharpSerializer.Silverlight.dll</HintPath>
-    </Reference>
+    <Reference Include="System.Observable" />
     <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.Servicemodel.Web" />
     <Reference Include="System.Windows" />
     <Reference Include="system" />
     <Reference Include="System.Core" />
@@ -70,12 +73,17 @@
     <Reference Include="System.Xml.Serialization" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AlbumInfo.cs" />
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="BrowserPage.xaml.cs">
+      <DependentUpon>BrowserPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="MainPage.xaml.cs">
       <DependentUpon>MainPage.xaml</DependentUpon>
     </Compile>
+    <Compile Include="OAuthBase.cs" />
     <Compile Include="Page1.xaml.cs">
       <DependentUpon>Page1.xaml</DependentUpon>
     </Compile>
@@ -84,12 +92,17 @@
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="MySystem.cs" />
+    <Compile Include="UserInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <ApplicationDefinition Include="App.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </ApplicationDefinition>
+    <Page Include="BrowserPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="MainPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -138,12 +151,19 @@
     <Content Include="MB_173.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="MB_358.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="MB_62.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="SplashScreenImage.jpg" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\..\..\..\..\Desktop\DropBox.WindowsPhone\Dropox.WindowsPhone.csproj">
+      <Project>{DF432344-6B3C-41AC-AD1A-EF3461BBF306}</Project>
+      <Name>Dropox.WindowsPhone</Name>
+    </ProjectReference>
     <ProjectReference Include="..\AudioPlaybackAgent1\AudioPlaybackAgent1.csproj">
       <Project>{8EE9D35B-2A5C-49B1-937A-3ABDB52F81C8}</Project>
       <Name>AudioPlaybackAgent1</Name>
