@@ -170,7 +170,7 @@ namespace MusicBird
             }
             ((ApplicationBarIconButton)(ApplicationBar.Buttons[nextButton])).IsEnabled = nextBtnEnabled;
 
-            if(Page1.read("albumart"))
+            if((bool)Page1.read("albumart"))
             {
                 try
                 {
@@ -789,8 +789,8 @@ namespace MusicBird
                 // is passed.
                 transferRequest.Tag = filename + ".mp3";
 
-                bool allowCellular = Page1.read("allowCellular");
-                bool allowBattery = Page1.read("allowBattery");
+                bool allowCellular = (bool)Page1.read("allowCellular");
+                bool allowBattery = (bool)Page1.read("allowBattery");
                 if(allowCellular && allowBattery)
                 {
                     transferRequest.TransferPreferences = TransferPreferences.AllowCellularAndBattery;

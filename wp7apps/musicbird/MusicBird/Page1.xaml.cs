@@ -14,6 +14,7 @@ using System.IO;
 using OAuth;
 using System.Text;
 using System.Threading;
+using RestSharp;
 
 namespace MusicBird
 {
@@ -21,18 +22,9 @@ namespace MusicBird
 
     public partial class Page1 : PhoneApplicationPage
     {
-        private static readonly string OAuthAuthorizeUri = "https://oauth.live.com/authorize";
-        private static readonly string ApiServiceUri = "https://apis.live.net/v5.0/";
-        private static readonly string ClientId = "000000004C0B2E84";
-        private static readonly string RedirectUri = "https://oauth.live.com/desktop";
-        private string accessToken;
-        private string[] scopes = new string[] { "wl.basic", "wl.photos" };
-        private string user = "me";
-        private string albums = "me/albums";
-
         private static ManualResetEvent allDone = new ManualResetEvent(false);
 
-
+        private static readonly string RedirectUri = "https://oauth.live.com/desktop";
         public Page1()
         {
             InitializeComponent();
@@ -82,13 +74,32 @@ namespace MusicBird
             //settings.Save();
         }
 
-        public static bool read( string name )
+        public static void delete( string name )
         {
             var settings = IsolatedStorageSettings.ApplicationSettings;
-            Boolean item;
             if(settings.Contains(name))
             {
-                if(settings.TryGetValue<Boolean>(name, out item))
+                settings.Remove(name);
+            }
+        }
+
+        public static void save( string name, string value )
+        {
+            var settings = IsolatedStorageSettings.ApplicationSettings;
+            if(settings.Contains(name))
+            {
+                settings.Remove(name);
+            }
+            settings.Add(name, value);
+        }
+
+        public static object read( string name )
+        {
+            var settings = IsolatedStorageSettings.ApplicationSettings;
+            object item;
+            if(settings.Contains(name))
+            {
+                if(settings.TryGetValue<object>(name, out item))
                 {
                     return item;
                 }
@@ -99,18 +110,19 @@ namespace MusicBird
             }
             else
             {
-                settings.Add(name, false);
+                settings.Add(name, null);
                 //settings.Save();
-                return false;
+                return null;
             }
-        } 
+        }
+
         #endregion
 
         private void PhoneApplicationPage_Loaded( object sender, RoutedEventArgs e )
         {
-            albumart.IsChecked = read("albumart");
-            allowCellular.IsChecked = read("allowCellular");
-            allowBattery.IsChecked = read("allowBattery");
+            albumart.IsChecked = (bool)read("albumart");
+            allowCellular.IsChecked = (bool)read("allowCellular");
+            allowBattery.IsChecked = (bool)read("allowBattery");
         }
 
         private void button1_Click( object sender, RoutedEventArgs e )
@@ -121,6 +133,8 @@ namespace MusicBird
                 {
                     myIsolatedStorage.DeleteFile("Playlist.xml");
                 }
+                delete("skydrive-access-token");
+                delete("dropbox-access-token");
             }
         }
 
@@ -148,10 +162,15 @@ namespace MusicBird
         #region Skydrive
         private void LaunchOAuthFlow()
         {
-            this.loadingGrid.Visibility = Visibility.Visible;
-            this.authorizationBrowser.Navigating += this.OnAuthorizationBrowserNavigating;
-            this.authorizationBrowser.Navigated += this.OnAuthorizationBrowserNavigated;
-            this.authorizationBrowser.Navigate(this.BuildOAuthUri(this.scopes));
+            if((string)read("skydrive-access-token") != null){
+                MessageBox.Show("already authenticated :-)");
+                MessageBox.Show("Token is "+(string)read("skydrive-access-token"));
+            }else{
+                this.loadingGrid.Visibility = Visibility.Visible;
+                this.authorizationBrowser.Navigating += this.OnAuthorizationBrowserNavigating;
+                this.authorizationBrowser.Navigated += this.OnAuthorizationBrowserNavigated;
+                this.authorizationBrowser.Navigate(SkydriveAuth.BuildOAuthUri());
+            }
         }
 
         private void CompleteOAuthFlow( bool success )
@@ -174,7 +193,7 @@ namespace MusicBird
             this.loadingGrid.Visibility = Visibility.Visible;
             WebClient client = new WebClient();
             client.OpenReadCompleted += this.OnClientOpenReadComplete;
-            client.OpenReadAsync(this.BuildApiUri(this.user), Results.UserInfo);
+            client.OpenReadAsync(SkydriveAuth.BuildApiUri(), Results.UserInfo);
 
         }
 
@@ -202,51 +221,11 @@ namespace MusicBird
             }
         }
 
-        private Uri BuildApiUri( string path )
-        {
-            UriBuilder builder = new UriBuilder(ApiServiceUri);
-            builder.Path += path;
-            builder.Query = "access_token=" + HttpUtility.UrlEncode(this.accessToken);
-            return builder.Uri;
-        }
+        
 
-        private Uri BuildOAuthUri( string[] scopes )
-        {
-            List<string> paramList = new List<string>();
-            paramList.Add("client_id=" + HttpUtility.UrlEncode(ClientId));
-            paramList.Add("scope=" + HttpUtility.UrlEncode(String.Join(" ", scopes)));
-            paramList.Add("response_type=" + HttpUtility.UrlEncode("token"));
-            paramList.Add("display=" + HttpUtility.UrlEncode("touch"));
-            paramList.Add("redirect_uri=" + HttpUtility.UrlEncode(RedirectUri));
+        
 
-            UriBuilder authorizeUri = new UriBuilder(OAuthAuthorizeUri);
-            authorizeUri.Query = String.Join("&", paramList.ToArray());
-            return authorizeUri.Uri;
-        }
-
-        private Dictionary<string, string> ProcessFragments( string fragment )
-        {
-            Dictionary<string, string> processedFragments = new Dictionary<string, string>();
-
-            if(fragment[0] == '#')
-            {
-                fragment = fragment.Substring(1);
-            }
-
-            string[] fragmentParams = fragment.Split('&');
-
-            foreach(string fragmentParam in fragmentParams)
-            {
-                string[] keyValue = fragmentParam.Split('=');
-
-                if(keyValue.Length == 2)
-                {
-                    processedFragments.Add(keyValue[0], HttpUtility.UrlDecode(keyValue[1]));
-                }
-            }
-
-            return processedFragments;
-        }
+        
 
         private void client_UploadStringCompleted( object sender, UploadStringCompletedEventArgs e )
         {
@@ -267,9 +246,7 @@ namespace MusicBird
 
             if(uri != null && uri.AbsoluteUri.StartsWith(RedirectUri))
             {
-                Dictionary<string, string> fragments = this.ProcessFragments(uri.Fragment);
-
-                bool success = fragments.TryGetValue("access_token", out this.accessToken);
+                bool success = SkydriveAuth.getFragments(uri.Fragment);
 
                 e.Cancel = true;
                 this.CompleteOAuthFlow(success);
@@ -288,7 +265,7 @@ namespace MusicBird
 
                 WebClient client = new WebClient();
                 client.OpenReadCompleted += this.OnClientOpenReadComplete;
-                client.OpenReadAsync(this.BuildApiUri(this.albums), Results.AlbumInfo);
+                client.OpenReadAsync(SkydriveAuth.BuildApiUri(), Results.AlbumInfo);
             }
             else if(e.UserState.Equals(Results.AlbumInfo))
             {
@@ -303,12 +280,19 @@ namespace MusicBird
         #region Dropbox
         private void getRequestToken()
         {
-            System.Diagnostics.Debug.WriteLine("DB OAuth started");
-            string requestTokenUrl = DropboxAuth.buildRequestTokenUri();
+            if((string)Page1.read("dropbox-access-token") != "")
+            {
 
-            WebClient wc = new WebClient();
-            wc.DownloadStringCompleted += getRequestTokenCompleted;
-            wc.DownloadStringAsync(new Uri(requestTokenUrl));
+            }
+            else
+            {
+                System.Diagnostics.Debug.WriteLine("DB OAuth started");
+                string requestTokenUrl = DropboxAuth.buildRequestTokenUri();
+
+                WebClient wc = new WebClient();
+                wc.DownloadStringCompleted += getRequestTokenCompleted;
+                wc.DownloadStringAsync(new Uri(requestTokenUrl));
+            }
         }
 
         private void getRequestTokenCompleted( Object sender, DownloadStringCompletedEventArgs e )
@@ -367,6 +351,7 @@ namespace MusicBird
 
         private void getAccessTokenReceived( object sender, DownloadStringCompletedEventArgs e ) {
             System.Diagnostics.Debug.WriteLine(e.Result);
+            Page1.save("dropbox-access-token", e.Result);
         }
 
         #endregion
