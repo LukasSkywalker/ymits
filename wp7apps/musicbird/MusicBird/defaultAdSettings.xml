@@ -1,0 +1,30 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<AdSettings xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+            xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <CultureDescriptors>
+    <AdCultureDescriptor CultureName="en-US">
+      <Probabilities Probability="1" AdType="PubCenter" />
+      <Probabilities Probability="1" AdType="MobFox" />
+      <Probabilities Probability="70" AdType="InnerActive" />
+      <Probabilities Probability="27" AdType="AdMob" />
+    </AdCultureDescriptor>
+    <AdCultureDescriptor CultureName="en-GB">
+      <Probabilities Probability="1" AdType="PubCenter" />
+      <Probabilities Probability="1" AdType="MobFox" />
+      <Probabilities Probability="70" AdType="InnerActive" />
+      <Probabilities Probability="27" AdType="AdMob" />
+    </AdCultureDescriptor>
+    <AdCultureDescriptor CultureName="de-CH">
+      <Probabilities Probability="1" AdType="PubCenter" />
+      <Probabilities Probability="1" AdType="MobFox" />
+      <Probabilities Probability="70" AdType="InnerActive" />
+      <Probabilities Probability="27" AdType="AdMob" />
+    </AdCultureDescriptor>
+    <AdCultureDescriptor CultureName="default">
+      <Probabilities Probability="1" AdType="PubCenter" />
+      <Probabilities Probability="1" AdType="MobFox" />
+      <Probabilities Probability="70" AdType="InnerActive" />
+      <Probabilities Probability="27" AdType="AdMob" />
+    </AdCultureDescriptor>
+  </CultureDescriptors>
+</AdSettings>

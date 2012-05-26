@@ -4,6 +4,9 @@ using System.Windows.Navigation;
 using Microsoft.Phone.Controls;
 using Microsoft.Phone.Marketplace;
 using Microsoft.Phone.Shell;
+using System.Reflection;
+using com.mtiks.winmobile;
+
 
 namespace MusicBird
 {
@@ -71,6 +74,7 @@ namespace MusicBird
         // This code will not execute when the application is reactivated
         private void Application_Launching(object sender, LaunchingEventArgs e)
         {
+            mtiks.Instance.Start("6fa3cfb581843c4b5d7fc7996", Assembly.GetExecutingAssembly());
             CheckLicense();
             //IsolatedStorageExplorer.Explorer.Start("localhost");
         }
@@ -79,6 +83,7 @@ namespace MusicBird
         // This code will not execute when the application is first launched
         private void Application_Activated(object sender, ActivatedEventArgs e)
         {
+            mtiks.Instance.Start("6fa3cfb581843c4b5d7fc7996", Assembly.GetExecutingAssembly());
             CheckLicense();
             //IsolatedStorageExplorer.Explorer.RestoreFromTombstone();
         }
@@ -87,6 +92,7 @@ namespace MusicBird
         // This code will not execute when the application is closing
         private void Application_Deactivated(object sender, DeactivatedEventArgs e)
         {
+            mtiks.Instance.Stop();
             // Ensure that required application state is persisted here.
         }
 
@@ -94,6 +100,7 @@ namespace MusicBird
         // This code will not execute when the application is deactivated
         private void Application_Closing(object sender, ClosingEventArgs e)
         {
+            mtiks.Instance.Stop();
         }
 
         // Code to execute if a navigation fails

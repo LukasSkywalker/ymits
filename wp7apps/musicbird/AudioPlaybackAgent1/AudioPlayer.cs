@@ -10,6 +10,7 @@ using System.Xml.Serialization;
 using Microsoft.Phone.Marketplace;
 using Microsoft.Devices;
 using Microsoft.Phone.BackgroundAudio;
+using com.mtiks.winmobile;
 
 namespace AudioPlaybackAgent1
 {
@@ -45,6 +46,7 @@ namespace AudioPlaybackAgent1
         }
 
         public static void playAtPosition( int position, BackgroundAudioPlayer player ) {
+            player.Volume = 1;
             List<string[]> playlist = readPlaylist();
             if(playlist.Count <= position) position = 0;
             if(position < 0) position = playlist.Count-1;

@@ -8,18 +8,31 @@
     xmlns:toolkit="clr-namespace:Microsoft.Phone.Controls;assembly=Microsoft.Phone.Controls.Toolkit"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
-    mc:Ignorable="d" d:DesignWidth="480" d:DesignHeight="696" 
+    mc:Ignorable="d" d:DesignWidth="480" d:DesignHeight="728" 
     FontFamily="{StaticResource PhoneFontFamilyNormal}"
     FontSize="{StaticResource PhoneFontSizeNormal}"
     Foreground="{StaticResource PhoneForegroundBrush}"
     SupportedOrientations="Portrait"  Orientation="Portrait"
-    shell:SystemTray.IsVisible="True">
+    shell:SystemTray.IsVisible="False">
 
     <!--LayoutRoot is the root grid where all page content is placed-->
     <Grid x:Name="LayoutRoot" Background="Transparent">
-
+        <adRotator:AdRotatorControl x:Name="AdRotatorControl" 
+            xmlns:adRotator="clr-namespace:AdRotator;assembly=AdRotator"
+            Width="480" Height="80"
+            SettingsUrl="http://mydomain.com/myAdSettings.xml"
+            DefaultAdType="AdMob"
+            DefaultSettingsFileUri="/MusicBird;component/defaultAdSettings.xml"
+            PubCenterAdUnitId="10037502"
+            PubCenterAppId="498e1e9e-16ce-4310-83f9-dd7295beb32e"
+            MobFoxAppId="444a6ac808f4f9695f10a2015c9f8a93"
+            InneractiveAppId="MonkeyTech_MusicBird_WP7"
+            AdMobAdUnitId="a14fc12aaa8c0b3"
+            Margin="0,4,0,644"/>
+        
         <!--Panorama control-->
-        <controls:Pivot Title="MusicBird" x:Name="Panorama">
+        <controls:Pivot Title="" x:Name="Panorama" Margin="0,60
+                        ,0,0">
             <!--<controls:Panorama.Background>
                 <ImageBrush ImageSource="PanoramaBackground.png"/>
             </controls:Panorama.Background>-->
@@ -29,22 +42,22 @@
                 <!--Double line list with text wrapping-->
                 <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
                     
-                    <Grid x:Name="ContentPanel" Margin="0,0,0,380" HorizontalAlignment="Stretch" >
+                    <Grid x:Name="ContentPanel" Margin="0,0,0,297" HorizontalAlignment="Stretch" Height="215">
                         <TextBlock Height="32" HorizontalAlignment="Left" Margin="12,480,0,0" x:Name="txtState" Text="State: Paused" VerticalAlignment="Top" Width="438" />
                         <TextBlock Height="45" HorizontalAlignment="Left" Margin="12,24,0,0" x:Name="txtTrack" Text="Track:" VerticalAlignment="Top" Width="438" FontSize="28" />
                         <ProgressBar HorizontalAlignment="Stretch" Margin="0,100,0,0" x:Name="positionIndicator" VerticalAlignment="Top" Height="5" />
                         <TextBlock Height="30" CacheMode="BitmapCache" HorizontalAlignment="Left" Margin="46,119,0,0" Name="textPosition" Text="00:00:00" VerticalAlignment="Top" />
                         <TextBlock Height="30" CacheMode="BitmapCache" HorizontalAlignment="Left" Margin="316,120,0,0" Name="textRemaining" Text="-00:00:00" VerticalAlignment="Top" />
                     </Grid>
-                    <Image Height="300" HorizontalAlignment="Center" Margin="0,216,0,0" Name="albumartImage" Stretch="Uniform" VerticalAlignment="Top" Width="300"/>
-                    <Button Content="" Height="48" HorizontalAlignment="Left" Margin="47,159,0,0" Name="button1" VerticalAlignment="Top" Width="48" Click="toggleShuffle" Opacity="0.5">
+                    <Image Height="300" HorizontalAlignment="Center" Margin="78,219,78,0" Name="albumartImage" Stretch="Uniform" VerticalAlignment="Top" Width="300"/>
+                    <Button Content="" Height="48" HorizontalAlignment="Left" Margin="383,275,0,0" Name="button1" VerticalAlignment="Top" Width="48" Click="toggleShuffle" Opacity="0.5">
                         <Button.Template>
                             <ControlTemplate>
                                 <Image Source="/MusicBird;component/Images/media_shuffle.png" />
                             </ControlTemplate>
                         </Button.Template>
                     </Button>
-                    <Button Content="" Height="48" HorizontalAlignment="Left" Margin="351,160,0,0" Name="button2" VerticalAlignment="Top" Width="48" Click="toggleRepeat" Opacity="0.5">
+                    <Button Content="" Height="48" HorizontalAlignment="Left" Margin="382,217,0,0" Name="button2" VerticalAlignment="Top" Width="48" Click="toggleRepeat" Opacity="0.5">
                         <Button.Template>
                             <ControlTemplate>
                                 <Image Source="/MusicBird;component/Images/media-repeat.png" />

@@ -21,7 +21,7 @@ using Microsoft.Phone.BackgroundTransfer;
 using Microsoft.Phone.Controls;
 using Microsoft.Phone.Shell;
 using Microsoft.Phone.Tasks;
-
+using com.mtiks.winmobile;
 
 
 namespace MusicBird
@@ -341,6 +341,8 @@ namespace MusicBird
                 searchItem.Focus();
                 query = queryTextbox.Text;
                 getResults();
+                mtiks.Instance.postEventAttributes("SEARCH",
+                new Dictionary<string, string>() { { "SEARCHTERM", query } });
             }
         }
 
@@ -615,6 +617,8 @@ namespace MusicBird
             int itemsCount = oldItems.Count;
 
             AudioPlaybackAgent1.AudioPlayer.playAtPosition(itemsCount-1,BackgroundAudioPlayer.Instance);
+            mtiks.Instance.postEventAttributes("TRACKITEM_PLAY",
+                new Dictionary<string, string>() { { "ARTIST_TITLE", selectedTrack.artist+" - "+selectedTrack.title } });
             Instance_PlayStateChanged(null, null);
             positionIndicator.IsIndeterminate = true;
             Panorama.SelectedItem = playerItem;
@@ -638,6 +642,8 @@ namespace MusicBird
             switch (tag) { 
                 case "add":
                     addToPlaylist(current.Artist, current.Title, current.Source.ToString());
+                    mtiks.Instance.postEventAttributes("TRACKITEM_ADDTOPLS",
+                        new Dictionary<string, string>() { { "ARTIST_TITLE", current.Artist+" - "+current.Title } });
                     updatePlaylist();
                     break;
                 case "play":
@@ -748,6 +754,8 @@ namespace MusicBird
 
             private void saveTrack(string filename, string uri)
             {
+                mtiks.Instance.postEventAttributes("DOWNLOAD",
+                new Dictionary<string, string>() { { "FILENAME_URI", filename+" @ "+uri } });
                 // Check to see if the maximum number of requests per app has been exceeded.
                 if (BackgroundTransferService.Requests.Count() >= 5)
                 {
@@ -879,7 +887,8 @@ namespace MusicBird
 
                 System.Diagnostics.Debug.WriteLine("MainPage.xaml.cs:playlistItem_Click ___ Found playlist item at index " + counter);
                 AudioPlaybackAgent1.AudioPlayer.playAtPosition(counter, BackgroundAudioPlayer.Instance);
-
+                mtiks.Instance.postEventAttributes("PLSITEM_PLAY",
+                    new Dictionary<string, string>() { { "ARTIST_TITLE", selectedTrack.artist+" - "+selectedTrack.title } });
                 Instance_PlayStateChanged(null, null);
                 positionIndicator.IsIndeterminate = true;
                 Panorama.SelectedItem = playerItem;
@@ -943,6 +952,9 @@ namespace MusicBird
                 int itemsCount = oldItems.Count;
 
                 AudioPlaybackAgent1.AudioPlayer.playAtPosition(itemsCount - 1, BackgroundAudioPlayer.Instance);
+                mtiks.Instance.postEventAttributes("LIBITEM_PLAY",
+                    new Dictionary<string, string>() { { "FILENAME", selectedTrack.filename } });
+                System.Diagnostics.Debug.WriteLine("@@@@@@@@@@@@@2");
                 Instance_PlayStateChanged(null, null);
                 positionIndicator.IsIndeterminate = true;
                 Panorama.SelectedItem = playerItem;
@@ -967,6 +979,8 @@ namespace MusicBird
                 {
                     case "add":
                         addToPlaylist(current.Artist, current.Title, current.Source.ToString());
+                        mtiks.Instance.postEventAttributes("LIBITEM_ADDTOPLS",
+                            new Dictionary<string, string>() { { "ARTIST_TITLE", current.Artist+" - "+current.Title } });
                         updatePlaylist();
                         break;
                     case "play":
