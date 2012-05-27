@@ -78,7 +78,7 @@ namespace MusicBird
         public static bool getFragments(string fragment){
             Dictionary<string, string> fragments = SkydriveAuth.ProcessFragments(fragment);
             bool success = fragments.TryGetValue("access_token", out accessToken);
-            Page1.save("skydrive-access-token", accessToken);
+            Preferences.write("skydrive-access-token", accessToken);
             return success;
         }
     }

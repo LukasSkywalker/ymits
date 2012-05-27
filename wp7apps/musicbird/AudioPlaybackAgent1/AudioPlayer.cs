@@ -384,31 +384,6 @@ namespace AudioPlaybackAgent1
             }
         }
 
-        /*public static Dictionary<String, String> readPrefs()
-        {
-            try
-            {
-                using(IsolatedStorageFile myIsolatedStorage = IsolatedStorageFile.GetUserStoreForApplication())
-                {
-                    if(!myIsolatedStorage.FileExists("Preferences.xml"))
-                    {
-                        return new Dictionary<String, String>();
-                    }
-                    using(IsolatedStorageFileStream stream = myIsolatedStorage.OpenFile("Preferences.xml", FileMode.Open))
-                    {
-                        XmlSerializer serializer = new XmlSerializer(typeof(Dictionary<String, String>));
-                        Dictionary<String, String> data = (Dictionary<String, String>)serializer.Deserialize(stream);
-                        return data;
-                    }
-                }
-            }
-            catch
-            {
-                // add some code here
-                throw new IsolatedStorageException("Could not get Playlist file from UserStore");
-            }
-        }*/
-
         private bool isTrial() {
             bool isTrial = (new LicenseInformation()).IsTrial();
             System.Diagnostics.Debug.WriteLine("AudioPlayer.cs:isTrial ______________ isTrial: "+isTrial.ToString());
@@ -422,60 +397,33 @@ namespace AudioPlaybackAgent1
             now = DateTime.Now;
             DateTime date = now.Date;
 
-            if(settings.Contains("playback"))
+            string playbackDate = Preferences.read("playback-date");
+            string playbackNumber = Preferences.read("playback-number");
+
+            if(DateTime.Parse(playbackDate) != date)
             {
-                String[] items;
-                if(settings.TryGetValue<String[]>("playback", out items))
-                {
-                    if(DateTime.Parse(items[0]) != date)
-                    {
-                        //last date was yesterday
-                        System.Diagnostics.Debug.WriteLine("Dates do not match. Counter set to 1.");
-                        items[0] = date.ToString();
-                        items[1] = "1";
-                        return false;
-                    }
-                    else
-                    {
-                        //already played today
-                        if(Convert.ToInt32(items[1]) >= 4)
-                        {
-                            //more than or exactly 5 playbacks. Exceeded.
-                            System.Diagnostics.Debug.WriteLine("Playback limit exceeded. "+Convert.ToInt32(items[1])+" plays.");
-                            return true;
-                        }
-                        else
-                        {
-                            //less than 5 replays. Count 1 up.
-                            System.Diagnostics.Debug.WriteLine("Not exceeded. " + Convert.ToInt32(items[1]) + " plays.");
-                            items[1] = (Convert.ToInt32(items[1]) + 1).ToString();
-                            settings.Remove("playback");
-                            settings.Add("playback", items);
-                            settings.Save();
-                            return false;
-                        }
-                    }
+                //last date was yesterday
+                System.Diagnostics.Debug.WriteLine("Dates do not match. Counter set to 1.");
+                playbackDate = date.ToString();
+                playbackNumber = "1";
+                return false;
+            }else{
+                //already played today
+                if(Convert.ToInt32(playbackNumber) >= 4){
+                    //more than or exactly 5 playbacks. Exceeded.
+                    System.Diagnostics.Debug.WriteLine("Playback limit exceeded. "+Convert.ToInt32(playbackNumber)+" plays.");
+                    return true;
                 }
-                else
-                {
-                    settings.Remove("playback");
-                    System.Diagnostics.Debug.WriteLine("Tryget failed. Setting to 1.");
-                    String[] nullItem = new String[] {date.ToString(), "1" };
-                    settings.Add("playback", nullItem);
-                    settings.Save();
-                    //failed to get value
+                else{
+                    //less than 5 replays. Count 1 up.
+                    System.Diagnostics.Debug.WriteLine("Not exceeded. " + Convert.ToInt32(playbackNumber) + " plays.");
+                    playbackNumber = (Convert.ToInt32(playbackNumber) + 1).ToString();
+                    Preferences.write("playback-date", playbackDate);
+                    Preferences.write("playback-number", playbackNumber);
                     return false;
                 }
             }
-            else
-            {
-                System.Diagnostics.Debug.WriteLine(".contains() returns false. Created with count=1.");
-                String[] nullItem = new String[] { date.ToString(), "1" };
-                settings.Add("playback", nullItem);
-                settings.Save();
-                return false;
-            }
-        }
+       }
 
     }
     public class TrackListItem

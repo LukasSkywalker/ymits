@@ -54,6 +54,9 @@
     <Reference Include="System.Xml.Serialization" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\MusicBird\Preferences.cs">
+      <Link>Preferences.cs</Link>
+    </Compile>
     <Compile Include="AudioPlayer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

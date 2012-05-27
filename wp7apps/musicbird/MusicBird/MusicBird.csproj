@@ -98,6 +98,7 @@
     <Compile Include="Page1.xaml.cs">
       <DependentUpon>Page1.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Preferences.cs" />
     <Compile Include="Properties.xaml.cs">
       <DependentUpon>Properties.xaml</DependentUpon>
     </Compile>
