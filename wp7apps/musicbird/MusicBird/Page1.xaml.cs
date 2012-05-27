@@ -183,6 +183,7 @@ namespace MusicBird
 
             if(success)
             {
+                this.UploadImage();
                 this.GetUserData();
                 this.signInButton1.Visibility = Visibility.Collapsed;
             }
@@ -212,13 +213,30 @@ namespace MusicBird
 
         private void GetAlbumDataComplete( Albums albumList )
         {
-
-            System.Diagnostics.Debug.WriteLine("\nSkyDrive Albums\n");
+        
+            /*System.Diagnostics.Debug.WriteLine("\nSkyDrive Albums\n");
             foreach(AlbumInfo info in albumList.data)
             {
                 string s = (info.Count == 1 ? String.Empty : "s");
                 System.Diagnostics.Debug.WriteLine(String.Format("{0} ({1} photo{2})\n", info.Name, info.Count, s));
-            }
+            }*/
+        }
+
+        private void UploadImage() {
+            System.Diagnostics.Debug.WriteLine("accesstoken: "+SkydriveAuth.aToken());
+            String url = "https://apis.live.net/v5.0/me/skydrive/files/HelloWorld.txt?access_token=" + SkydriveAuth.aToken();
+            var web = new WebClient();
+            web.UploadStringCompleted += ( s, e ) =>
+            {
+                System.Diagnostics.Debug.WriteLine(e.Error);
+                string res = e.Result.ToString();
+                System.Diagnostics.Debug.WriteLine("###" + res);
+            };
+
+            web.Headers["Content-type"] = "text/plain";
+            web.Encoding = Encoding.UTF8;
+            string xml = "asldjkfghlasidhgfhasdjfkl";
+            web.UploadStringAsync(new Uri(url), "PUT", xml);    
         }
 
         
@@ -280,19 +298,19 @@ namespace MusicBird
         #region Dropbox
         private void getRequestToken()
         {
-            if((string)Page1.read("dropbox-access-token") != "")
+            /*if((string)Page1.read("dropbox-access-token") != "")
             {
 
             }
             else
-            {
+            {*/
                 System.Diagnostics.Debug.WriteLine("DB OAuth started");
                 string requestTokenUrl = DropboxAuth.buildRequestTokenUri();
 
                 WebClient wc = new WebClient();
                 wc.DownloadStringCompleted += getRequestTokenCompleted;
                 wc.DownloadStringAsync(new Uri(requestTokenUrl));
-            }
+           // }
         }
 
         private void getRequestTokenCompleted( Object sender, DownloadStringCompletedEventArgs e )

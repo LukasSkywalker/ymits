@@ -68,6 +68,15 @@ namespace MusicBird
         {
             System.Diagnostics.Debug.WriteLine("MainPage_Loaded");
 
+            if((Application.Current as App).IsTrial)
+            {
+                AdRotatorControl.IsEnabled = true;
+            }
+            else {
+                AdRotatorControl.IsEnabled = false;
+                Panorama.Margin = new System.Windows.Thickness(0,0,0,0);
+            }
+
             // Initialize a timer to update the UI every half-second.
             _timer = new DispatcherTimer();
             _timer.Interval = TimeSpan.FromSeconds(0.5);

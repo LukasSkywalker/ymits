@@ -14,7 +14,7 @@ using Microsoft.Phone.Reactive;
 
 namespace MusicBird
 {
-    public static class DropboxAuth
+    public class DropboxAuth : CloudAuth
     {
         private static readonly string requestTokenUri = "https://api.dropbox.com/1/oauth/request_token";
         private static readonly string authorizeUri = "https://www.dropbox.com/1/oauth/authorize";
@@ -26,7 +26,6 @@ namespace MusicBird
         private static string accessToken;
         private static string accessTokenSecret;
 
-        public static event EventHandler<RoutedEventArgs> requestTokenReceived;
 
         public static string buildRequestTokenUri() {
             OAuthBase oAuth = new OAuthBase();

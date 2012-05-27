@@ -18,9 +18,10 @@ namespace MusicBird
         private static readonly string ApiServiceUri = "https://apis.live.net/v5.0/";
         private static readonly string ClientId = "000000004C0B2E84";
         private static string accessToken;
-        private static string[] scopes = new string[] { "wl.basic", "wl.photos" };
+        private static string[] scopes = new string[] { "wl.basic", "wl.photos", "wl.skydrive_update" };
         private static string user = "me";
         private static string albums = "me/albums";
+        private static string upload = "me/skydrive/files";
         private static readonly string RedirectUri = "https://oauth.live.com/desktop";
 
         public static Uri BuildOAuthUri()
@@ -35,6 +36,10 @@ namespace MusicBird
             UriBuilder authorizeUri = new UriBuilder(OAuthAuthorizeUri);
             authorizeUri.Query = String.Join("&", paramList.ToArray());
             return authorizeUri.Uri;
+        }
+
+        public static string aToken() {
+            return HttpUtility.UrlEncode(accessToken);
         }
 
         public static Uri BuildApiUri()

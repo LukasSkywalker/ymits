@@ -13,22 +13,24 @@
     FontSize="{StaticResource PhoneFontSizeNormal}"
     Foreground="{StaticResource PhoneForegroundBrush}"
     SupportedOrientations="Portrait"  Orientation="Portrait"
-    shell:SystemTray.IsVisible="False">
+    shell:SystemTray.IsVisible="False" xmlns:my="clr-namespace:Microsoft.Advertising.Mobile.UI;assembly=Microsoft.Advertising.Mobile.UI">
 
     <!--LayoutRoot is the root grid where all page content is placed-->
     <Grid x:Name="LayoutRoot" Background="Transparent">
+        <!--<my:AdControl HorizontalAlignment="Left" Margin="0,0,0,0" Name="adControl1" VerticalAlignment="Top" Width="480" Height="80" AdUnitId="10037502" ApplicationId="498e1e9e-16ce-4310-83f9-dd7295beb32e" />-->
         <adRotator:AdRotatorControl x:Name="AdRotatorControl" 
             xmlns:adRotator="clr-namespace:AdRotator;assembly=AdRotator"
             Width="480" Height="80"
-            SettingsUrl="http://mydomain.com/myAdSettings.xml"
-            DefaultAdType="AdMob"
+            SettingsUrl="http://musicdc.sourceforge.net/upload/musicbird/myAdSettings.xml"
+            DefaultAdType="AdDuplex"
             DefaultSettingsFileUri="/MusicBird;component/defaultAdSettings.xml"
             PubCenterAdUnitId="10037502"
             PubCenterAppId="498e1e9e-16ce-4310-83f9-dd7295beb32e"
             MobFoxAppId="444a6ac808f4f9695f10a2015c9f8a93"
             InneractiveAppId="MonkeyTech_MusicBird_WP7"
             AdMobAdUnitId="a14fc12aaa8c0b3"
-            Margin="0,4,0,644"/>
+            Margin="0,4,0,644"
+            AdDuplexAppId="13499" />
         
         <!--Panorama control-->
         <controls:Pivot Title="" x:Name="Panorama" Margin="0,60
@@ -196,6 +198,7 @@
                 </Grid>
             </controls:PivotItem>
         </controls:Pivot>
+        
     </Grid>
     <phone:PhoneApplicationPage.ApplicationBar>
          <shell:ApplicationBar IsVisible="True" IsMenuEnabled="False" x:Name="AppBar">
