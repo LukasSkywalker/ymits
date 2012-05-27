@@ -16,34 +16,18 @@ namespace MusicBird
 {
     public class DropboxAuth : CloudAuth
     {
-        private static readonly string requestTokenUri = "https://api.dropbox.com/1/oauth/request_token";
-        private static readonly string authorizeUri = "https://www.dropbox.com/1/oauth/authorize";
-        private static readonly string accessTokenUri = "https://api.dropbox.com/1/oauth/access_token";
-        private static readonly string consumerKey = "b8eahgi7u8ziyah";
-        private static readonly string consumerSecret = "3r7s2wpnd1jesfz";
+        public static readonly string requestTokenUri = "https://api.dropbox.com/1/oauth/request_token";
+        public static readonly string authorizeUri = "https://www.dropbox.com/1/oauth/authorize";
+        public static readonly string accessTokenUri = "https://api.dropbox.com/1/oauth/access_token";
+        public static readonly string consumerKey = "b8eahgi7u8ziyah";
+        public static readonly string consumerSecret = "3r7s2wpnd1jesfz";
         private static string requestToken;
         private static string requestTokenSecret;
         private static string accessToken;
         private static string accessTokenSecret;
 
 
-        public static string buildRequestTokenUri() {
-            OAuthBase oAuth = new OAuthBase();
-            string nonce = oAuth.GenerateNonce();
-            string timeStamp = oAuth.GenerateTimeStamp();
-            string signature = generateSig(consumerSecret, String.Empty);
-
-            StringBuilder requestUri = new StringBuilder(requestTokenUri);
-            requestUri.AppendFormat("?oauth_consumer_key={0}&", consumerKey);
-            requestUri.AppendFormat("oauth_nonce={0}&", nonce);
-            requestUri.AppendFormat("oauth_timestamp={0}&", timeStamp);
-            requestUri.AppendFormat("oauth_signature_method={0}&", "PLAINTEXT");
-            requestUri.AppendFormat("oauth_version={0}&", "1.0");
-            requestUri.AppendFormat("oauth_signature={0}", signature);
-
-            string auth_url = requestUri.ToString();
-            return auth_url;
-        }
+        
 
         public static string buildAuthorizeUri() {
             string url = authorizeUri;

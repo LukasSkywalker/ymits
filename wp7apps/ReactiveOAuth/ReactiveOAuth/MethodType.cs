@@ -5,7 +5,7 @@ namespace Codeplex.OAuth
     /// <summary>WebRequest HttpMethodType</summary>
     public enum MethodType
     {
-        Get, Post
+        Get, Post, Put
     }
 
     public static class MethodTypeExtensions
@@ -19,6 +19,8 @@ namespace Codeplex.OAuth
                     return "GET";
                 case MethodType.Post:
                     return "POST";
+                case MethodType.Put:
+                    return "PUT";
                 default:
                     throw new ArgumentException();
             }

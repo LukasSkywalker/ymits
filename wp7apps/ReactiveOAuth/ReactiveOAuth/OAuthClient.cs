@@ -47,9 +47,9 @@ namespace Codeplex.OAuth
             }
         }
 
-        protected virtual WebRequest CreateWebRequest()
+        public virtual WebRequest CreateWebRequest()
         {
-            var requestUrl = (MethodType == OAuth.MethodType.Get) ? Url + "?" + Parameters.ToQueryParameter() : Url;
+            var requestUrl = (MethodType == OAuth.MethodType.Get || MethodType == OAuth.MethodType.Put) ? Url + "?" + Parameters.ToQueryParameter() : Url;
             var req = (HttpWebRequest)WebRequest.Create(requestUrl);
 #if WINDOWS_PHONE
             req.AllowReadStreamBuffering = false;
