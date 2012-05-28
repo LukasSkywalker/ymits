@@ -2,15 +2,13 @@
 using System.Collections.Generic;
 using System.IO;
 using System.IO.IsolatedStorage;
-using System.Threading;
 using System.Windows;
 using System.Windows.Media.Imaging;
 using System.Windows.Resources;
 using System.Xml.Serialization;
-using Microsoft.Phone.Marketplace;
 using Microsoft.Devices;
 using Microsoft.Phone.BackgroundAudio;
-using com.mtiks.winmobile;
+using Microsoft.Phone.Marketplace;
 
 namespace AudioPlaybackAgent1
 {
@@ -19,13 +17,14 @@ namespace AudioPlaybackAgent1
         
         private static volatile bool _classInitialized;
         public static int currentTrackNumber = 0;
-        public static Mutex mut = new Mutex(false, "playlistMutex");
 
         public static List<AudioTrack> _playList = new List<AudioTrack>
         {
 
             
         };
+        private bool IsTrial;
+        private bool trialRead = false;
 
         /// <remarks>
         /// AudioPlayer instances can share the same process. 
@@ -344,19 +343,7 @@ namespace AudioPlaybackAgent1
 
         private static void setFlag(String type){
             //type is Limit or NotFound
-            try
-            {
-                using(IsolatedStorageFile myIsolatedStorage = IsolatedStorageFile.GetUserStoreForApplication())
-                {
-                    if(!myIsolatedStorage.FileExists(type+".txt"))
-                    {
-                        myIsolatedStorage.CreateFile(type+".txt");
-                    }
-                }
-            }
-            catch(Exception e) { 
-            
-            }
+            Preferences.write(type, true);
         }
 
         private  static List<String[]> readPlaylist()
@@ -385,9 +372,14 @@ namespace AudioPlaybackAgent1
         }
 
         private bool isTrial() {
-            bool isTrial = (new LicenseInformation()).IsTrial();
-            System.Diagnostics.Debug.WriteLine("AudioPlayer.cs:isTrial ______________ isTrial: "+isTrial.ToString());
-            return isTrial;
+            if(this.trialRead){
+                return this.IsTrial;
+            }else{
+                this.IsTrial = Preferences.readBool("trial");
+                this.trialRead = true;
+            }
+            System.Diagnostics.Debug.WriteLine("AudioPlayer.cs:isTrial ______________ isTrial: "+IsTrial.ToString());
+            return this.IsTrial;
         }
 
         public static bool isPlaybackLimitExceeded()
@@ -400,15 +392,19 @@ namespace AudioPlaybackAgent1
             string playbackDate = Preferences.read("playback-date");
             string playbackNumber = Preferences.read("playback-number");
 
-            if(DateTime.Parse(playbackDate) != date)
+            if(playbackDate == null || DateTime.Parse(playbackDate) != date)
             {
                 //last date was yesterday
                 System.Diagnostics.Debug.WriteLine("Dates do not match. Counter set to 1.");
                 playbackDate = date.ToString();
-                playbackNumber = "1";
+                Preferences.write("playback-number", 1);
+                Preferences.write("playback-date", playbackDate);
                 return false;
             }else{
                 //already played today
+                if(playbackNumber == null){
+                    playbackNumber = 0.ToString();
+                }
                 if(Convert.ToInt32(playbackNumber) >= 4){
                     //more than or exactly 5 playbacks. Exceeded.
                     System.Diagnostics.Debug.WriteLine("Playback limit exceeded. "+Convert.ToInt32(playbackNumber)+" plays.");

@@ -26,6 +26,7 @@ using System.IO;
                 writeFile.WriteLine(someTextData);
                 writeFile.Close();
             }
+            myIsolatedStorage.Dispose();
         }
 
         internal static void write( string name, int value )
@@ -46,6 +47,7 @@ using System.IO;
             {   
                 return reader.ReadLine();
             }
+            myIsolatedStorage.Dispose();
         }
 
         internal static bool readBool( string name ) {

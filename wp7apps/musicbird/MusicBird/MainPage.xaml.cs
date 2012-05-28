@@ -73,9 +73,11 @@ namespace MusicBird
             if((Application.Current as App).IsTrial)
             {
                 AdRotatorControl.IsEnabled = true;
+                AdRotatorControl.Visibility = Visibility.Visible;
             }
             else {
                 AdRotatorControl.IsEnabled = false;
+                AdRotatorControl.Visibility = Visibility.Collapsed;
                 Panorama.Margin = new System.Windows.Thickness(0,0,0,0);
             }
 
@@ -684,6 +686,7 @@ namespace MusicBird
         private void setAppTile(object sender, EventArgs e)
         {
             if(checkFlag("LimitExceeded")) {
+                BackgroundAudioPlayer.Instance.Stop();
                 if(MessageBox.Show("You are using MusicBird in Trial mode. You can only listen " +
                         "to 5 tracks per day and you can't download the music. This limit is exceeded."+
                         "Press OK to go to the market.", "Trial",
@@ -1492,24 +1495,9 @@ namespace MusicBird
 
             private static bool checkFlag(String type)
             {
-                try
-                {
-                    using(IsolatedStorageFile myIsolatedStorage = IsolatedStorageFile.GetUserStoreForApplication())
-                    {
-                        if(myIsolatedStorage.FileExists(type+".txt"))
-                        {
-                            myIsolatedStorage.DeleteFile(type+".txt");
-                            return true;
-                        }
-                        else {
-                            return false;
-                        }
-                    }
-                }
-                catch(Exception e)
-                {
-                    return false;
-                }
+                bool value = Preferences.readBool(type);
+                Preferences.write(type, false);
+                return value;
             }
 
             private AccessToken authenticate()

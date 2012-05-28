@@ -74,8 +74,8 @@ namespace MusicBird
         // This code will not execute when the application is reactivated
         private void Application_Launching(object sender, LaunchingEventArgs e)
         {
-            mtiks.Instance.Start("6fa3cfb581843c4b5d7fc7996", Assembly.GetExecutingAssembly());
             CheckLicense();
+            if(_isTrial) mtiks.Instance.Start("6fa3cfb581843c4b5d7fc7996", Assembly.GetExecutingAssembly());
             //IsolatedStorageExplorer.Explorer.Start("localhost");
         }
 
@@ -83,8 +83,8 @@ namespace MusicBird
         // This code will not execute when the application is first launched
         private void Application_Activated(object sender, ActivatedEventArgs e)
         {
-            mtiks.Instance.Start("6fa3cfb581843c4b5d7fc7996", Assembly.GetExecutingAssembly());
             CheckLicense();
+            if(_isTrial) mtiks.Instance.Start("6fa3cfb581843c4b5d7fc7996", Assembly.GetExecutingAssembly());
             //IsolatedStorageExplorer.Explorer.RestoreFromTombstone();
         }
 
@@ -142,13 +142,7 @@ namespace MusicBird
         #else
             _isTrial = _licenseInfo.IsTrial();
         #endif
-            /*var settings = IsolatedStorageSettings.ApplicationSettings;
-            if(settings.Contains("isTrial"))
-            {
-                settings.Remove("isTrial");
-            }
-            settings.Add("isTrial", _isTrial);
-            settings.Save();*/
+            Preferences.write("trial", _isTrial);
         }
 
         #region Phone application initialization
