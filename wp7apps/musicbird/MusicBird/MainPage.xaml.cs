@@ -22,6 +22,8 @@ using Microsoft.Phone.Controls;
 using Microsoft.Phone.Shell;
 using Microsoft.Phone.Tasks;
 using com.mtiks.winmobile;
+using Codeplex.OAuth;
+using System.Text;
 
 
 namespace MusicBird
@@ -998,6 +1000,10 @@ namespace MusicBird
                     case "properties":
                         NavigationService.Navigate(new Uri("/Properties.xaml?filename="+selectedTrack.filename, UriKind.Relative));
                         break;
+                    case "upload":
+                        AccessToken token = authenticate();
+                        sendFile(token, selectedTrack.filename);
+                        break;
                     case "delete":
                         using (var store = IsolatedStorageFile.GetUserStoreForApplication())
                         {
@@ -1237,6 +1243,12 @@ namespace MusicBird
                             }
 
                             updateLibrary();
+                            if(Preferences.read("dropboxUpload") != null)
+                            {
+                                AccessToken token = authenticate();
+                                sendFile(token, filename);
+                            }
+
                             try
                             {
                                 if(Panorama.SelectedItem.Equals(downloadItem)) Panorama.SelectedItem = libraryItem;
@@ -1497,6 +1509,94 @@ namespace MusicBird
                 catch(Exception e)
                 {
                     return false;
+                }
+            }
+
+            private AccessToken authenticate()
+            {
+                if(Preferences.read("dropbox-access-token-key") != null)
+                {
+                    System.Diagnostics.Debug.WriteLine("Access token exists");
+                    string key = Preferences.read("dropbox-access-token-key");
+                    string secret = Preferences.read("dropbox-access-token-secret");
+                    return new AccessToken(key, secret);
+                }
+                else
+                {
+                    NavigationService.Navigate(new Uri("/Page1.xaml", UriKind.Relative));
+                    return null;
+                }
+            }
+
+            private void sendFile(AccessToken accessToken, String filename)
+            {
+                System.Diagnostics.Debug.WriteLine(accessToken.Key + " " + accessToken.Secret+" "+filename);
+                var client = new OAuthClient(DropboxAuth.consumerKey, DropboxAuth.consumerSecret, accessToken);
+                client.Url = "https://api-content.dropbox.com/1/files_put/sandbox/" + filename.Replace(" ", "");
+                client.Parameters.Add("overwrite", "true");
+                client.MethodType = MethodType.Put;
+                var webRequest = client.CreateWebRequest();
+                webRequest.BeginGetRequestStream(this.StartUpload, new object[] { webRequest, filename });
+                char[] separator = new char[] { ' ' };
+                int counter = Convert.ToInt32(uploadCounter.Text.Split(separator)[0]);
+                uploadCounter.Text = (counter + 1).ToString() + " running uploads";
+                if(counter+1 > 0)
+                {
+                    uploadProgress.Visibility = Visibility.Visible;
+                    uploadProgress.IsIndeterminate = true;
+                }
+            }
+
+            private void StartUpload( IAsyncResult asyncResult )
+            {
+                object[] args = (object[])asyncResult.AsyncState;
+                HttpWebRequest request = (HttpWebRequest)args[0];
+                string filename = (string)args[1];
+
+                var postStream = request.EndGetRequestStream(asyncResult);
+                using(var isolatedStorage = IsolatedStorageFile.GetUserStoreForApplication())
+                {
+                    using(var stream = isolatedStorage.OpenFile(filename, FileMode.Open))
+                    {
+                        stream.CopyTo(postStream);
+                        postStream.Close();
+                    }
+                }
+                request.BeginGetResponse(this.EndUpload, request);
+            }
+
+            private void EndUpload( IAsyncResult asyncResult )
+            {
+                var request = (HttpWebRequest)asyncResult.AsyncState;
+                try
+                {
+                    var response = (HttpWebResponse)request.EndGetResponse(asyncResult);
+                    response.Dispose();
+                    System.Diagnostics.Debug.WriteLine("Your file has been sucessfully uploaded to Dropbox!");
+                }
+                catch(Exception ex)
+                {
+                    this.Dispatcher.BeginInvoke(() =>
+                    {
+                        System.Diagnostics.Debug.WriteLine("An error occured: " + ex.Message);
+                        if(ex.Message.Equals("The remote server returned an error: NotFound.")) {
+                            NavigationService.Navigate(new Uri("/Page1.xaml", UriKind.Relative));
+                        }
+                    });
+                }
+                finally {
+                    this.Dispatcher.BeginInvoke(() =>
+                    {
+                        char[] separator = new char[] { ' ' };
+                        System.Diagnostics.Debug.WriteLine(uploadCounter.Text.Split(separator)[0]);
+                        int counter = Convert.ToInt32(uploadCounter.Text.Split(separator)[0]);
+                        if(counter == 1)
+                        {
+                            uploadProgress.Visibility = Visibility.Collapsed;
+                            uploadProgress.IsIndeterminate = false;
+                        }
+                        uploadCounter.Text = (counter - 1).ToString() + " running uploads";
+                    });
                 }
             }
     }

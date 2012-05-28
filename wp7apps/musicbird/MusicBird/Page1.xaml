@@ -29,14 +29,13 @@
         <!--ContentPanel - place additional content here-->
         <Grid x:Name="ContentPanel" Grid.Row="1" Margin="12,0,12,0">
             <CheckBox Content="Download album cover" Height="72" HorizontalAlignment="Left" Margin="6,6,0,0" Name="albumart" VerticalAlignment="Top" Checked="albumart_Checked" Unchecked="albumart_Unchecked" />
-            <Rectangle Height="189" HorizontalAlignment="Left" Margin="12,84,0,0" Name="rectangle1" Stroke="Black" StrokeThickness="1" VerticalAlignment="Top" Width="438" />
-            <CheckBox Content="on a mobile network" Height="72" HorizontalAlignment="Left" Margin="12,123,0,0" Name="allowCellular" VerticalAlignment="Top" Width="302" Checked="allowCellular_Checked" Unchecked="allowCellular_Unchecked" />
-            <CheckBox Content="on battery power" Height="72" HorizontalAlignment="Left" Margin="12,201,0,0" Name="allowBattery" VerticalAlignment="Top" Width="260" Unchecked="allowBattery_Unchecked" Checked="allowBattery_Checked" />
-            <TextBlock Height="30" HorizontalAlignment="Left" Margin="12,84,0,0" Name="textBlock1" Text="Allow Downloads even when" VerticalAlignment="Top" />
-            <Button Content="Fix playlist errors" Height="72" HorizontalAlignment="Left" Margin="12,279,0,0" Name="button1" VerticalAlignment="Top" Width="294" Click="button1_Click" />
-            <Button Content="Sign In SD" Height="72" HorizontalAlignment="Left" Margin="12,357,0,0" Name="signInButton1" VerticalAlignment="Top" Width="189" Click="OnSignInButtonClicked" Tag="skydrive" />
-            <Button Content="Sign In DB" Height="72" HorizontalAlignment="Left" Margin="12,411,0,0" Name="signInButton2" VerticalAlignment="Top" Width="189" Click="OnSignInButtonClicked" Tag="dropbox" />
-            <TextBlock Height="112" HorizontalAlignment="Stretch" Margin="18,489,0,0" Name="errorMessage" VerticalAlignment="Top" />
+            <Rectangle Height="189" HorizontalAlignment="Left" Margin="12,82,0,0" Name="rectangle1" Stroke="Black" StrokeThickness="1" VerticalAlignment="Top" Width="437" />
+            <CheckBox Content="on a mobile network" Height="72" HorizontalAlignment="Left" Margin="12,123,0,0" Name="allowCellular" VerticalAlignment="Top" Width="302" Checked="allowCellular_Checked" Unchecked="allowCellular_Unchecked" IsChecked="False" />
+            <CheckBox Content="on battery power" Height="72" HorizontalAlignment="Left" Margin="12,201,0,0" Name="allowBattery" VerticalAlignment="Top" Width="260" Unchecked="allowBattery_Unchecked" Checked="allowBattery_Checked" IsChecked="False" />
+            <TextBlock Height="30" HorizontalAlignment="Left" Margin="17,84,0,0" Name="textBlock1" Text="Allow music downloads even when" VerticalAlignment="Top" />
+            <Button Content="Fix playlist errors" Height="72" HorizontalAlignment="Left" Margin="11,342,0,0" Name="playlistErrorButton" VerticalAlignment="Top" Width="294" Click="playlistErrorButton_Click" />
+            <Button Content="Sign In" Height="72" HorizontalAlignment="Left" Margin="311,476,0,0" Name="dropboxAuthButton" VerticalAlignment="Top" Width="138" Click="dropboxAuthButton_Click" Tag="dropbox" />
+            <CheckBox Content="Upload to Dropbox" Height="72" HorizontalAlignment="Left" Margin="17,474,0,0" Name="dropboxUpload" VerticalAlignment="Top" Checked="dropboxUpload_Checked" Unchecked="dropboxUpload_Unchecked"/>
         </Grid>
         <phone:WebBrowser Name="authorizationBrowser" Grid.RowSpan="2" IsScriptEnabled="True" Visibility="Collapsed" />
         <Grid x:Name="loadingGrid" Grid.RowSpan="2" HorizontalAlignment="Stretch" Visibility="Collapsed" Background="#B9000000">

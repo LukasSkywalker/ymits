@@ -8,13 +8,12 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Shapes;
-using OAuth;
 using System.Text;
 using Microsoft.Phone.Reactive;
 
 namespace MusicBird
 {
-    public class DropboxAuth : CloudAuth
+    public class DropboxAuth
     {
         public static readonly string requestTokenUri = "https://api.dropbox.com/1/oauth/request_token";
         public static readonly string authorizeUri = "https://www.dropbox.com/1/oauth/authorize";
@@ -41,25 +40,6 @@ namespace MusicBird
             return url;
         }
 
-        public static string buildAccessTokenBody() {
-            OAuthBase oAuth = new OAuthBase();
-            string nonce = oAuth.GenerateNonce();
-            string timeStamp = oAuth.GenerateTimeStamp();
-            string signature = generateSig(consumerSecret, requestToken);
-
-            StringBuilder requestUri = new StringBuilder("");
-            requestUri.AppendFormat("oauth_consumer_key={0}&", consumerKey);
-            requestUri.AppendFormat("oauth_nonce={0}&", nonce);
-            requestUri.AppendFormat("oauth_token={0}&", requestToken);
-            requestUri.AppendFormat("oauth_token_secret={0}&", requestTokenSecret);
-            requestUri.AppendFormat("oauth_timestamp={0}&", timeStamp);
-            requestUri.AppendFormat("oauth_signature_method={0}&", "PLAINTEXT");
-            requestUri.AppendFormat("oauth_version={0}&", "1.0");
-            requestUri.AppendFormat("oauth_signature={0}", signature);
-
-            string auth_url = requestUri.ToString();
-            return auth_url;
-        }
 
         private static string generateRandomString( int length )
         {

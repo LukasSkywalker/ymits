@@ -7,11 +7,9 @@ using System.Windows.Navigation;
 using System.Net;
 using System.Collections.Generic;
 using System.Runtime.Serialization.Json;
-using SkyDrive_Photos_Sample;
 using System.ComponentModel;
 using System.Windows.Controls;
 using System.IO;
-using OAuth;
 using System.Text;
 using System.Threading;
 using RestSharp;
@@ -26,9 +24,10 @@ namespace MusicBird
     {
 
         private RequestToken RequestToken;
-        private static ManualResetEvent allDone = new ManualResetEvent(false);
-
-        private static readonly string RedirectUri = "https://oauth.live.com/desktop";
+        private const string ConsumerKey = "consumerkey";
+        private const string ConsumerSecret = "consumersecret";
+        private RequestToken requestToken;
+        private AccessToken accessToken;
         public Page1()
         {
             InitializeComponent();
@@ -37,33 +36,46 @@ namespace MusicBird
         #region settings
         private void albumart_Checked( object sender, RoutedEventArgs e )
         {
-            Preferences.write("albumart", 1);
+            Preferences.write("albumart", true);
         }
 
         private void albumart_Unchecked( object sender, RoutedEventArgs e )
         {
-            Preferences.write("albumart", 0);
+            Preferences.write("albumart", false);
         }
 
         private void allowCellular_Checked( object sender, RoutedEventArgs e )
         {
-            Preferences.write("allowCellular", 1);
+            Preferences.write("allowCellular", true);
         }
 
         private void allowCellular_Unchecked( object sender, RoutedEventArgs e )
         {
-            Preferences.write("allowCellular", 0);
+            Preferences.write("allowCellular", false);
         }
 
         private void allowBattery_Unchecked( object sender, RoutedEventArgs e )
         {
-            Preferences.write("allowBattery", 0);
+            Preferences.write("allowBattery", false);
         }
 
         private void allowBattery_Checked( object sender, RoutedEventArgs e )
         {
-            Preferences.write("allowBattery", 1);
-        } 
+            Preferences.write("allowBattery", true);
+        }
+
+        private void dropboxUpload_Checked( object sender, RoutedEventArgs e )
+        {
+            Preferences.write("dropboxUpload", true);
+            if(Preferences.read("dropbox-access-token-key") == null){
+                dropboxAuthButton_Click(null, null);
+            }
+        }
+
+        private void dropboxUpload_Unchecked( object sender, RoutedEventArgs e ) {
+            Preferences.write("dropboxUpload", false);
+        }
+
         #endregion
 
         private void PhoneApplicationPage_Loaded( object sender, RoutedEventArgs e )
@@ -71,9 +83,10 @@ namespace MusicBird
             albumart.IsChecked = Preferences.readBool("albumart");
             allowCellular.IsChecked = Preferences.readBool("allowCellular");
             allowBattery.IsChecked = Preferences.readBool("allowBattery");
+            dropboxUpload.IsChecked = Preferences.readBool("dropboxUpload");
         }
 
-        private void button1_Click( object sender, RoutedEventArgs e )
+        private void playlistErrorButton_Click( object sender, RoutedEventArgs e )
         {
             using(IsolatedStorageFile myIsolatedStorage = IsolatedStorageFile.GetUserStoreForApplication())
             {
@@ -84,50 +97,32 @@ namespace MusicBird
             }
         }
 
-        
-
-        private void OnSignInButtonClicked( object sender, RoutedEventArgs e )
+        private void dropboxAuthButton_Click( object sender, RoutedEventArgs e )
         {
-            Button btn = sender as Button;
-            if(btn.Tag.ToString().Equals("dropbox")) { this.getRequestToken(); }
-
+            this.getRequestToken();
         }
 
-        const string ConsumerKey = "consumerkey";
-        const string ConsumerSecret = "consumersecret";
-        RequestToken requestToken;
-        AccessToken accessToken;
-
         #region Dropbox
+
         private void getRequestToken()
         {
-            if(Preferences.read("dropbox-access-token-key") != null)
-            {
-                System.Diagnostics.Debug.WriteLine("Access token exists");
-                string key = Preferences.read("dropbox-access-token-key");
-                string secret = Preferences.read("dropbox-access-token-secret");
-                this.accessToken = new AccessToken(key, secret);
-                sendFile();
-            }
-            else
-            {
-                System.Diagnostics.Debug.WriteLine("DB OAuth started");
-                var authorizer = new OAuthAuthorizer(DropboxAuth.consumerKey, DropboxAuth.consumerSecret);
-                authorizer.GetRequestToken("https://api.dropbox.com/1/oauth/request_token")
-                    .ObserveOnDispatcher()
-                    .Subscribe(token =>
-                    {
-                        this.RequestToken = token.Token;
-                        var url = authorizer.BuildAuthorizeUrl("https://www.dropbox.com/1/oauth/authorize", token.Token);
+            
+            System.Diagnostics.Debug.WriteLine("DB OAuth started");
+            var authorizer = new OAuthAuthorizer(DropboxAuth.consumerKey, DropboxAuth.consumerSecret);
+            authorizer.GetRequestToken("https://api.dropbox.com/1/oauth/request_token")
+                .ObserveOnDispatcher()
+                .Subscribe(token =>
+                {
+                    this.RequestToken = token.Token;
+                    var url = authorizer.BuildAuthorizeUrl("https://www.dropbox.com/1/oauth/authorize", token.Token);
        
-                        url += "&oauth_callback=http://dummywebsite/dummy";
+                    url += "&oauth_callback=http://dummywebsite/dummy";
 
-                        this.loadingGrid.Visibility = Visibility.Visible;
-                        this.authorizationBrowser.Navigating += this.OnDBAuthorizationBrowserNavigating;
-                        this.authorizationBrowser.Navigated += this.OnDBAuthorizationBrowserNavigated;
-                        this.authorizationBrowser.Navigate(new Uri(url));
-              });
-            }
+                    this.loadingGrid.Visibility = Visibility.Visible;
+                    this.authorizationBrowser.Navigating += this.OnDBAuthorizationBrowserNavigating;
+                    this.authorizationBrowser.Navigated += this.OnDBAuthorizationBrowserNavigated;
+                    this.authorizationBrowser.Navigate(new Uri(url));
+            });
         }
 
         private void OnDBAuthorizationBrowserNavigated( object sender, NavigationEventArgs e )
@@ -162,51 +157,9 @@ namespace MusicBird
                         Preferences.write("dropbox-access-token-key", this.accessToken.Key.ToString());
                         Preferences.write("dropbox-access-token-secret", this.accessToken.Secret.ToString());
                         System.Diagnostics.Debug.WriteLine("Saved access token");
-                        this.sendFile();
                     });
         }
 
-        private void sendFile()
-        {
-            var client = new OAuthClient(DropboxAuth.consumerKey, DropboxAuth.consumerSecret, this.accessToken);
-            client.Url = "https://api-content.dropbox.com/1/files_put/sandbox/test.txt";
-            client.Parameters.Add("overwrite", "true");
-            client.MethodType = MethodType.Put;
-            var webRequest = client.CreateWebRequest();
-            webRequest.BeginGetRequestStream(this.StartUpload, webRequest);
-        }
-
-        private void StartUpload( IAsyncResult asyncResult )
-        {
-            var request = (HttpWebRequest)asyncResult.AsyncState;
-            var postStream = request.EndGetRequestStream(asyncResult);
-            using(var isolatedStorage = IsolatedStorageFile.GetUserStoreForApplication())
-            {
-                using(var stream = isolatedStorage.OpenFile("Playlist.xml", FileMode.Open))
-                {
-                    stream.CopyTo(postStream);
-                    postStream.Close();
-                }
-            }
-            request.BeginGetResponse(this.EndUpload, request);        
-        }
-
-        private void EndUpload( IAsyncResult asyncResult )
-        {
-            var request = (HttpWebRequest)asyncResult.AsyncState;
-            try{
-                var response = (HttpWebResponse)request.EndGetResponse(asyncResult);
-                response.Dispose();
-                this.Dispatcher.BeginInvoke(() =>
-                {
-                    MessageBox.Show("Your file has been sucessfully uploaded to Dropbox!");
-                });
-            }
-            catch (Exception ex)
-            {
-                this.Dispatcher.BeginInvoke(() => MessageBox.Show("An error occured: " + ex.Message));
-            }
-        }
 
         #endregion
 

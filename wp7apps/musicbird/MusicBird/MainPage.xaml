@@ -143,6 +143,7 @@
                                         <toolkit:MenuItem Header="play" Tag="play" Click="libraryItem_Hold" />
                                         <toolkit:MenuItem Header="add to playlist" Tag="add" Click="libraryItem_Hold" />
                                         <toolkit:MenuItem Header="properties" Tag="properties" Click="libraryItem_Hold" />
+                                        <toolkit:MenuItem Header="upload" Tag="upload" Click="libraryItem_Hold" />
                                         <toolkit:MenuItem Header="delete" Tag="delete" Click="libraryItem_Hold" />
                                     </toolkit:ContextMenu>
                                     </toolkit:ContextMenuService.ContextMenu>
@@ -162,7 +163,7 @@
             <controls:PivotItem Header="downloads" Visibility="Collapsed" x:Name="downloadItem">
                 <Grid x:Name="DownloadPanel" Grid.Row="1" >
                     <TextBlock Text="You have no running Downloads." Name="EmptyTextBlock" Visibility="Collapsed"/>
-                    <ListBox Name="TransferListBox">
+                    <ListBox Name="TransferListBox" Height="451" Margin="0,0,0,83">
                         <ListBox.ItemTemplate>
                             <DataTemplate>
                                 <Grid Background="Transparent" Margin="0,0,0,30">
@@ -195,10 +196,14 @@
                             </DataTemplate>
                         </ListBox.ItemTemplate>
                     </ListBox>
+                    <Grid x:Name="UploadPanel" Height="83" VerticalAlignment="Bottom" Width="456">
+                        <TextBlock Text="Dropbox Uploads" Margin="0,0,0,56" />
+                        <TextBlock x:Name="uploadCounter" Text="0 running uploads" Margin="0,20,0,0" />
+                        <toolkit:PerformanceProgressBar IsIndeterminate="False" x:Name="uploadProgress" Visibility="Collapsed" Margin="0,50,0,0" />
+                    </Grid>
                 </Grid>
             </controls:PivotItem>
         </controls:Pivot>
-        
     </Grid>
     <phone:PhoneApplicationPage.ApplicationBar>
          <shell:ApplicationBar IsVisible="True" IsMenuEnabled="False" x:Name="AppBar">
