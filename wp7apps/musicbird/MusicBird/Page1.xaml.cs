@@ -12,21 +12,15 @@ using System.Windows.Controls;
 using System.IO;
 using System.Text;
 using System.Threading;
-using RestSharp;
 using Codeplex.OAuth;
 using Microsoft.Phone.Reactive;
 
 namespace MusicBird
 {
-    public enum Results { UserInfo, AlbumInfo };
-
     public partial class Page1 : PhoneApplicationPage
     {
 
         private RequestToken RequestToken;
-        private const string ConsumerKey = "consumerkey";
-        private const string ConsumerSecret = "consumersecret";
-        private RequestToken requestToken;
         private AccessToken accessToken;
         public Page1()
         {
@@ -81,8 +75,8 @@ namespace MusicBird
         private void PhoneApplicationPage_Loaded( object sender, RoutedEventArgs e )
         {
             albumart.IsChecked = Preferences.readBool("albumart");
-            allowCellular.IsChecked = Preferences.readBool("allowCellular");
-            allowBattery.IsChecked = Preferences.readBool("allowBattery");
+            /*allowCellular.IsChecked = Preferences.readBool("allowCellular");
+            allowBattery.IsChecked = Preferences.readBool("allowBattery");*/
             dropboxUpload.IsChecked = Preferences.readBool("dropboxUpload");
         }
 

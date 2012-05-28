@@ -812,12 +812,12 @@ namespace MusicBird
                 // is passed.
                 transferRequest.Tag = filename + ".mp3";
 
-                bool allowCellular = Preferences.readBool("allowCellular");
+                /*bool allowCellular = Preferences.readBool("allowCellular");
                 bool allowBattery = Preferences.readBool("allowBattery");
                 if(allowCellular && allowBattery)
-                {
+                {*/
                     transferRequest.TransferPreferences = TransferPreferences.AllowCellularAndBattery;
-                }
+                /*}
                 else if(allowCellular)
                 {
                     transferRequest.TransferPreferences = TransferPreferences.AllowCellular;
@@ -825,7 +825,7 @@ namespace MusicBird
                 else if(allowBattery)
                 {
                     transferRequest.TransferPreferences = TransferPreferences.AllowBattery;
-                }
+                }*/
                 
 
                 // Add the transfer request using the BackgroundTransferService. Do this in 
@@ -1262,7 +1262,7 @@ namespace MusicBird
                             }
 
                             StreamResourceInfo sri = null;
-                            Uri imageUri = new Uri("MB_173.png", UriKind.Relative);
+                            Uri imageUri = new Uri("Images/MB_173_dark.png", UriKind.Relative);
                             sri = Application.GetResourceStream(imageUri);
 
                             WriteableBitmap wb = new WriteableBitmap(173, 173);
@@ -1538,11 +1538,13 @@ namespace MusicBird
             {
                 System.Diagnostics.Debug.WriteLine(accessToken.Key + " " + accessToken.Secret+" "+filename);
                 var client = new OAuthClient(DropboxAuth.consumerKey, DropboxAuth.consumerSecret, accessToken);
-                client.Url = "https://api-content.dropbox.com/1/files_put/sandbox/" + filename.Replace(" ", "");
+                string remoteName = Regex.Replace(filename,"[^A-Za-z0-9.-]","");
+                System.Diagnostics.Debug.WriteLine("Remote name is " + remoteName);
+                client.Url = "https://api-content.dropbox.com/1/files_put/sandbox/" + remoteName;
                 client.Parameters.Add("overwrite", "true");
                 client.MethodType = MethodType.Put;
                 var webRequest = client.CreateWebRequest();
-                webRequest.BeginGetRequestStream(this.StartUpload, new object[] { webRequest, filename });
+                webRequest.BeginGetRequestStream(this.StartUpload, new object[] { webRequest, filename, remoteName });
                 char[] separator = new char[] { ' ' };
                 int counter = Convert.ToInt32(uploadCounter.Text.Split(separator)[0]);
                 uploadCounter.Text = (counter + 1).ToString() + " running uploads";
@@ -1558,6 +1560,7 @@ namespace MusicBird
                 object[] args = (object[])asyncResult.AsyncState;
                 HttpWebRequest request = (HttpWebRequest)args[0];
                 string filename = (string)args[1];
+                string remoteName = (string)args[2];
 
                 var postStream = request.EndGetRequestStream(asyncResult);
                 using(var isolatedStorage = IsolatedStorageFile.GetUserStoreForApplication())
@@ -1568,17 +1571,26 @@ namespace MusicBird
                         postStream.Close();
                     }
                 }
-                request.BeginGetResponse(this.EndUpload, request);
+                request.BeginGetResponse(this.EndUpload, new object[] { request, filename, remoteName });
             }
 
             private void EndUpload( IAsyncResult asyncResult )
             {
-                var request = (HttpWebRequest)asyncResult.AsyncState;
+                object[] args = (object[])asyncResult.AsyncState;
+                HttpWebRequest request = (HttpWebRequest)args[0];
+                string filename = (string)args[1];
+                string remoteName = (string)args[2];
+
                 try
                 {
                     var response = (HttpWebResponse)request.EndGetResponse(asyncResult);
                     response.Dispose();
                     System.Diagnostics.Debug.WriteLine("Your file has been sucessfully uploaded to Dropbox!");
+                    this.Dispatcher.BeginInvoke(() =>
+                    {
+                        mtiks.Instance.postEventAttributes("UPLOAD",
+                                new Dictionary<string, string>() { { "SUCCESS", filename + "-->" + remoteName } });
+                    });
                 }
                 catch(Exception ex)
                 {
@@ -1586,7 +1598,9 @@ namespace MusicBird
                     {
                         System.Diagnostics.Debug.WriteLine("An error occured: " + ex.Message);
                         if(ex.Message.Equals("The remote server returned an error: NotFound.")) {
-                            NavigationService.Navigate(new Uri("/Page1.xaml", UriKind.Relative));
+                            MessageBox.Show("There was an error uploading the file. Please make sure you are logged in (open the preferences), and that the filename contains no special symbols. You can rename the files by tapping and holding them and selecting 'properties'. Sorry for the inconvenience, this will be fixed soon.");
+                            mtiks.Instance.postEventAttributes("UPLOAD",
+                                new Dictionary<string, string>() { { "FAILURE", filename + "-->" + remoteName } });
                         }
                     });
                 }

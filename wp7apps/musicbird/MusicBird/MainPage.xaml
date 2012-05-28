@@ -143,7 +143,7 @@
                                         <toolkit:MenuItem Header="play" Tag="play" Click="libraryItem_Hold" />
                                         <toolkit:MenuItem Header="add to playlist" Tag="add" Click="libraryItem_Hold" />
                                         <toolkit:MenuItem Header="properties" Tag="properties" Click="libraryItem_Hold" />
-                                        <toolkit:MenuItem Header="upload" Tag="upload" Click="libraryItem_Hold" />
+                                        <toolkit:MenuItem Header="upload to dropbox" Tag="upload" Click="libraryItem_Hold" />
                                         <toolkit:MenuItem Header="delete" Tag="delete" Click="libraryItem_Hold" />
                                     </toolkit:ContextMenu>
                                     </toolkit:ContextMenuService.ContextMenu>

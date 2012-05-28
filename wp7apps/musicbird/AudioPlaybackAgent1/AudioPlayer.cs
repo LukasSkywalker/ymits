@@ -73,7 +73,7 @@ namespace AudioPlaybackAgent1
             Deployment.Current.Dispatcher.BeginInvoke(() =>
             {                
                 StreamResourceInfo sri = null;
-                Uri imageUri = new Uri("MB_358.png", UriKind.Relative);
+                Uri imageUri = new Uri("Images/MB_358_dark.png", UriKind.Relative);
                 sri = Application.GetResourceStream(imageUri);
 
                 WriteableBitmap wb = new WriteableBitmap(358, 358);

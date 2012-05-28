@@ -63,9 +63,9 @@
       <Probabilities Probability="1" AdType="AdDuplex" />
     </AdCultureDescriptor>
     <AdCultureDescriptor CultureName="default">
-      <Probabilities Probability="98" AdType="AdDuplex" />
-      <Probabilities Probability="1" AdType="MobFox" />
-      <Probabilities Probability="1" AdType="AdMob" />
+      <Probabilities Probability="30" AdType="AdDuplex" />
+      <Probabilities Probability="30" AdType="MobFox" />
+      <Probabilities Probability="30" AdType="AdMob" />
     </AdCultureDescriptor>
   </CultureDescriptors>
 </AdSettings>
