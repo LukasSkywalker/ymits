@@ -40,14 +40,16 @@ using System.IO;
 
         internal static string read(string name) {
             string filename = "pref-" + name + ".txt";
+            string output = null;
             IsolatedStorageFile myIsolatedStorage = IsolatedStorageFile.GetUserStoreForApplication();
             if(!myIsolatedStorage.FileExists(filename)) return null;
             IsolatedStorageFileStream fileStream = myIsolatedStorage.OpenFile(filename, FileMode.Open, FileAccess.Read);
             using(StreamReader reader = new StreamReader(fileStream))
             {   
-                return reader.ReadLine();
+                output = reader.ReadLine();
             }
             myIsolatedStorage.Dispose();
+            return output;
         }
 
         internal static bool readBool( string name ) {

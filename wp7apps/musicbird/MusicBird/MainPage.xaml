@@ -51,21 +51,21 @@
                         <TextBlock Height="30" CacheMode="BitmapCache" HorizontalAlignment="Left" Margin="46,119,0,0" Name="textPosition" Text="00:00:00" VerticalAlignment="Top" />
                         <TextBlock Height="30" CacheMode="BitmapCache" HorizontalAlignment="Left" Margin="316,120,0,0" Name="textRemaining" Text="-00:00:00" VerticalAlignment="Top" />
                     </Grid>
-                    <Image Height="300" HorizontalAlignment="Center" Margin="78,219,78,0" Name="albumartImage" Stretch="Uniform" VerticalAlignment="Top" Width="300"/>
-                    <Button Content="" Height="48" HorizontalAlignment="Left" Margin="383,275,0,0" Name="button1" VerticalAlignment="Top" Width="48" Click="toggleShuffle" Opacity="0.5">
+                    <Image Height="300" HorizontalAlignment="Center" Margin="78,225,78,0" Name="albumartImage" Stretch="Uniform" VerticalAlignment="Top" Width="300"/>
+                    <!--<Button Height="48" HorizontalAlignment="Left" Margin="383,284,0,0" Name="shuffleButton" VerticalAlignment="Top" Width="48" Click="toggleShuffle" Opacity="0.4">
                         <Button.Template>
                             <ControlTemplate>
-                                <Image Source="/MusicBird;component/Images/media_shuffle.png" />
+                                <Image x:Name="shuffleButtonImage" Source="Images/media-shuffle-dark.png"/>
                             </ControlTemplate>
                         </Button.Template>
                     </Button>
-                    <Button Content="" Height="48" HorizontalAlignment="Left" Margin="382,217,0,0" Name="button2" VerticalAlignment="Top" Width="48" Click="toggleRepeat" Opacity="0.5">
+                    <Button Height="48" HorizontalAlignment="Left" Margin="383,227,0,0" Name="repeatButton" VerticalAlignment="Top" Width="48" Click="toggleRepeat" Opacity="0.4">
                         <Button.Template>
                             <ControlTemplate>
-                                <Image Source="/MusicBird;component/Images/media-repeat.png" />
+                                <Image x:Name="repeatButtonImage" Source="Images/media-repeat-dark.png"/>
                             </ControlTemplate>
                         </Button.Template>
-                    </Button>
+                    </Button>-->
                 </Grid>
             </controls:PivotItem>
  
