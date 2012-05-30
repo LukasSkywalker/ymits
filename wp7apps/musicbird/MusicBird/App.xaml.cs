@@ -34,6 +34,8 @@ namespace MusicBird
             }
         }
 
+        public int dropboxUploads { get; set; }
+
         /// <summary>
         /// Constructor for the Application object.
         /// </summary>
@@ -65,7 +67,7 @@ namespace MusicBird
                 // application's PhoneApplicationService object to Disabled.
                 // Caution:- Use this under debug mode only. Application that disables user idle detection will continue to run
                 // and consume battery power when the user is not using the phone.
-                PhoneApplicationService.Current.UserIdleDetectionMode = IdleDetectionMode.Disabled;
+                PhoneApplicationService.Current.UserIdleDetectionMode = IdleDetectionMode.Enabled;
             }
 
         }
@@ -75,8 +77,8 @@ namespace MusicBird
         private void Application_Launching(object sender, LaunchingEventArgs e)
         {
             CheckLicense();
-            if(_isTrial) mtiks.Instance.Start("6fa3cfb581843c4b5d7fc7996", Assembly.GetExecutingAssembly());
-            //IsolatedStorageExplorer.Explorer.Start("localhost");
+            mtiks.Instance.Start("6fa3cfb581843c4b5d7fc7996", Assembly.GetExecutingAssembly());
+            //if (System.Diagnostics.Debugger.IsAttached) IsolatedStorageExplorer.Explorer.Start("192.168.0.4");
         }
 
         // Code to execute when the application is activated (brought to foreground)
@@ -84,8 +86,8 @@ namespace MusicBird
         private void Application_Activated(object sender, ActivatedEventArgs e)
         {
             CheckLicense();
-            if(_isTrial) mtiks.Instance.Start("6fa3cfb581843c4b5d7fc7996", Assembly.GetExecutingAssembly());
-            //IsolatedStorageExplorer.Explorer.RestoreFromTombstone();
+            mtiks.Instance.Start("6fa3cfb581843c4b5d7fc7996", Assembly.GetExecutingAssembly());
+            //if(System.Diagnostics.Debugger.IsAttached) IsolatedStorageExplorer.Explorer.RestoreFromTombstone();
         }
 
         // Code to execute when the application is deactivated (sent to background)
@@ -116,10 +118,13 @@ namespace MusicBird
         // Code to execute on Unhandled Exceptions
         private void Application_UnhandledException(object sender, ApplicationUnhandledExceptionEventArgs e)
         {
-            if (System.Diagnostics.Debugger.IsAttached)
+            if(System.Diagnostics.Debugger.IsAttached)
             {
                 // An unhandled exception has occurred; break into the debugger
                 System.Diagnostics.Debugger.Break();
+            }
+            else {
+                mtiks.Instance.AddException(e.ExceptionObject);
             }
         }
 

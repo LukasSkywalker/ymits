@@ -25,7 +25,25 @@ namespace MusicBird
         public Page1()
         {
             InitializeComponent();
+
         }
+
+        protected override void OnNavigatedTo(System.Windows.Navigation.NavigationEventArgs e) 
+        { 
+            base.OnNavigatedTo(e);
+            try
+            {
+                String action = NavigationContext.QueryString["action"];
+                if(action.Equals("dropboxauth"))
+                {
+                    MessageBox.Show("Please log in to your Dropbox and try again", "Dropbox", MessageBoxButton.OK);
+                    dropboxAuthButton_Click(null, null);
+                }
+            }
+            catch(KeyNotFoundException ex) {
+                //Nothing to do here
+            }
+        } 
 
         #region settings
         private void albumart_Checked( object sender, RoutedEventArgs e )
@@ -98,7 +116,7 @@ namespace MusicBird
 
         #region Dropbox
 
-        private void getRequestToken()
+        public void getRequestToken()
         {
             
             System.Diagnostics.Debug.WriteLine("DB OAuth started");

@@ -18,15 +18,25 @@ using System.IO;
     {
         internal static void write(string name, string value) {
             string filename = "pref-" + name + ".txt";
-            IsolatedStorageFile myIsolatedStorage = IsolatedStorageFile.GetUserStoreForApplication();
-            if(myIsolatedStorage.FileExists(filename)) myIsolatedStorage.DeleteFile(filename);
-            using(StreamWriter writeFile = new StreamWriter(new IsolatedStorageFileStream(filename, FileMode.Create, FileAccess.Write, myIsolatedStorage)))
+            try
             {
-                string someTextData = value;
-                writeFile.WriteLine(someTextData);
-                writeFile.Close();
+                using(IsolatedStorageFile myIsolatedStorage = IsolatedStorageFile.GetUserStoreForApplication())
+                {
+                    if(myIsolatedStorage.FileExists(filename)) myIsolatedStorage.DeleteFile(filename);
+                    using(StreamWriter writeFile = new StreamWriter(new IsolatedStorageFileStream(filename,
+                        FileMode.Create, FileAccess.Write, myIsolatedStorage)))
+                    {
+                        string someTextData = value;
+                        writeFile.WriteLine(someTextData);
+                        writeFile.Close();
+                    }
+                }
+                System.Diagnostics.Debug.WriteLine("Pref " + name + " written successfully. Value is " + value);
             }
-            myIsolatedStorage.Dispose();
+            catch(Exception e) {
+                System.Diagnostics.Debug.WriteLine("Failed to write pref "+name+": "+value+". Error is "+e.Message);
+            }
+            
         }
 
         internal static void write( string name, int value )
@@ -41,14 +51,19 @@ using System.IO;
         internal static string read(string name) {
             string filename = "pref-" + name + ".txt";
             string output = null;
-            IsolatedStorageFile myIsolatedStorage = IsolatedStorageFile.GetUserStoreForApplication();
-            if(!myIsolatedStorage.FileExists(filename)) return null;
-            IsolatedStorageFileStream fileStream = myIsolatedStorage.OpenFile(filename, FileMode.Open, FileAccess.Read);
-            using(StreamReader reader = new StreamReader(fileStream))
-            {   
-                output = reader.ReadLine();
+            try
+            {
+                using(IsolatedStorageFile myIsolatedStorage = IsolatedStorageFile.GetUserStoreForApplication())
+                {
+                    if(!myIsolatedStorage.FileExists(filename)) return null;
+                    IsolatedStorageFileStream fileStream = myIsolatedStorage.OpenFile(filename, FileMode.Open, FileAccess.Read);
+                    using(StreamReader reader = new StreamReader(fileStream))
+                    {
+                        output = reader.ReadLine();
+                    }
+                }
             }
-            myIsolatedStorage.Dispose();
+            catch(Exception e) { System.Diagnostics.Debug.WriteLine(e.Message); }
             return output;
         }
 

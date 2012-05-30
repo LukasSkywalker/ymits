@@ -54,6 +54,9 @@
     <Reference Include="System.Xml.Serialization" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\MusicBird\BackgroundErrorNotifier.cs">
+      <Link>BackgroundErrorNotifier.cs</Link>
+    </Compile>
     <Compile Include="..\MusicBird\Preferences.cs">
       <Link>Preferences.cs</Link>
     </Compile>

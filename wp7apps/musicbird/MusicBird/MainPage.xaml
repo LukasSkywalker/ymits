@@ -107,30 +107,29 @@
                 </StackPanel>
             </controls:PivotItem>
             <controls:PivotItem Header="playlist" Visibility="Collapsed" x:Name="playlistItem">
-                <Grid x:Name="playlistContentPanel" Grid.Row="1" Margin="12,0,12,100" Height="560">
-                    <ListBox Name="PlaylistElement" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
-                        <ListBox.ItemTemplate>
-                            <DataTemplate>
-                                <Button Click="playlistItem_Click">
-                                    <toolkit:ContextMenuService.ContextMenu>
-                                        <toolkit:ContextMenu IsZoomEnabled="False">
-                                            <toolkit:MenuItem Header="play" Tag="play" Click="playlistItem_Hold" />
-                                            <toolkit:MenuItem Header="delete" Tag="delete" Click="playlistItem_Hold" />
-                                        </toolkit:ContextMenu>
-                                    </toolkit:ContextMenuService.ContextMenu>
-                                    <Button.Content>
-                                        <StackPanel Orientation="Horizontal" Margin="0,0,0,17" x:Name="spItem">
-                                            <StackPanel Width="311">
-                                                <TextBlock TextWrapping="Wrap" Text="{Binding title}" Style="{StaticResource PhoneTextExtraLargeStyle}" FontSize="{StaticResource PhoneFontSizeMediumLarge}"/>
-                                                <TextBlock TextWrapping="Wrap" Text="{Binding artist}" Margin="12,-6,12,0" Style="{StaticResource PhoneTextSubtleStyle}"/>
-                                            </StackPanel>
+                <ListBox Name="PlaylistElement">
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <Button Click="playlistItem_Click">
+                                <toolkit:ContextMenuService.ContextMenu>
+                                    <toolkit:ContextMenu IsZoomEnabled="False">
+                                        <toolkit:MenuItem Header="play" Tag="play" Click="playlistItem_Hold" />
+                                        <toolkit:MenuItem Header="download" Tag="download" Click="playlistItem_Hold" />
+                                        <toolkit:MenuItem Header="delete" Tag="delete" Click="playlistItem_Hold" />
+                                    </toolkit:ContextMenu>
+                                </toolkit:ContextMenuService.ContextMenu>
+                                <Button.Content>
+                                    <StackPanel Orientation="Horizontal" Margin="0,0,0,17" x:Name="spItem">
+                                        <StackPanel Width="311">
+                                            <TextBlock TextWrapping="Wrap" Text="{Binding title}" Style="{StaticResource PhoneTextExtraLargeStyle}" FontSize="{StaticResource PhoneFontSizeMediumLarge}"/>
+                                            <TextBlock TextWrapping="Wrap" Text="{Binding artist}" Margin="12,-6,12,0" Style="{StaticResource PhoneTextSubtleStyle}"/>
                                         </StackPanel>
-                                    </Button.Content>
-                                </Button>
-                            </DataTemplate>
-                        </ListBox.ItemTemplate>  
-                    </ListBox>
-                </Grid>
+                                    </StackPanel>
+                                </Button.Content>
+                            </Button>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>  
+                </ListBox>
             </controls:PivotItem>
 
             <controls:PivotItem Header="library" Visibility="Collapsed" x:Name="libraryItem">

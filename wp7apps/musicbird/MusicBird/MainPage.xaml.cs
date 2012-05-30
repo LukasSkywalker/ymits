@@ -46,6 +46,8 @@ namespace MusicBird
         DispatcherTimer _timer;
         DispatcherTimer _tileTimer;
         DispatcherTimer _downloadTimer;
+        DispatcherTimer _errorTimer;
+        DispatcherTimer _trialTimer;
 
         // Indexes into the array of ApplicationBar.Buttons
         const int prevButton = 0;
@@ -71,30 +73,31 @@ namespace MusicBird
         {
             System.Diagnostics.Debug.WriteLine("MainPage_Loaded");
 
-            if((Application.Current as App).IsTrial)
-            {
-                AdRotatorControl.IsEnabled = true;
-                AdRotatorControl.Visibility = Visibility.Visible;
-            }
-            else {
-                AdRotatorControl.IsEnabled = false;
-                AdRotatorControl.Visibility = Visibility.Collapsed;
-                Panorama.Margin = new System.Windows.Thickness(0,0,0,0);
-            }
+            toggleAds();
 
             // Initialize a timer to update the UI every half-second.
             _timer = new DispatcherTimer();
-            _timer.Interval = TimeSpan.FromSeconds(0.5);
+            _timer.Interval = TimeSpan.FromSeconds(1);
             _timer.Tick += new EventHandler(UpdateState);            
 
             _tileTimer = new DispatcherTimer();
-            _tileTimer.Interval = TimeSpan.FromSeconds(5);
+            _tileTimer.Interval = TimeSpan.FromSeconds(10);
             _tileTimer.Tick += new EventHandler(setAppTile);
             _tileTimer.Start();
 
             _downloadTimer = new DispatcherTimer();
             _downloadTimer.Interval = TimeSpan.FromSeconds(2);
             _downloadTimer.Tick += new EventHandler(UpdateUI);
+
+            _errorTimer = new DispatcherTimer();
+            _errorTimer.Interval = TimeSpan.FromSeconds(5);
+            _errorTimer.Tick += new EventHandler(getErrors);
+            _errorTimer.Start();
+
+            _trialTimer = new DispatcherTimer();
+            _trialTimer.Interval = TimeSpan.FromSeconds(20);
+            _trialTimer.Tick += new EventHandler(checkTrial);
+            _trialTimer.Start();
 
             NetworkChange.NetworkAddressChanged += NetworkAddress_Changed;
 
@@ -111,9 +114,19 @@ namespace MusicBird
             updateLibrary();
         }
 
-        public void test(object s, EventArgs e) {
-            System.Diagnostics.Debug.WriteLine("test");
-            UpdateUI(null, null);
+        private void toggleAds()
+        {
+            if((Application.Current as App).IsTrial)
+            {
+                AdRotatorControl.IsEnabled = true;
+                AdRotatorControl.Visibility = Visibility.Visible;
+            }
+            else
+            {
+                AdRotatorControl.IsEnabled = false;
+                AdRotatorControl.Visibility = Visibility.Collapsed;
+                Panorama.Margin = new System.Windows.Thickness(0, 0, 0, 0);
+            }
         }
 
         /// <summary>
@@ -191,7 +204,7 @@ namespace MusicBird
                     getAlbumArt(BackgroundAudioPlayer.Instance.Track.Artist + " " + BackgroundAudioPlayer.Instance.Track.Title);
                 }
                 catch(Exception e) {
-                    System.Diagnostics.Debug.WriteLine(e.Message);
+                    log(e);
                 }
             }
         }
@@ -204,6 +217,7 @@ namespace MusicBird
         /// <param name="e"></param>
         private void UpdateState(object sender, EventArgs e)
         {
+            System.Diagnostics.Debug.WriteLine("Updating state");
             txtState.Text = string.Format("State: {0}", BackgroundAudioPlayer.Instance.PlayerState);
 
             if(BackgroundAudioPlayer.Instance.PlayerState == PlayState.Stopped) {
@@ -218,11 +232,11 @@ namespace MusicBird
                 {
                     title = BackgroundAudioPlayer.Instance.Track.Title;
                 }
-                catch(Exception ex) { System.Diagnostics.Debug.WriteLine(ex.Message); }
+                catch(Exception ex) { log(ex); }
                 try{
                     artist = BackgroundAudioPlayer.Instance.Track.Artist;
                 }
-                catch(Exception ex) { System.Diagnostics.Debug.WriteLine(ex.Message); }
+                catch(Exception ex) { log(ex); }
 
                 string[] arguments = new string[] { title, artist };
                 txtTrack.Text = string.Format("Track: {1} - {0}", arguments);
@@ -232,12 +246,19 @@ namespace MusicBird
                 {
                     positionIndicator.Value = BackgroundAudioPlayer.Instance.Position.TotalSeconds;
                 }
-                catch(Exception ex) { System.Diagnostics.Debug.WriteLine(ex.Message); }
+                catch(Exception ex) { log(ex); }
 
                 // Update the current playback position.
-                TimeSpan position = new TimeSpan();
-                position = BackgroundAudioPlayer.Instance.Position;
-                textPosition.Text = String.Format("{0:d2}:{1:d2}:{2:d2}", position.Hours, position.Minutes, position.Seconds);
+                TimeSpan position = new TimeSpan(0,0,0,0,0);
+                try
+                {
+                    position = BackgroundAudioPlayer.Instance.Position;
+                    textPosition.Text = String.Format("{0:d2}:{1:d2}:{2:d2}", position.Hours, position.Minutes, position.Seconds);
+                }
+                catch(Exception ex)
+                {
+                    log(ex);
+                }
 
                 // Update the time remaining digits.
                 TimeSpan timeRemaining = new TimeSpan();
@@ -247,7 +268,7 @@ namespace MusicBird
                     duration = BackgroundAudioPlayer.Instance.Track.Duration;
                 }
                 catch(Exception ex) {
-                    System.Diagnostics.Debug.WriteLine(ex.Message);
+                    log(ex);
                 }
                 timeRemaining = duration - position;
                 textRemaining.Text = String.Format("-{0:d2}:{1:d2}:{2:d2}", timeRemaining.Hours, timeRemaining.Minutes, timeRemaining.Seconds);
@@ -293,13 +314,7 @@ namespace MusicBird
             {
                 if((Application.Current as App).IsTrial)
                 {
-                    if(MessageBox.Show("You are using MusicBird in trial mode. Please purchase " +
-                        "the paid license to listen to more than 5 tracks per day. Press OK to go to the market.", "Trial",
-                            MessageBoxButton.OKCancel) == MessageBoxResult.OK)
-                    {
-                        MarketplaceDetailTask _marketPlaceDetailTask = new MarketplaceDetailTask();
-                        _marketPlaceDetailTask.Show();
-                    }
+                    marketPlaceMessage();
                 }else{
                     BackgroundAudioPlayer.Instance.Play();
                     ApplicationBarIconButton btn = sender as ApplicationBarIconButton;
@@ -354,6 +369,7 @@ namespace MusicBird
                 queryProgress.Visibility = Visibility.Visible;
                 searchItem.Focus();
                 query = queryTextbox.Text;
+                trackList.Clear();
                 getResults();
                 mtiks.Instance.postEventAttributes("SEARCH",
                 new Dictionary<string, string>() { { "SEARCHTERM", query } });
@@ -415,10 +431,14 @@ namespace MusicBird
                     string name = h.ToString();
                     string artist = name;
                     string title = name;
+                    string url = g.ToString();
                     string[] data = getArtistAndTitle(name);
-                    TrackListItem item = new TrackListItem(data[0], data[1], g.ToString());
-                    trackList.Add(item);
-                    matchCount += 1;
+                    if(url.IndexOf("4shared") == -1)
+                    {
+                        TrackListItem item = new TrackListItem(data[0], data[1], url);
+                        trackList.Add(item);
+                        matchCount ++;
+                    }
                     m = m.NextMatch();
                     n = n.NextMatch();
                 }
@@ -439,6 +459,7 @@ namespace MusicBird
                 String msg = ex.Message;
                 String statCode = ((HttpWebResponse)ex.Response).StatusCode.ToString();
                 String statDescr = ((HttpWebResponse)ex.Response).StatusDescription.ToString();
+                log(ex);
                 stopThrobber();
             }
             finally
@@ -510,6 +531,7 @@ namespace MusicBird
                 String msg = ex.Message;
                 String statCode = ((HttpWebResponse)ex.Response).StatusCode.ToString();
                 String statDescr = ((HttpWebResponse)ex.Response).StatusDescription.ToString();
+                log(ex);
             }
             finally
             {
@@ -666,16 +688,10 @@ namespace MusicBird
                 case "download":
                     if((Application.Current as App).IsTrial)
                     {
-                        if(MessageBox.Show("You are using MusicBird in trial mode. Please purchase " +
-                            "the paid license to use this feature. Press OK to go to the market.", "Trial",
-                                MessageBoxButton.OKCancel) == MessageBoxResult.OK)
-                        {
-                            MarketplaceDetailTask _marketPlaceDetailTask = new MarketplaceDetailTask();
-                            _marketPlaceDetailTask.Show();
-                        }
+                        marketPlaceMessage();
                     }
                     else {
-                        saveTrack( selectedTrack.artist + " - " + selectedTrack.title, selectedTrack.url );
+                        saveTrack(selectedTrack.artist + " - " + selectedTrack.title, selectedTrack.url);
                     }
                     break;
                 default:
@@ -686,24 +702,6 @@ namespace MusicBird
 
         private void setAppTile(object sender, EventArgs e)
         {
-            if(checkFlag("LimitExceeded")) {
-                BackgroundAudioPlayer.Instance.Stop();
-                if(MessageBox.Show("You are using MusicBird in Trial mode. You can only listen " +
-                        "to 5 tracks per day and you can't download the music. This limit is exceeded."+
-                        "Press OK to go to the market.", "Trial",
-                                MessageBoxButton.OKCancel) == MessageBoxResult.OK)
-                {
-                    MarketplaceDetailTask _marketPlaceDetailTask = new MarketplaceDetailTask();
-                    _marketPlaceDetailTask.Show();
-                }
-            }
-
-            if(checkFlag("NotFound")) {
-                MessageBox.Show("The file was not found. Please try another file");
-                BackgroundAudioPlayer.Instance.Stop();
-                positionIndicator.IsIndeterminate = false;
-            }
-
             // Application Tile is always the first Tile, even if it is not pinned to Start.
             ShellTile TileToFind = ShellTile.ActiveTiles.First();
 
@@ -719,7 +717,7 @@ namespace MusicBird
                     count = BackgroundTransferService.Requests.Count();
                 }
                 catch(Exception ex) {
-                    System.Diagnostics.Debug.WriteLine(ex.Message);
+                    log(ex);
                 }
 
                 try
@@ -734,7 +732,7 @@ namespace MusicBird
                     }
                 }
                 catch(Exception ex) {
-                    System.Diagnostics.Debug.WriteLine(ex.Message);
+                    log(ex);
                 }
 
 
@@ -769,6 +767,8 @@ namespace MusicBird
 
             private void saveTrack(string filename, string uri)
             {
+                uri = Uri.EscapeUriString(uri);
+                System.Diagnostics.Debug.WriteLine(uri);
                 mtiks.Instance.postEventAttributes("DOWNLOAD",
                 new Dictionary<string, string>() { { "FILENAME_URI", filename+" @ "+uri } });
                 // Check to see if the maximum number of requests per app has been exceeded.
@@ -811,6 +811,8 @@ namespace MusicBird
                 // Pass custom data with the Tag property. In this example, the friendly name
                 // is passed.
                 transferRequest.Tag = filename + ".mp3";
+                transferRequest.Headers.Add("User-Agent", "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:7.0.1) Gecko/20100101 Firefox/7.0.12011-10-16 20:23:00");
+                System.Diagnostics.Debug.WriteLine(transferRequest.Headers["User-Agent"]);
 
                 /*bool allowCellular = Preferences.readBool("allowCellular");
                 bool allowBattery = Preferences.readBool("allowBattery");
@@ -842,10 +844,12 @@ namespace MusicBird
                 catch (InvalidOperationException ex)
                 {
                     MessageBox.Show("Unable to add background transfer request. " + ex.Message);
+                    log(ex);
                 }
-                catch (Exception)
+                catch (Exception ex)
                 {
                     MessageBox.Show("Unable to add background transfer request.");
+                    log(ex);
                 }
                 setAppTile(null, null);
             }
@@ -939,12 +943,33 @@ namespace MusicBird
                         removeFromPlaylist(selectedIndex);
                         updatePlaylist();
                         break;
+                    case "download":
+                        if((Application.Current as App).IsTrial)
+                        {
+                            marketPlaceMessage();
+                        }
+                        else
+                        {
+                            saveTrack(selectedTrack.artist + " - " + selectedTrack.title, selectedTrack.url);
+                        }
+                        break;
                     case "play":
                         playlistItem_Click(sender, e);
                         break;
                     default:
                         break;
 
+                }
+            }
+
+            private void marketPlaceMessage()
+            {
+                if(MessageBox.Show("You are using MusicBird in trial mode. Please purchase " +
+                                "the paid license to use this feature. Press OK to go to the market.", "Trial",
+                                    MessageBoxButton.OKCancel) == MessageBoxResult.OK)
+                {
+                    MarketplaceDetailTask _marketPlaceDetailTask = new MarketplaceDetailTask();
+                    _marketPlaceDetailTask.Show();
                 }
             }
 
@@ -969,7 +994,6 @@ namespace MusicBird
                 AudioPlaybackAgent1.AudioPlayer.playAtPosition(itemsCount - 1, BackgroundAudioPlayer.Instance);
                 mtiks.Instance.postEventAttributes("LIBITEM_PLAY",
                     new Dictionary<string, string>() { { "FILENAME", selectedTrack.filename } });
-                System.Diagnostics.Debug.WriteLine("@@@@@@@@@@@@@2");
                 Instance_PlayStateChanged(null, null);
                 positionIndicator.IsIndeterminate = true;
                 Panorama.SelectedItem = playerItem;
@@ -1002,11 +1026,14 @@ namespace MusicBird
                         libraryItem_Click(sender, e);
                         break;
                     case "properties":
-                        NavigationService.Navigate(new Uri("/Properties.xaml?filename="+selectedTrack.filename, UriKind.Relative));
+                        NavigationService.Navigate(new Uri("/Properties.xaml?filename="+Uri.EscapeDataString(selectedTrack.filename), UriKind.Relative));
                         break;
                     case "upload":
                         AccessToken token = authenticate();
-                        sendFile(token, selectedTrack.filename);
+                        if(token != null){
+                          sendFile(token, selectedTrack.filename);
+                          Panorama.SelectedItem = downloadItem;
+                        }
                         break;
                     case "delete":
                         using (var store = IsolatedStorageFile.GetUserStoreForApplication())
@@ -1024,10 +1051,13 @@ namespace MusicBird
                                         store.DeleteFile(selectedTrack.filename);
                                     }
                                 }
-                                catch(Exception ex)
+                                catch(NullReferenceException ex)
                                 {
-                                    MessageBox.Show(ex.Message);
+                                    //No playback a.t.m.
                                     store.DeleteFile(selectedTrack.filename);
+                                }
+                                catch(Exception ex) {
+                                    log(ex);
                                 }
                             }
                             else {
@@ -1083,6 +1113,51 @@ namespace MusicBird
 
                 transferRequests = BackgroundTransferService.Requests;
                 System.Diagnostics.Debug.WriteLine(Microsoft.Phone.Info.DeviceStatus.ApplicationCurrentMemoryUsage.ToString());
+            }
+
+            private void getErrors( object sender, EventArgs e ) {
+                System.Diagnostics.Debug.WriteLine("Getting errors");
+                string msg = BackgroundErrorNotifier.getError();
+                System.Diagnostics.Debug.WriteLine("Got error: "+msg);
+                string message = "Player error: "+msg+". The error has been reported to the developer. Sorry for the inconvenience.";
+                if(msg != null && msg != "")
+                {
+                    switch(msg) {
+                        case "-1072889830":
+                            message = "The file could not be found. Please try another.";
+                            break;
+                        case "-2147012889":
+                            message = "Can’t find the server (is the phone in flight mode?)";
+                            break;
+                        case "-2147012696":
+                            message = "No available network connection";
+                            break;
+                        case "-2147467259":
+                            message = "Generic error. The error has been reported to the developer. Sorry for the inconvenience.";
+                            break;
+                        case "-1072873852":
+                            message = "Invalid or corrupted file. Please try another.";
+                            break;
+                    }
+                    MessageBox.Show(message,"Error",MessageBoxButton.OK);
+                    BackgroundErrorNotifier.addError(null);
+                    mtiks.Instance.AddException(new Exception("BAP Error: " + message));
+                }
+
+                if(checkFlag("NotFound"))
+                {
+                    MessageBox.Show("The file was not found. Please try another file");
+                    BackgroundAudioPlayer.Instance.Stop();
+                    positionIndicator.IsIndeterminate = false;
+                }
+            }
+
+            private void checkTrial( object sender, EventArgs e ) {
+                if(checkFlag("LimitExceeded"))
+                {
+                    BackgroundAudioPlayer.Instance.Stop();
+                    marketPlaceMessage();
+                }
             }
 
             private void UpdateUI( object sender, EventArgs e )
@@ -1170,13 +1245,7 @@ namespace MusicBird
             private void showNagScreen() {
                 if((Application.Current as App).IsTrial)
                 {
-                    if(MessageBox.Show("You are using MusicBird in Trial mode. You can only listen " +
-                        "to 5 tracks per day and you can't download the music. Press OK to go to the market.", "Trial",
-                                MessageBoxButton.OKCancel) == MessageBoxResult.OK)
-                    {
-                        MarketplaceDetailTask _marketPlaceDetailTask = new MarketplaceDetailTask();
-                        _marketPlaceDetailTask.Show();
-                    }
+                    marketPlaceMessage();
                 }
             }
 
@@ -1247,7 +1316,8 @@ namespace MusicBird
                             }
 
                             updateLibrary();
-                            if(Preferences.read("dropboxUpload") != null)
+                            var upload = Preferences.read("dropboxUpload");
+                            if(upload != null && upload.Equals(true.ToString()))
                             {
                                 AccessToken token = authenticate();
                                 sendFile(token, filename);
@@ -1258,7 +1328,7 @@ namespace MusicBird
                                 if(Panorama.SelectedItem.Equals(downloadItem)) Panorama.SelectedItem = libraryItem;
                             }
                             catch(NullReferenceException e) {
-                                System.Diagnostics.Debug.WriteLine(e.Message);
+                                log(e);
                             }
 
                             StreamResourceInfo sri = null;
@@ -1282,6 +1352,7 @@ namespace MusicBird
                             mediaHistoryItem.PlayerContext.Add("playSong", filename);
                             MediaHistory.Instance.WriteAcquiredItem(mediaHistoryItem);
 
+                            stream.Close();
                         }
                         else
                         {
@@ -1323,8 +1394,12 @@ namespace MusicBird
 
             void transfer_TransferProgressChanged(object sender, BackgroundTransferEventArgs e)
             {
-                System.Diagnostics.Debug.WriteLine("Downloaded " + e.Request.BytesReceived/e.Request.TotalBytesToReceive*100+" %");
+                System.Diagnostics.Debug.WriteLine("Downloaded " + (e.Request.BytesReceived*100)/e.Request.TotalBytesToReceive+" %");
                 //UpdateUI();
+                /*this.Dispatcher.BeginInvoke(() =>
+                        {
+                            e.Request.Tag = ((e.Request.BytesReceived * 100) / e.Request.TotalBytesToReceive) + " %";
+                        });*/
             }
 
             private void CancelButton_Click(object sender, EventArgs e)
@@ -1353,7 +1428,7 @@ namespace MusicBird
                 catch (Exception e)
                 {
                     // Handle the exception.
-                    System.Diagnostics.Debug.WriteLine(e.Message);
+                    log(e);
                 }
             }
 
@@ -1425,6 +1500,7 @@ namespace MusicBird
                         {
                             serializer.Serialize(xmlWriter, playlist);
                         }
+                        stream.Close();
                     }
                 }
             }
@@ -1441,14 +1517,16 @@ namespace MusicBird
                         {
                             XmlSerializer serializer = new XmlSerializer(typeof(List<String[]>));
                             List<String[]> data = (List<String[]>)serializer.Deserialize(stream);
+                            stream.Close();
                             return data;
                         }
                     }
                 }
-                catch
+                catch(Exception e)
                 {
                     // add some code here
-                    throw new IsolatedStorageException("Could not get Playlist file from UserStore"); 
+                    throw new IsolatedStorageException("Could not get Playlist file from UserStore");
+                    log(e);
                 }
             }
 
@@ -1479,7 +1557,7 @@ namespace MusicBird
                         }
                     }
                     catch(WebException ex) {
-                        System.Diagnostics.Debug.WriteLine(ex.Message);
+                        log(ex);
                     }
                 }
             }
@@ -1514,7 +1592,7 @@ namespace MusicBird
             private static bool checkFlag(String type)
             {
                 bool value = Preferences.readBool(type);
-                Preferences.write(type, false);
+                if(value) Preferences.write(type, false);
                 return value;
             }
 
@@ -1529,7 +1607,7 @@ namespace MusicBird
                 }
                 else
                 {
-                    NavigationService.Navigate(new Uri("/Page1.xaml", UriKind.Relative));
+                    NavigationService.Navigate(new Uri("/Page1.xaml?action=dropboxauth", UriKind.Relative));
                     return null;
                 }
             }
@@ -1545,14 +1623,7 @@ namespace MusicBird
                 client.MethodType = MethodType.Put;
                 var webRequest = client.CreateWebRequest();
                 webRequest.BeginGetRequestStream(this.StartUpload, new object[] { webRequest, filename, remoteName });
-                char[] separator = new char[] { ' ' };
-                int counter = Convert.ToInt32(uploadCounter.Text.Split(separator)[0]);
-                uploadCounter.Text = (counter + 1).ToString() + " running uploads";
-                if(counter+1 > 0)
-                {
-                    uploadProgress.Visibility = Visibility.Visible;
-                    uploadProgress.IsIndeterminate = true;
-                }
+                addUploadCounter(1);
             }
 
             private void StartUpload( IAsyncResult asyncResult )
@@ -1565,10 +1636,20 @@ namespace MusicBird
                 var postStream = request.EndGetRequestStream(asyncResult);
                 using(var isolatedStorage = IsolatedStorageFile.GetUserStoreForApplication())
                 {
-                    using(var stream = isolatedStorage.OpenFile(filename, FileMode.Open))
+                    try
                     {
-                        stream.CopyTo(postStream);
-                        postStream.Close();
+                        using(var stream = isolatedStorage.OpenFile(filename, FileMode.Open))
+                        {
+                            stream.CopyTo(postStream);
+                            postStream.Close();
+                            stream.Close();
+                        }
+                    }
+                    catch(IsolatedStorageException e) {
+                        this.Dispatcher.BeginInvoke(() =>
+                        {
+                            MessageBox.Show("You can't upload the file your playing. Please wait until it's finished and try again.");
+                        });
                     }
                 }
                 request.BeginGetResponse(this.EndUpload, new object[] { request, filename, remoteName });
@@ -1581,43 +1662,91 @@ namespace MusicBird
                 string filename = (string)args[1];
                 string remoteName = (string)args[2];
 
+                int statusCode = 0;
+
                 try
                 {
                     var response = (HttpWebResponse)request.EndGetResponse(asyncResult);
+                    statusCode = (int)response.StatusCode;
                     response.Dispose();
-                    System.Diagnostics.Debug.WriteLine("Your file has been sucessfully uploaded to Dropbox!");
-                    this.Dispatcher.BeginInvoke(() =>
-                    {
-                        mtiks.Instance.postEventAttributes("UPLOAD",
-                                new Dictionary<string, string>() { { "SUCCESS", filename + "-->" + remoteName } });
-                    });
                 }
-                catch(Exception ex)
+                catch(WebException ex)
                 {
-                    this.Dispatcher.BeginInvoke(() =>
-                    {
-                        System.Diagnostics.Debug.WriteLine("An error occured: " + ex.Message);
-                        if(ex.Message.Equals("The remote server returned an error: NotFound.")) {
-                            MessageBox.Show("There was an error uploading the file. Please make sure you are logged in (open the preferences), and that the filename contains no special symbols. You can rename the files by tapping and holding them and selecting 'properties'. Sorry for the inconvenience, this will be fixed soon.");
-                            mtiks.Instance.postEventAttributes("UPLOAD",
-                                new Dictionary<string, string>() { { "FAILURE", filename + "-->" + remoteName } });
-                        }
-                    });
+                    log(ex);
+                    var response = ((HttpWebResponse)ex.Response);
+                    statusCode = (int)response.StatusCode;
+                    response.Dispose();
+                }
+                catch(NotSupportedException ex) {
+                    //Upload was cancelled (e.g. file in-use)
+                    log(ex);
                 }
                 finally {
+                    string msg = "Unknown Error";
+                    #region Switch for msg
+                    switch(statusCode)
+                    {
+                        case 200:
+                            msg = "File upload completed.";
+                            break;
+                        case 400:
+                            msg = "Bad input parameter.";
+                            msg += " This is an error on our side. Sorry for the inconvenience. Please try again.";
+                            break;
+                        case 401:
+                            msg = "Bad or expired authentication data. Please log in again.";
+                            break;
+                        case 403:
+                            msg = "Bad OAuth request (wrong parameter). Re-authentication won't help.";
+                            msg += " This is an error on our side. Sorry for the inconvenience. Please try again.";
+                            break;
+                        case 404:
+                            msg = "File/folder not found. Please check your internet connection.";
+                            break;
+                        case 405:
+                            msg = "Request method not expected.";
+                            msg += " This is an error on our side. Sorry for the inconvenience. Please try again.";
+                            break;
+                        case 503:
+                            msg = "Too many request. App is being rate-limited. Please try again later";
+                            break;
+                        case 507:
+                            msg = "User is over Dropbox storage quota. Try to clean up or buy additional space.";
+                            break;
+                        default:
+                            msg = "Error " + statusCode + ". Unknown description.";
+                            msg += " This is an error on our side. Sorry for the inconvenience. Please try again.";
+                            break;
+                    } 
+                    #endregion
+
                     this.Dispatcher.BeginInvoke(() =>
                     {
-                        char[] separator = new char[] { ' ' };
-                        System.Diagnostics.Debug.WriteLine(uploadCounter.Text.Split(separator)[0]);
-                        int counter = Convert.ToInt32(uploadCounter.Text.Split(separator)[0]);
-                        if(counter == 1)
-                        {
-                            uploadProgress.Visibility = Visibility.Collapsed;
-                            uploadProgress.IsIndeterminate = false;
-                        }
-                        uploadCounter.Text = (counter - 1).ToString() + " running uploads";
+                        if(statusCode!= 0) MessageBox.Show(msg, "Dropbox Upload", MessageBoxButton.OK);
+                        if(statusCode == 401) NavigationService.Navigate(new Uri("/Page1.xaml?action=dropboxauth", UriKind.Relative));
+                        mtiks.Instance.postEventAttributes("UPLOAD",
+                                new Dictionary<string, string>() { { statusCode.ToString(), filename + "-->" + remoteName } });
+
+                        //Count the 'running uploads' counter down
+
+                        addUploadCounter(-1);
                     });
                 }
+            }
+
+            private void addUploadCounter( int howMany ) {
+                int counter = (Application.Current as App).dropboxUploads += howMany;
+                if(counter == 0)
+                {
+                    uploadProgress.Visibility = Visibility.Collapsed;
+                    uploadProgress.IsIndeterminate = false;
+                }
+                if(counter > 0)
+                {
+                    uploadProgress.Visibility = Visibility.Visible;
+                    uploadProgress.IsIndeterminate = true;
+                }
+                uploadCounter.Text = counter.ToString() + " running uploads";
             }
 
             public static T FindChild<T>( DependencyObject parent, string childName )
@@ -1662,6 +1791,13 @@ namespace MusicBird
                 }
 
                 return foundChild;
+            }
+
+            private void log( Exception ex ) {
+                System.Diagnostics.Debug.WriteLine("Message         : "+ex.Message);
+                System.Diagnostics.Debug.WriteLine("Inner Exception : "+ex.InnerException);
+                System.Diagnostics.Debug.WriteLine("Stacktrace      : " + ex.InnerException);
+                mtiks.Instance.AddException(ex);
             }
     }
 

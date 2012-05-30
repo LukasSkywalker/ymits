@@ -284,13 +284,17 @@ namespace AudioPlaybackAgent1
 
         protected override void OnError(BackgroundAudioPlayer player, AudioTrack track, Exception error, bool isFatal)
         {
+            System.Diagnostics.Debug.WriteLine("Error in BAP!");
             System.Diagnostics.Debug.WriteLine(error.Message);
+            BackgroundErrorNotifier.addError(error);
+            System.Diagnostics.Debug.WriteLine("Error was added");
             if (isFatal)
             {
                 Abort();
             }
             else
             {
+                player.Track = null;
                 NotifyComplete();
             }
 
@@ -384,7 +388,6 @@ namespace AudioPlaybackAgent1
 
         public static bool isPlaybackLimitExceeded()
         {
-            var settings = IsolatedStorageSettings.ApplicationSettings;
             DateTime now = new DateTime();
             now = DateTime.Now;
             DateTime date = now.Date;

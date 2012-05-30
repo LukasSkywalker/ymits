@@ -23,7 +23,8 @@ namespace MusicBird
         }
 
         private void init( String filename ) {
-            this.oldFilename = filename;
+            System.Diagnostics.Debug.WriteLine(filename);
+            this.oldFilename =  filename;
             try
             {
                 using(IsolatedStorageFile myIsolatedStorage = IsolatedStorageFile.GetUserStoreForApplication())
@@ -47,12 +48,13 @@ namespace MusicBird
 
                         fileName.Text = filename;
                         creationDate.Text = creation.LocalDateTime.ToLongDateString() + " " + creation.LocalDateTime.ToLongTimeString();
-                        fileSize.Text = (size/1024/1024).ToString()+" MB";
+                        double mb = size/(double)1048576;
+                        fileSize.Text = mb.ToString("F2")+" MB";
 
 
                         //memoryBar.Maximum = quota;
                         //memoryBar.Value = quota - free;
-                        freeMemory.Text = "Free: " + free / 1024 / 1024 + " MB";
+                        freeMemory.Text = "Free: " + (free / (double)1048576).ToString("F2") + " MB";
                         //usedMemory.Text = "Used: " + (quota - free) / 1024 / 1024 + "MB";
                         //System.Diagnostics.Debug.WriteLine("quota:" + quota + "\nfree:" + free);
                     }

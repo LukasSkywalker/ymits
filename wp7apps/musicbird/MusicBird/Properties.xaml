@@ -28,15 +28,13 @@
 
         <!--ContentPanel - place additional content here-->
         <Grid x:Name="ContentPanel" Grid.Row="1" Margin="12,0,12,0">
-            <TextBlock Height="30" HorizontalAlignment="Left" Margin="6,6,0,0" Name="textBlock1" Text="Name" VerticalAlignment="Top" />
+            <TextBlock Height="30" HorizontalAlignment="Left" Margin="6,6,0,0" Name="textBlock1" Text="Name (change &amp; save to rename)" VerticalAlignment="Top" />
             <TextBox Height="72" HorizontalAlignment="Left" Margin="6,42,0,0" Name="fileName" Text="" VerticalAlignment="Top" Width="444" />
             <TextBlock Height="30" HorizontalAlignment="Left" Margin="6,133,0,0" Name="textBlock2" Text="Creation date" VerticalAlignment="Top" />
             <TextBlock Height="30" HorizontalAlignment="Left" Margin="6,169,0,0" Name="creationDate" Text="" VerticalAlignment="Top" Width="444" />
             <TextBlock Height="30" HorizontalAlignment="Left" Margin="6,229,0,0" Name="textBlock3" Text="Size" VerticalAlignment="Top" />
             <TextBlock Height="30" HorizontalAlignment="Left" Margin="6,265,0,0" Name="fileSize" Text="" VerticalAlignment="Top" Width="444" />
             <Button Content="Save" Height="72" HorizontalAlignment="Left" Margin="290,327,0,0" Name="button1" VerticalAlignment="Top" Width="160" Click="button1_Click" />
-            <ProgressBar HorizontalAlignment="Stretch" Margin="0,510,0,0" x:Name="memoryBar" VerticalAlignment="Top" Height="27" />
-            <TextBlock Height="30" HorizontalAlignment="Left" Margin="6,543,0,0" Name="usedMemory" Text="" VerticalAlignment="Top" Width="220" />
             <TextBlock Height="30" HorizontalAlignment="Left" Margin="232,543,0,0" Name="freeMemory" Text="" VerticalAlignment="Top" Width="218" TextAlignment="Right" />
         </Grid>
     </Grid>
