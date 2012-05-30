@@ -45,7 +45,7 @@
                 <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
                     
                     <Grid x:Name="ContentPanel" Margin="0,0,0,297" HorizontalAlignment="Stretch" Height="215">
-                        <TextBlock Height="32" HorizontalAlignment="Left" Margin="12,480,0,0" x:Name="txtState" Text="State: Paused" VerticalAlignment="Top" Width="438" />
+                        <TextBlock Height="32" HorizontalAlignment="Left" Margin="12,180,0,0" x:Name="txtState" Text="Paused" VerticalAlignment="Top" Width="438" />
                         <TextBlock Height="45" HorizontalAlignment="Left" Margin="12,24,0,0" x:Name="txtTrack" Text="Track:" VerticalAlignment="Top" Width="438" FontSize="28" />
                         <ProgressBar HorizontalAlignment="Stretch" Margin="0,100,0,0" x:Name="positionIndicator" VerticalAlignment="Top" Height="5" />
                         <TextBlock Height="30" CacheMode="BitmapCache" HorizontalAlignment="Left" Margin="46,119,0,0" Name="textPosition" Text="00:00:00" VerticalAlignment="Top" />
@@ -162,7 +162,7 @@
             <controls:PivotItem Header="downloads" Visibility="Collapsed" x:Name="downloadItem">
                 <Grid x:Name="DownloadPanel" Grid.Row="1" >
                     <TextBlock Text="You have no running Downloads." Name="EmptyTextBlock" Visibility="Collapsed"/>
-                    <ListBox Name="TransferListBox" Height="451" Margin="0,0,0,83">
+                    <ListBox Name="TransferListBox" Height="441" Margin="0,0,0,93">
                         <ListBox.ItemTemplate>
                             <DataTemplate>
                                 <Grid Background="Transparent" Margin="0,0,0,30">
@@ -196,9 +196,13 @@
                         </ListBox.ItemTemplate>
                     </ListBox>
                     <Grid x:Name="UploadPanel" Height="83" VerticalAlignment="Bottom" Width="456">
-                        <TextBlock Text="Dropbox Uploads" Margin="0,0,0,56" />
-                        <TextBlock x:Name="uploadCounter" Text="0 running uploads" Margin="0,20,0,0" />
-                        <toolkit:PerformanceProgressBar IsIndeterminate="False" x:Name="uploadProgress" Visibility="Collapsed" Margin="0,50,0,0" />
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="231*" />
+                            <ColumnDefinition Width="225*" />
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Text="Dropbox Uploads" Margin="0,-11,0,56" Grid.ColumnSpan="2" FontSize="26"/>
+                        <TextBlock x:Name="uploadCounter" Text="0 running uploads" Margin="0,20,0,0" Grid.ColumnSpan="2" />
+                        <toolkit:PerformanceProgressBar IsIndeterminate="False" x:Name="uploadProgress" Visibility="Collapsed" Margin="0,50,0,0" Grid.ColumnSpan="2" />
                     </Grid>
                 </Grid>
             </controls:PivotItem>

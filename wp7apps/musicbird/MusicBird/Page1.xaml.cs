@@ -175,5 +175,10 @@ namespace MusicBird
 
         #endregion
 
+        private void infoButton_Click( object sender, RoutedEventArgs e )
+        {
+            MessageBox.Show("MusicBird is a product by MonkeyTech. Visit http://lukasdiener.tk for more information.","About MusicBird",MessageBoxButton.OK);
+        }
+
     }
 }

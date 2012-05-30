@@ -42,6 +42,7 @@ downloads automatically.
 You have to sign in once." VerticalAlignment="Top" Width="444" />
             <TextBlock TextWrapping="Wrap" Height="115" HorizontalAlignment="Left" Margin="12,430,0,0" Name="textBlock2" Text="If you experience problems with the playlist, tap
 this button to remove it." VerticalAlignment="Top" Width="444" />
+            <Button Content="Info" Height="72" HorizontalAlignment="Left" Margin="290,529,0,0" Name="infoButton" VerticalAlignment="Top" Width="160" Click="infoButton_Click" />
         </Grid>
         <phone:WebBrowser Name="authorizationBrowser" Grid.RowSpan="2" IsScriptEnabled="True" Visibility="Collapsed" />
         <Grid x:Name="loadingGrid" Grid.RowSpan="2" HorizontalAlignment="Stretch" Visibility="Collapsed" Background="#B9000000">
