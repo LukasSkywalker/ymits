@@ -225,52 +225,27 @@ namespace MusicBird
                 {
                     String artist = "";
                     String title = "";
-                    try
-                    {
-                        title = BackgroundAudioPlayer.Instance.Track.Title;
-                    }
-                    catch(Exception ex) { log(ex); }
-                    try
-                    {
-                        artist = BackgroundAudioPlayer.Instance.Track.Artist;
-                    }
-                    catch(Exception ex) { log(ex); }
+                    title = BackgroundAudioPlayer.Instance.Track.Title;
+                    artist = BackgroundAudioPlayer.Instance.Track.Artist;
 
                     string[] arguments = new string[] { title, artist };
                     txtTrack.Text = string.Format("Track: {1} - {0}", arguments);
 
                     // Set the current position on the ProgressBar.
-                    try
-                    {
+                    if(BackgroundAudioPlayer.Instance.Position != null){
                         positionIndicator.Value = BackgroundAudioPlayer.Instance.Position.TotalSeconds;
-                    }
-                    catch(Exception ex) { log(ex); }
 
-                    // Update the current playback position.
-                    TimeSpan position = new TimeSpan(0, 0, 0, 0, 0);
-                    try
-                    {
+                        // Update the current playback position.
+                        TimeSpan position = new TimeSpan(0, 0, 0, 0, 0);
+
                         position = BackgroundAudioPlayer.Instance.Position;
                         textPosition.Text = String.Format("{0:d2}:{1:d2}:{2:d2}", position.Hours, position.Minutes, position.Seconds);
-                    }
-                    catch(Exception ex)
-                    {
-                        log(ex);
-                    }
 
-                    // Update the time remaining digits.
-                    TimeSpan timeRemaining = new TimeSpan();
-                    TimeSpan duration = new TimeSpan(0, 0, 0, 0, 0);
-                    try
-                    {
-                        duration = BackgroundAudioPlayer.Instance.Track.Duration;
+                        // Update the time remaining digits.
+                         TimeSpan timeRemaining = BackgroundAudioPlayer.Instance.Track.Duration - position;
+                        textRemaining.Text = String.Format("-{0:d2}:{1:d2}:{2:d2}", timeRemaining.Hours, timeRemaining.Minutes, timeRemaining.Seconds);
                     }
-                    catch(Exception ex)
-                    {
-                        log(ex);
-                    }
-                    timeRemaining = duration - position;
-                    textRemaining.Text = String.Format("-{0:d2}:{1:d2}:{2:d2}", timeRemaining.Hours, timeRemaining.Minutes, timeRemaining.Seconds);
+                    
                 }
             }
         }
@@ -387,7 +362,7 @@ namespace MusicBird
                 {
                     getAlbumArt(BackgroundAudioPlayer.Instance.Track.Artist + " " + BackgroundAudioPlayer.Instance.Track.Title);
                 }
-                catch(Exception e)
+                catch(WebException e)
                 {
                     log(e);
                 }
@@ -479,6 +454,7 @@ namespace MusicBird
                     if(url.IndexOf("4shared") == -1)
                     {
                         TrackListItem item = new TrackListItem(data[0], data[1], url);
+                        getSize(url);
                         trackList.Add(item);
                         matchCount++;
                     }
@@ -684,6 +660,32 @@ namespace MusicBird
 
             return name;
         }
+
+        private void getSize(string url){
+            HttpWebRequest req = (HttpWebRequest)WebRequest.Create(url);
+            req.Method = "HEAD";
+            req.BeginGetResponse(new AsyncCallback(gotSize), req);
+        }
+
+        private void gotSize( IAsyncResult asynchronousResult ) {
+            HttpWebRequest request = (HttpWebRequest)asynchronousResult.AsyncState;
+            try
+            {
+                HttpWebResponse response = (HttpWebResponse)request.EndGetResponse(asynchronousResult);
+                int size = Convert.ToInt32(response.Headers["Content-Length"]);
+                string url = request.RequestUri.ToString();
+                foreach(TrackListItem trackListItem in trackList) {
+                    if(trackListItem.url.Equals(url)){
+                        trackListItem.setSize(size);
+                    }
+                }
+            }
+            catch(WebException e) {
+                // do nothing ?
+                System.Diagnostics.Debug.WriteLine("Error for file "+request.RequestUri.ToString());
+            }
+        }
+
         #endregion
 
         private void stopThrobber() {
@@ -769,33 +771,19 @@ namespace MusicBird
             // Application should always be found
             if (TileToFind != null)
             {
-
                 string status = "Paused";
                 string name = "";
-                int count = 0;
-                try
-                {
-                    count = BackgroundTransferService.Requests.Count();
-                }
-                catch(Exception ex) {
-                    log(ex);
-                }
 
-                try
-                {
-                    if(BackgroundAudioPlayer.Instance.PlayerState == PlayState.Playing)
-                    {
-                        status = "Playing...";
-                    }
-                    else
-                    {
-                        status = "Paused";
-                    }
-                }
-                catch(Exception ex) {
-                    log(ex);
-                }
+                int count = BackgroundTransferService.Requests.Count();
 
+                if(BackgroundAudioPlayer.Instance.PlayerState == PlayState.Playing)
+                {
+                    status = "Playing...";
+                }
+                else
+                {
+                    status = "Paused";
+                }
 
                 if(BackgroundAudioPlayer.Instance != null)
                 {
@@ -903,11 +891,6 @@ namespace MusicBird
                 catch (InvalidOperationException ex)
                 {
                     MessageBox.Show("Unable to add background transfer request. " + ex.Message);
-                    log(ex);
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show("Unable to add background transfer request.");
                     log(ex);
                 }
                 setAppTile(null, null);
@@ -1093,10 +1076,6 @@ namespace MusicBird
                                 {
                                     //No playback a.t.m.
                                     store.DeleteFile(selectedTrack.filename);
-                                }
-                                catch(Exception ex)
-                                {
-                                    log(ex);
                                 }
                             }
                             else
@@ -1457,17 +1436,7 @@ namespace MusicBird
             {
                 // Use Find to retrieve the transfer request with the specified ID.
                 BackgroundTransferRequest transferToRemove = BackgroundTransferService.Find(transferID);
-
-                // Try to remove the transfer from the background transfer service.
-                try
-                {
-                    BackgroundTransferService.Remove(transferToRemove);
-                }
-                catch(Exception e)
-                {
-                    // Handle the exception.
-                    log(e);
-                }
+                BackgroundTransferService.Remove(transferToRemove);
             } 
             #endregion
 
@@ -1568,11 +1537,10 @@ namespace MusicBird
                         }
                     }
                 }
-                catch(Exception e)
+                catch(IsolatedStorageException e)
                 {
-                    // add some code here
-                    throw new IsolatedStorageException("Could not get Playlist file from UserStore");
                     log(e);
+                    return new List<string[]>();
                 }
             } 
             #endregion
@@ -1861,15 +1829,22 @@ namespace MusicBird
     {
         public string title { get; set; }
         public string artist { get; set; }
-        public string size { get; set; }
+        public double size { get; private set; }
         public string duration { get; set; }
         public string url { get; set; }
+        public string sizeText { get; private set; }
 
         public TrackListItem( String artist, String title, String url )
         {
             this.artist = artist;
             this.title = title;
             this.url = url;
+            this.size = 0;
+        }
+
+        public void setSize( double size ) {
+            this.size = size;
+            this.sizeText = (size/(double)1048576).ToString("F2")+" MB";
         }
     }
 
