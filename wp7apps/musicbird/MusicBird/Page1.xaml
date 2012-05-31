@@ -34,12 +34,12 @@
             <CheckBox Content="on battery power" Height="72" HorizontalAlignment="Left" Margin="12,201,0,0" Name="allowBattery" VerticalAlignment="Top" Width="260" Unchecked="allowBattery_Unchecked" Checked="allowBattery_Checked" IsChecked="False" />
             <TextBlock Height="30" HorizontalAlignment="Left" Margin="17,84,0,0" Name="textBlock1" Text="Allow music downloads even when" VerticalAlignment="Top" />-->
             <Button Content="Fix playlist errors" Height="72" HorizontalAlignment="Left" Margin="0,352,0,0" Name="playlistErrorButton" VerticalAlignment="Top" Width="294" Click="playlistErrorButton_Click" />
-            <Button Content="Sign In" Height="72" HorizontalAlignment="Left" Margin="312,84,0,0" Name="dropboxAuthButton" VerticalAlignment="Top" Width="138" Click="dropboxAuthButton_Click" Tag="dropbox" />
-            <CheckBox Content="Upload to Dropbox" Height="72" HorizontalAlignment="Left" Margin="6,84,0,0" Name="dropboxUpload" VerticalAlignment="Top" Checked="dropboxUpload_Checked" Unchecked="dropboxUpload_Unchecked"/>
-            <TextBlock TextWrapping="Wrap" Height="115" HorizontalAlignment="Left" Margin="12,162,0,0" Name="textBlock1" Text="Tap and hold on a library item to upload the track
-to Dropbox, or check here to upload future
-downloads automatically.
-You have to sign in once." VerticalAlignment="Top" Width="444" />
+            <Button Content="Download music from Dropbox" Height="72" HorizontalAlignment="Left" Margin="12,158,0,0" Name="dropboxAuthButton" VerticalAlignment="Top" Width="423" Click="dropboxAuthButton_Click" Tag="dropbox" />
+            <!--<CheckBox Content="Upload to Dropbox" Height="72" HorizontalAlignment="Left" Margin="6,84,0,0" Name="dropboxUpload" VerticalAlignment="Top" Checked="dropboxUpload_Checked" Unchecked="dropboxUpload_Unchecked"/>-->
+            <TextBlock TextWrapping="Wrap" Height="115" HorizontalAlignment="Left" Margin="12,222,0,0" Name="textBlock1" Text="You can put mp3 music files in your Dropbox
+(in the folder Apps/MusicBird) and download
+them here, so you can play them with your
+mobile phone." VerticalAlignment="Top" Width="444" />
             <TextBlock TextWrapping="Wrap" Height="115" HorizontalAlignment="Left" Margin="12,430,0,0" Name="textBlock2" Text="If you experience problems with the playlist, tap
 this button to remove it." VerticalAlignment="Top" Width="444" />
             <Button Content="Info" Height="72" HorizontalAlignment="Left" Margin="290,529,0,0" Name="infoButton" VerticalAlignment="Top" Width="160" Click="infoButton_Click" />

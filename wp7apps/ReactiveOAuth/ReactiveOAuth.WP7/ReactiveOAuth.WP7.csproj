@@ -58,6 +58,20 @@
     <WarningLevel>3</WarningLevel>
     <DocumentationFile>..\Binary\ReactiveOAuth.WP7.XML</DocumentationFile>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Dropbox|AnyCPU'">
+    <OutputPath>bin\Dropbox\</OutputPath>
+    <DefineConstants>TRACE;SILVERLIGHT;WINDOWS_PHONE</DefineConstants>
+    <DocumentationFile>..\Binary\ReactiveOAuth.WP7.XML</DocumentationFile>
+    <Optimize>true</Optimize>
+    <WarningLevel>3</WarningLevel>
+    <NoStdLib>true</NoStdLib>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisIgnoreBuiltInRuleSets>false</CodeAnalysisIgnoreBuiltInRuleSets>
+    <CodeAnalysisIgnoreBuiltInRules>false</CodeAnalysisIgnoreBuiltInRules>
+    <CodeAnalysisFailOnMissingRules>false</CodeAnalysisFailOnMissingRules>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="Microsoft.Phone.Reactive" />
     <Reference Include="mscorlib" />

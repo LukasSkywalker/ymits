@@ -45,7 +45,7 @@ namespace MusicBird
         // Timer for updating the UI
         DispatcherTimer _timer;
         DispatcherTimer _tileTimer;
-        DispatcherTimer _downloadTimer;
+        //DispatcherTimer _downloadTimer;
         DispatcherTimer _errorTimer;
         DispatcherTimer _trialTimer;
 
@@ -86,9 +86,9 @@ namespace MusicBird
             _tileTimer.Tick += new EventHandler(setAppTile);
             _tileTimer.Start();
 
-            _downloadTimer = new DispatcherTimer();
+            /*_downloadTimer = new DispatcherTimer();
             _downloadTimer.Interval = TimeSpan.FromSeconds(2);
-            _downloadTimer.Tick += new EventHandler(UpdateUI);
+            _downloadTimer.Tick += new EventHandler(UpdateUI);*/
 
             _errorTimer = new DispatcherTimer();
             _errorTimer.Interval = TimeSpan.FromSeconds(8);
@@ -897,7 +897,7 @@ namespace MusicBird
                     transferRequest.TransferProgressChanged += new EventHandler<BackgroundTransferEventArgs>(transfer_TransferProgressChanged);
                     UpdateUI(null, null);
                     Panorama.SelectedItem = downloadItem;
-                    _downloadTimer.Start();
+                    //_downloadTimer.Start();
                 }
                 catch (InvalidOperationException ex)
                 {
@@ -1323,7 +1323,7 @@ namespace MusicBird
                 {
                     case TransferStatus.Transferring:
                         System.Diagnostics.Debug.WriteLine("Transferring");
-                        _downloadTimer.Start();
+                        //_downloadTimer.Start();
                         break;
                     case TransferStatus.Completed:
 
@@ -1339,7 +1339,7 @@ namespace MusicBird
 
                             if(transferRequests.Count<BackgroundTransferRequest>() > 0)
                             {
-                                _downloadTimer.Stop();
+                                //_downloadTimer.Stop();
                             }
 
                             // In this example, the downloaded file is moved into the root
@@ -1436,7 +1436,7 @@ namespace MusicBird
             void transfer_TransferProgressChanged( object sender, BackgroundTransferEventArgs e )
             {
                 System.Diagnostics.Debug.WriteLine("Downloaded " + (e.Request.BytesReceived * 100) / e.Request.TotalBytesToReceive + " %");
-                UpdateUI(null, null);
+                //UpdateUI(null, null);
             }
 
             private void CancelButton_Click( object sender, EventArgs e )
@@ -1608,6 +1608,28 @@ namespace MusicBird
                 }
             }
 
+            public static T FindFirstElementInVisualTree<T>( DependencyObject parentElement ) where T : DependencyObject
+            {
+                var count = VisualTreeHelper.GetChildrenCount(parentElement);
+                if(count == 0)
+                    return null;
+                for(int i = 0 ; i < count ; i++)
+                {
+                    var child = VisualTreeHelper.GetChild(parentElement, i);
+                    if(child != null && child is T)
+                    {
+                        return (T)child;
+                    }
+                    else
+                    {
+                        var result = FindFirstElementInVisualTree<T>(child);
+                        if(result != null)
+                            return result;
+                    }
+                }
+                return null;
+            }
+
             /*private void toggleRepeat( object sender, RoutedEventArgs e )
             {
                 if(Preferences.readBool("repeat"))   //disable it!
@@ -1673,12 +1695,36 @@ namespace MusicBird
                 addUploadCounter(1);
             }
 
+            private void receiveFile( AccessToken accessToken, string filename ) {
+                System.Diagnostics.Debug.WriteLine(accessToken.Key + " " + accessToken.Secret + " " + filename);
+                var client = new OAuthClient(DropboxAuth.consumerKey, DropboxAuth.consumerSecret, accessToken);
+                client.Url = "https://api-content.dropbox.com/1/metadata/sandbox/";
+                client.Parameters.Add("overwrite", "true");
+                client.MethodType = MethodType.Get;
+                var webRequest = client.CreateWebRequest();
+                webRequest.Method = "GET";
+                webRequest.BeginGetResponse(r =>
+                {
+                    var httpRequest = (HttpWebRequest)r.AsyncState;
+                    var httpResponse = (HttpWebResponse)httpRequest.EndGetResponse(r);
+
+                    using(var reader = new StreamReader(httpResponse.GetResponseStream()))
+                    {
+                        var response = reader.ReadToEnd();
+
+                        Deployment.Current.Dispatcher.BeginInvoke(new Action(() =>
+                        {
+                            System.Diagnostics.Debug.WriteLine(response);
+                        }));
+                    }
+                }, webRequest);
+            }
+
             private void StartUpload( IAsyncResult asyncResult )
             {
                 object[] args = (object[])asyncResult.AsyncState;
                 HttpWebRequest request = (HttpWebRequest)args[0];
                 string filename = (string)args[1];
-                string remoteName = (string)args[2];
 
                 var postStream = request.EndGetRequestStream(asyncResult);
                 using(var isolatedStorage = IsolatedStorageFile.GetUserStoreForApplication())
@@ -1700,7 +1746,7 @@ namespace MusicBird
                         });
                     }
                 }
-                request.BeginGetResponse(this.EndUpload, new object[] { request, filename, remoteName });
+                request.BeginGetResponse(this.EndUpload, new object[] { request, filename });
             }
 
             private void EndUpload( IAsyncResult asyncResult )
@@ -1708,7 +1754,6 @@ namespace MusicBird
                 object[] args = (object[])asyncResult.AsyncState;
                 HttpWebRequest request = (HttpWebRequest)args[0];
                 string filename = (string)args[1];
-                string remoteName = (string)args[2];
 
                 int statusCode = 0;
 
@@ -1772,14 +1817,14 @@ namespace MusicBird
 
                     this.Dispatcher.BeginInvoke(() =>
                     {
-                        if(statusCode != 0) MessageBox.Show(msg, "Dropbox Upload", MessageBoxButton.OK);
+                        /*if(statusCode != 0) MessageBox.Show(msg, "Dropbox Upload", MessageBoxButton.OK);
                         if(statusCode == 401) NavigationService.Navigate(new Uri("/Page1.xaml?action=dropboxauth", UriKind.Relative));
                         mtiks.Instance.postEventAttributes("UPLOAD",
                                 new Dictionary<string, string>() { { statusCode.ToString(), filename + "-->" + remoteName } });
 
                         //Count the 'running uploads' counter down
 
-                        addUploadCounter(-1);
+                        addUploadCounter(-1);*/
                     });
                 }
             }

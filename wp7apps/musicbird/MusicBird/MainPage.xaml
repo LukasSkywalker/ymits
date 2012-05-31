@@ -136,19 +136,18 @@
                     <ListBox Name="LibraryElement">
                         <ListBox.ItemTemplate>
                             <DataTemplate>
-                                <Button Click="libraryItem_Click">
+                            <Button Click="libraryItem_Click" x:Name="library_listboxItem">
                                     <toolkit:ContextMenuService.ContextMenu>
                                         <toolkit:ContextMenu IsZoomEnabled="False">
                                         <toolkit:MenuItem Header="play" Tag="play" Click="libraryItem_Hold" />
                                         <toolkit:MenuItem Header="add to playlist" Tag="add" Click="libraryItem_Hold" />
                                         <toolkit:MenuItem Header="properties" Tag="properties" Click="libraryItem_Hold" />
-                                        <toolkit:MenuItem Header="upload to dropbox" Tag="upload" Click="libraryItem_Hold" />
+                                        <!--<toolkit:MenuItem Header="upload to dropbox" Tag="upload" Click="libraryItem_Hold" />-->
                                         <toolkit:MenuItem Header="delete" Tag="delete" Click="libraryItem_Hold" />
                                     </toolkit:ContextMenu>
                                     </toolkit:ContextMenuService.ContextMenu>
                                     <Button.Content>
                                         <StackPanel Orientation="Horizontal" Margin="0,0,0,17" x:Name="spItem">
-
                                             <StackPanel Width="311">
                                                 <TextBlock TextWrapping="Wrap" Text="{Binding filename}" Style="{StaticResource PhoneTextExtraLargeStyle}" FontSize="{StaticResource PhoneFontSizeMediumLarge}"/>
                                             </StackPanel>

@@ -31,6 +31,8 @@ namespace MusicBird
         protected override void OnNavigatedTo(System.Windows.Navigation.NavigationEventArgs e) 
         { 
             base.OnNavigatedTo(e);
+
+#if DROPBOX
             try
             {
                 String action = NavigationContext.QueryString["action"];
@@ -43,6 +45,15 @@ namespace MusicBird
             catch(KeyNotFoundException ex) {
                 //Nothing to do here
             }
+            
+#else
+
+            //dropboxUpload.Visibility = Visibility.Collapsed;
+            dropboxAuthButton.Visibility = Visibility.Collapsed;
+            textBlock1.Visibility = Visibility.Collapsed;
+
+#endif
+            
         } 
 
         #region settings
@@ -95,7 +106,7 @@ namespace MusicBird
             albumart.IsChecked = Preferences.readBool("albumart");
             /*allowCellular.IsChecked = Preferences.readBool("allowCellular");
             allowBattery.IsChecked = Preferences.readBool("allowBattery");*/
-            dropboxUpload.IsChecked = Preferences.readBool("dropboxUpload");
+            //dropboxUpload.IsChecked = Preferences.readBool("dropboxUpload");
         }
 
         private void playlistErrorButton_Click( object sender, RoutedEventArgs e )
