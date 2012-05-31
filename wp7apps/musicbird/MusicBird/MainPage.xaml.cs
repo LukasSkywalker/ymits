@@ -167,8 +167,11 @@ namespace MusicBird
                 UpdateButtons(false, null, false);
             }
 
+            PlayState playerState = BackgroundAudioPlayer.Instance.PlayerState;
+            //if(playerState != PlayState.Unknown) txtState.Text = playerState.ToString();
+
             //_tileTimer.Start();
-            switch (BackgroundAudioPlayer.Instance.PlayerState)
+            switch (playerState)
             {
                 case PlayState.Playing:
                     
@@ -818,7 +821,6 @@ namespace MusicBird
                 // Update the Application Tile
                 TileToFind.Update(NewTileData);
             }
-
         }
 
         
@@ -841,7 +843,7 @@ namespace MusicBird
                 // Get the URI of the file to be transferred from the Tag property
                 // of the button that was clicked.
                 string transferFileName = filename;
-                Uri transferUri = new Uri(uri, UriKind.RelativeOrAbsolute);
+                Uri transferUri = new Uri(uri, UriKind.Absolute);
 
 
                 // Create the new transfer request, passing in the URI of the file to 
@@ -862,7 +864,6 @@ namespace MusicBird
                     }
                 }
 
-                Uri downloadUri = new Uri(filename, UriKind.RelativeOrAbsolute);
                 System.Diagnostics.Debug.WriteLine("filename is " + filename + ".mp3");
                 transferRequest.DownloadLocation = new Uri("/shared/transfers/" + filename + ".mp3", UriKind.Relative);
 
@@ -979,7 +980,7 @@ namespace MusicBird
                         {
                             marketPlaceMessage();
                         }
-                        else if(selectedTrack.url.IndexOf("http") > 0)
+                        else if(selectedTrack.url.IndexOf("http") > -1)
                         {
                             saveTrack(selectedTrack.artist + " - " + selectedTrack.title, selectedTrack.url);
                         }
@@ -1280,7 +1281,7 @@ namespace MusicBird
                 }
                 else if(NavigationContext.QueryString.ContainsKey(_showPlayerKey))
                 {
-                    Panorama.SelectedItem = playerItem;
+                    Panorama.SelectedItem = libraryItem;
                 }
 
             }
@@ -1436,7 +1437,7 @@ namespace MusicBird
             void transfer_TransferProgressChanged( object sender, BackgroundTransferEventArgs e )
             {
                 System.Diagnostics.Debug.WriteLine("Downloaded " + (e.Request.BytesReceived * 100) / e.Request.TotalBytesToReceive + " %");
-                //UpdateUI(null, null);
+                UpdateUI(null, null);
             }
 
             private void CancelButton_Click( object sender, EventArgs e )

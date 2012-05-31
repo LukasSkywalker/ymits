@@ -81,9 +81,6 @@
     <Reference Include="PhonePerformance">
       <HintPath>..\..\PhonePerformance.dll</HintPath>
     </Reference>
-    <Reference Include="RestSharp.WindowsPhone">
-      <HintPath>..\..\..\..\..\..\Desktop\RestSharp\WindowsPhone\RestSharp.WindowsPhone.dll</HintPath>
-    </Reference>
     <Reference Include="System.Observable" />
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Servicemodel.Web" />
@@ -100,6 +97,7 @@
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
     <Compile Include="BackgroundErrorNotifier.cs" />
+    <Compile Include="CrashReporter.cs" />
     <Compile Include="DropboxAuth.cs" />
     <Compile Include="MainPage.xaml.cs">
       <DependentUpon>MainPage.xaml</DependentUpon>
@@ -112,6 +110,7 @@
       <DependentUpon>Properties.xaml</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Utility.cs" />
   </ItemGroup>
   <ItemGroup>
     <ApplicationDefinition Include="App.xaml">

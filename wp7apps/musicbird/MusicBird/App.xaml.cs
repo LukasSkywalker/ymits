@@ -50,6 +50,8 @@ namespace MusicBird
             // Phone-specific initialization
             InitializePhoneApplication();
 
+            CrashReporter.Initialize(RootFrame);
+
             // Show graphics profiling information while debugging.
             if (System.Diagnostics.Debugger.IsAttached)
             {
