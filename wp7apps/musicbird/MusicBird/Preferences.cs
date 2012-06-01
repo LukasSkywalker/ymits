@@ -18,8 +18,8 @@ using System.IO;
     {
         internal static void write(string name, string value) {
             string filename = "pref-" + name + ".txt";
-            try
-            {
+            /*try
+            {*/
                 using(IsolatedStorageFile myIsolatedStorage = IsolatedStorageFile.GetUserStoreForApplication())
                 {
                     if(myIsolatedStorage.FileExists(filename)) myIsolatedStorage.DeleteFile(filename);
@@ -32,10 +32,10 @@ using System.IO;
                     }
                 }
                 System.Diagnostics.Debug.WriteLine("Pref " + name + " written successfully. Value is " + value);
-            }
+            /*}
             catch(Exception e) {
                 System.Diagnostics.Debug.WriteLine("Failed to write pref "+name+": "+value+". Error is "+e.Message);
-            }
+            }*/
             
         }
 
@@ -51,8 +51,8 @@ using System.IO;
         internal static string read(string name) {
             string filename = "pref-" + name + ".txt";
             string output = null;
-            try
-            {
+            /*try
+            {*/
                 using(IsolatedStorageFile myIsolatedStorage = IsolatedStorageFile.GetUserStoreForApplication())
                 {
                     if(!myIsolatedStorage.FileExists(filename)) return null;
@@ -62,8 +62,8 @@ using System.IO;
                         output = reader.ReadLine();
                     }
                 }
-            }
-            catch(Exception e) { System.Diagnostics.Debug.WriteLine(e.Message); }
+            /*}
+            catch(Exception e) { System.Diagnostics.Debug.WriteLine(e.Message); }*/
             return output;
         }
 

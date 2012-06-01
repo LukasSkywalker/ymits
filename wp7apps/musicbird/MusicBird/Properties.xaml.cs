@@ -26,8 +26,8 @@ namespace MusicBird
         private void init( String filename ) {
             System.Diagnostics.Debug.WriteLine(filename);
             this.oldFilename =  filename;
-            try
-            {
+            /*try
+            {*/
                 using(IsolatedStorageFile myIsolatedStorage = IsolatedStorageFile.GetUserStoreForApplication())
                 {
                     if(!myIsolatedStorage.FileExists(filename))
@@ -60,33 +60,33 @@ namespace MusicBird
                         //System.Diagnostics.Debug.WriteLine("quota:" + quota + "\nfree:" + free);
                     }
                 }
-            }
+            /*}
             catch(Exception e) {
                 System.Diagnostics.Debug.WriteLine("Properties.xaml.cs:init ___ IsolatedStorageException: "+e.Message);
-            }
+            }*/
         }
 
         private void button1_Click( object sender, RoutedEventArgs e )
         {
-            try
-            {
+            /*try
+            {*/
                 using(IsolatedStorageFile myIsolatedStorage = IsolatedStorageFile.GetUserStoreForApplication())
                 {
                     if(myIsolatedStorage.FileExists(oldFilename))
                     {
-                        try
-                        {
+                        /*try
+                        {*/
                             myIsolatedStorage.MoveFile(oldFilename, fileName.Text);
-                        }
+                        /*}
                         catch(Exception exc) {
                             System.Diagnostics.Debug.WriteLine(exc.Message);
-                        }
+                        }*/
                     }
                 }
-            }
+            /*}
             catch(Exception ex) {
                 System.Diagnostics.Debug.WriteLine(ex.Message);
-            }
+            }*/
             NavigationService.Navigate(new Uri("/MainPage.xaml", UriKind.Relative));
         }
 

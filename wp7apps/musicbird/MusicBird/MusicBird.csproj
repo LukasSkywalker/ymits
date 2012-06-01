@@ -97,8 +97,11 @@
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
     <Compile Include="BackgroundErrorNotifier.cs" />
+    <Compile Include="BitReader.cs" />
     <Compile Include="CrashReporter.cs" />
     <Compile Include="DropboxAuth.cs" />
+    <Compile Include="id3v2.cs" />
+    <Compile Include="id3v2Frame.cs" />
     <Compile Include="MainPage.xaml.cs">
       <DependentUpon>MainPage.xaml</DependentUpon>
     </Compile>
