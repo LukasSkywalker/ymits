@@ -75,6 +75,7 @@
     <Reference Include="mtiks">
       <HintPath>..\mtiks.dll</HintPath>
     </Reference>
+    <Reference Include="Newtonsoft.Json.Silverlight, Version=3.5.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL" />
     <Reference Include="PhonePerformance">
       <HintPath>..\..\PhonePerformance.dll</HintPath>
     </Reference>

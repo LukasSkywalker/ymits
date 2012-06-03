@@ -1,12 +1,12 @@
-﻿using System.IO.IsolatedStorage;
+﻿using System;
+using System.IO.IsolatedStorage;
+using System.Reflection;
 using System.Windows;
 using System.Windows.Navigation;
+using com.mtiks.winmobile;
 using Microsoft.Phone.Controls;
 using Microsoft.Phone.Marketplace;
 using Microsoft.Phone.Shell;
-using System.Reflection;
-using com.mtiks.winmobile;
-using System;
 
 
 namespace MusicBird
