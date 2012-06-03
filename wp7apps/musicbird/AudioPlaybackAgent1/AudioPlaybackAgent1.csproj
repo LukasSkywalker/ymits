@@ -65,10 +65,10 @@
     <Reference Include="System.Xml.Serialization" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\MusicBird\BackgroundErrorNotifier.cs">
+    <Compile Include="..\MusicBird\Utility\BackgroundErrorNotifier.cs">
       <Link>BackgroundErrorNotifier.cs</Link>
     </Compile>
-    <Compile Include="..\MusicBird\Preferences.cs">
+    <Compile Include="..\MusicBird\Utility\Preferences.cs">
       <Link>Preferences.cs</Link>
     </Compile>
     <Compile Include="AudioPlayer.cs" />

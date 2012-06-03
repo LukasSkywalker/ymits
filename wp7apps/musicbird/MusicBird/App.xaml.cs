@@ -6,6 +6,7 @@ using Microsoft.Phone.Marketplace;
 using Microsoft.Phone.Shell;
 using System.Reflection;
 using com.mtiks.winmobile;
+using System;
 
 
 namespace MusicBird
@@ -20,6 +21,8 @@ namespace MusicBird
         public PhoneApplicationFrame RootFrame { get; private set; }
 
         private static LicenseInformation _licenseInfo = new LicenseInformation();
+
+        public string copyrightMessage = "Please note that listening to copyright protected music may not be allowed in some countries. MusicBird doesn't share/upload music, it simply streams them from publicly available web sites.";
 
         private static bool _isTrial = true;
 
@@ -80,6 +83,7 @@ namespace MusicBird
         {
             CheckLicense();
             mtiks.Instance.Start("6fa3cfb581843c4b5d7fc7996", Assembly.GetExecutingAssembly());
+            checkIfUpdated();
             //if (System.Diagnostics.Debugger.IsAttached) IsolatedStorageExplorer.Explorer.Start("192.168.0.4");
         }
 
@@ -150,6 +154,29 @@ namespace MusicBird
             _isTrial = _licenseInfo.IsTrial();
         #endif
             Preferences.write("trial", _isTrial);
+        }
+
+        private void checkIfUpdated() {
+            var settings = IsolatedStorageSettings.ApplicationSettings;
+            if(!settings.Contains("version"))
+            {
+                updateAction();
+                settings.Add("version", 23);
+                settings.Save();
+            }
+            else
+            {
+                int version = Convert.ToInt32(settings["version"]);
+                if(version != 23) {
+                    updateAction();
+                    settings["version"] = 23;
+                    settings.Save();
+                }
+            }
+        }
+
+        private void updateAction() {
+            MessageBox.Show(copyrightMessage, "MusicBird", MessageBoxButton.OK);
         }
 
         #region Phone application initialization

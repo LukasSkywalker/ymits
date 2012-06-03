@@ -22,10 +22,6 @@ namespace MusicBird
         public static readonly string consumerSecret = "3r7s2wpnd1jesfz";
         private static string requestToken;
         private static string requestTokenSecret;
-        private static string accessToken;
-        private static string accessTokenSecret;
-
-
         
 
         public static string buildAuthorizeUri() {

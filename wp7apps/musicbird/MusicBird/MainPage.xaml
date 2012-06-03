@@ -45,13 +45,13 @@
                 <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
                     
                     <Grid x:Name="ContentPanel" Margin="0,0,0,297" HorizontalAlignment="Stretch" Height="215">
-                        <TextBlock Height="32" HorizontalAlignment="Left" Margin="12,180,0,0" x:Name="txtState" Text="Paused" VerticalAlignment="Top" Width="438" />
+                        <TextBlock Height="32" HorizontalAlignment="Left" Margin="12,161,0,0" x:Name="txtState" Text="Paused" VerticalAlignment="Top" Width="438" />
                         <TextBlock Height="45" HorizontalAlignment="Left" Margin="12,24,0,0" x:Name="txtTrack" Text="Track:" VerticalAlignment="Top" Width="438" FontSize="28" />
                         <ProgressBar HorizontalAlignment="Stretch" Margin="0,100,0,0" x:Name="positionIndicator" VerticalAlignment="Top" Height="5" />
                         <TextBlock Height="30" CacheMode="BitmapCache" HorizontalAlignment="Left" Margin="46,119,0,0" Name="textPosition" Text="00:00:00" VerticalAlignment="Top" />
                         <TextBlock Height="30" CacheMode="BitmapCache" HorizontalAlignment="Left" Margin="316,120,0,0" Name="textRemaining" Text="-00:00:00" VerticalAlignment="Top" />
                     </Grid>
-                    <Image Height="300" HorizontalAlignment="Center" Margin="78,225,78,0" Name="albumartImage" Stretch="Uniform" VerticalAlignment="Top" Width="300"/>
+                    <Image Height="300" HorizontalAlignment="Center" Margin="78,259,78,0" Name="albumartImage" Stretch="Uniform" VerticalAlignment="Top" Width="300"/>
                     <!--<Button Height="48" HorizontalAlignment="Left" Margin="383,284,0,0" Name="shuffleButton" VerticalAlignment="Top" Width="48" Click="toggleShuffle" Opacity="0.4">
                         <Button.Template>
                             <ControlTemplate>

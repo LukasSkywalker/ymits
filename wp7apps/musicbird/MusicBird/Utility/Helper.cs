@@ -1,8 +1,8 @@
 ﻿using System.Reflection;
 
-namespace MusicBird
+namespace Utility
 {
-    public static class Utility
+    public static class Helper
     {
         #region Application Version
 

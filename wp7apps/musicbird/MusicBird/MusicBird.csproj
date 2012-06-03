@@ -75,9 +75,6 @@
     <Reference Include="mtiks">
       <HintPath>..\mtiks.dll</HintPath>
     </Reference>
-    <Reference Include="Newtonsoft.Json.Silverlight">
-      <HintPath>..\Newtonsoft.Json.Silverlight.dll</HintPath>
-    </Reference>
     <Reference Include="PhonePerformance">
       <HintPath>..\..\PhonePerformance.dll</HintPath>
     </Reference>
@@ -96,24 +93,24 @@
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
-    <Compile Include="BackgroundErrorNotifier.cs" />
-    <Compile Include="BitReader.cs" />
-    <Compile Include="CrashReporter.cs" />
+    <Compile Include="id3\BitReader.cs" />
+    <Compile Include="Utility\CrashReporter.cs" />
     <Compile Include="DropboxAuth.cs" />
-    <Compile Include="id3v2.cs" />
-    <Compile Include="id3v2Frame.cs" />
+    <Compile Include="id3\id3v2.cs" />
+    <Compile Include="id3\id3v2Frame.cs" />
     <Compile Include="MainPage.xaml.cs">
       <DependentUpon>MainPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="Page1.xaml.cs">
       <DependentUpon>Page1.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Preferences.cs" />
     <Compile Include="Properties.xaml.cs">
       <DependentUpon>Properties.xaml</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Utility.cs" />
+    <Compile Include="Utility\BackgroundErrorNotifier.cs" />
+    <Compile Include="Utility\Helper.cs" />
+    <Compile Include="Utility\Preferences.cs" />
   </ItemGroup>
   <ItemGroup>
     <ApplicationDefinition Include="App.xaml">

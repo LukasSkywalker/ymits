@@ -181,6 +181,7 @@ namespace MusicBird
                     positionIndicator.Maximum = BackgroundAudioPlayer.Instance.Track.Duration.TotalSeconds;
                     UpdateButtons(true, false, true);
                     UpdatePlayer(null, null);
+                    ((ApplicationBarIconButton)(ApplicationBar.Buttons[playButton])).IsEnabled = true;
 
                     // Start the timer for updating the UI.
                     _timer.Start();
@@ -191,6 +192,7 @@ namespace MusicBird
                     // Update the UI.
                     UpdateButtons(true, true, true);
                     UpdatePlayer(null, null);
+                    ((ApplicationBarIconButton)(ApplicationBar.Buttons[playButton])).IsEnabled = true;
 
                     // Stop the timer for updating the UI.
                     _timer.Stop();
@@ -215,8 +217,12 @@ namespace MusicBird
         {
             if(Panorama.SelectedIndex == 0)
             {
-                System.Diagnostics.Debug.WriteLine("Updating state");
-                txtState.Text = string.Format("{0}", BackgroundAudioPlayer.Instance.PlayerState);
+                System.Diagnostics.Debug.WriteLine("Updating player");
+                string ps = BackgroundAudioPlayer.Instance.PlayerState.ToString();
+                if(ps.Equals(PlayState.Unknown.ToString())){
+                    ps = "";
+                }
+                txtState.Text = ps;
 
                 if(BackgroundAudioPlayer.Instance.PlayerState == PlayState.Stopped) {
                     return;
@@ -284,6 +290,7 @@ namespace MusicBird
                 BackgroundAudioPlayer.Instance.Pause();
                 ApplicationBarIconButton btn = sender as ApplicationBarIconButton;
                 btn.IconUri = new Uri("/Images/appbar.transport.play.rest.png", UriKind.Relative);
+                btn.IsEnabled = false;
                 positionIndicator.IsIndeterminate = false;
 
             }
@@ -298,6 +305,7 @@ namespace MusicBird
                     BackgroundAudioPlayer.Instance.Play();
                     ApplicationBarIconButton btn = sender as ApplicationBarIconButton;
                     btn.IconUri = new Uri("/Images/appbar.transport.pause.rest.png", UriKind.Relative);
+                    btn.IsEnabled = false;
                     positionIndicator.IsIndeterminate = true;
                 }
             }
@@ -459,7 +467,7 @@ namespace MusicBird
                     if(url.IndexOf("4shared") == -1)
                     {
                         TrackListItem item = new TrackListItem(data[0], data[1], url);
-                        if(matchCount<20) getSize(new Uri(url, UriKind.Absolute));
+                        if(matchCount<20) getSize(new Uri(url, UriKind.RelativeOrAbsolute));
                         //getTags(url);
                         trackList.Add(item);
                         matchCount++;
@@ -686,9 +694,15 @@ namespace MusicBird
                     return 0;
                 else {
                     long size = 0;
-                    using(IsolatedStorageFileStream stream = store.OpenFile(filename, FileMode.Open))
+                    AudioTrack currentTrack = BackgroundAudioPlayer.Instance.Track;
+                    if(currentTrack != null && filename == HttpUtility.UrlDecode(currentTrack.Source.ToString()))
+                        size = 0;
+                    else
                     {
-                        size = stream.Length;
+                        using(IsolatedStorageFileStream stream = store.OpenFile(filename, FileMode.Open))
+                        {
+                            size = stream.Length;
+                        }
                     }
                     return size;
                 }
@@ -696,7 +710,7 @@ namespace MusicBird
         }
 
         private void getTags( string url ) {
-            Uri uri = new Uri(url, UriKind.Absolute);
+            Uri uri = new Uri(url, UriKind.RelativeOrAbsolute);
             ID3v2 reader = new ID3v2(uri);
             reader.TagsRead += new ID3v2.TagsReadEventHandler(reader_TagsRead);
             reader.Read();
@@ -727,9 +741,9 @@ namespace MusicBird
                     }
                 }
             }
-            catch(WebException e) {
+            catch(WebException) {
                 // do nothing ?
-                System.Diagnostics.Debug.WriteLine("Error for file "+request.RequestUri.ToString());
+                System.Diagnostics.Debug.WriteLine("Error getting size for file "+request.RequestUri.ToString());
             }
         }
 
@@ -741,7 +755,7 @@ namespace MusicBird
             showNagScreen();
 
             TrackListItem selectedTrack = (sender as FrameworkElement).DataContext as TrackListItem;
-            AudioTrack current = new AudioTrack(new Uri(selectedTrack.url, UriKind.Absolute), selectedTrack.artist, selectedTrack.title, "", null);
+            AudioTrack current = new AudioTrack(new Uri(selectedTrack.url, UriKind.RelativeOrAbsolute), selectedTrack.artist, selectedTrack.title, "", null);
 
             addToPlaylist(selectedTrack.artist, selectedTrack.title, selectedTrack.url);
             updatePlaylist();
@@ -768,7 +782,7 @@ namespace MusicBird
             }
             // get selected Track
             TrackListItem selectedTrack = selectedListBoxItem.DataContext as TrackListItem;
-            AudioTrack current = new AudioTrack(new Uri(selectedTrack.url, UriKind.Absolute), selectedTrack.artist, selectedTrack.title, "", null);
+            AudioTrack current = new AudioTrack(new Uri(selectedTrack.url, UriKind.RelativeOrAbsolute), selectedTrack.artist, selectedTrack.title, "", null);
 
             // get selected Context menu item
             var menuItem = (MenuItem)sender;
@@ -791,7 +805,7 @@ namespace MusicBird
                     }
                     else
                     {
-                        saveTrack(selectedTrack.artist + " - " + selectedTrack.title, selectedTrack.url);
+                        saveTrack(current.Artist + " - " + current.Title, current.Source.ToString());
                     }
                     break;
                 default:
@@ -811,7 +825,7 @@ namespace MusicBird
             {
                 string status = "Paused";
                 string name = "";
-                int count = 0;
+                /*int count = 0;
                 try
                 {
                     count = BackgroundTransferService.Requests.Count();
@@ -819,7 +833,7 @@ namespace MusicBird
                 catch(UriFormatException ex) {
                     count = 0;
                     System.Diagnostics.Debug.WriteLine("in setAppTile()");
-                }
+                }*/
 
                 if(BackgroundAudioPlayer.Instance.PlayerState == PlayState.Playing)
                 {
@@ -845,7 +859,7 @@ namespace MusicBird
                 {
                     Title = "MusicBird",
                     //BackgroundImage = new Uri(textBoxBackgroundImage.Text, UriKind.Relative),
-                    Count = count,
+                    Count = 0,
                     BackTitle = status,
                     //BackBackgroundImage = new Uri(textBoxBackBackgroundImage.Text, UriKind.Relative),
                     BackContent = name
@@ -1030,7 +1044,7 @@ namespace MusicBird
                                     store.DeleteFile(selectedTrack.filename);
                                 }
                             }
-                            catch(NullReferenceException ex)
+                            catch(NullReferenceException)
                             {
                                 //No playback a.t.m.
                                 store.DeleteFile(selectedTrack.filename);
@@ -1365,14 +1379,20 @@ namespace MusicBird
 
                 // If there are 1 or more transfers, hide the "no transfers"
                 // TextBlock. IF there are zero transfers, show the TextBlock.
-                if(transferRequests.Count<BackgroundTransferRequest>() > 0)
-                {
-                    EmptyTextBlock.Visibility = Visibility.Collapsed;
-                }
-                else
-                {
-                    EmptyTextBlock.Visibility = Visibility.Visible;
-                }
+                /*try
+                {*/
+                    if(transferRequests.Count<BackgroundTransferRequest>() > 0)
+                    {
+                        EmptyTextBlock.Visibility = Visibility.Collapsed;
+                    }
+                    else
+                    {
+                        EmptyTextBlock.Visibility = Visibility.Visible;
+                    }
+                    /*}
+                    catch(UriFormatException ex) {
+                        EmptyTextBlock.Visibility = Visibility.Collapsed;
+                    }*/
 
                 // Update the TransferListBox with the list of transfer requests.
                 TransferListBox.ItemsSource = transferRequests;
@@ -1383,13 +1403,13 @@ namespace MusicBird
         {
             // The Requests property returns new references, so make sure that
             // you dispose of the old references to avoid memory leaks.
-            /*if (transferRequests != null)
+            if (transferRequests != null)
             {
                 foreach (var request in transferRequests)
                 {
                     request.Dispose();
                 }
-            }*/
+            }
             // this is apparently not necessary. Works without disposing,
             // the memory goes down again after the req. is finished.
 
@@ -1404,18 +1424,24 @@ namespace MusicBird
             mtiks.Instance.postEventAttributes("DOWNLOAD",
             new Dictionary<string, string>() { { "FILENAME_URI", filename + " @ " + uri } });
             // Check to see if the maximum number of requests per app has been exceeded.
-            if(BackgroundTransferService.Requests.Count() >= 5)
-            {
-                // Note: Instead of showing a message to the user, you could store the
-                // requested file URI in isolated storage and add it to the queue later.
-                MessageBox.Show("The maximum number of background file transfer requests for this application has been exceeded. ");
-                return;
-            }
+            /*try
+            {*/
+                if(BackgroundTransferService.Requests.Count() >= 5)
+                {
+                    // Note: Instead of showing a message to the user, you could store the
+                    // requested file URI in isolated storage and add it to the queue later.
+                    MessageBox.Show("The maximum number of background file transfer requests for this application has been exceeded. ");
+                    return;
+                }
+            /*}
+            catch(UriFormatException) {
+                // nothing
+            }*/
 
             // Get the URI of the file to be transferred from the Tag property
             // of the button that was clicked.
             string transferFileName = filename;
-            Uri transferUri = new Uri(uri, UriKind.Absolute);
+            Uri transferUri = new Uri(uri, UriKind.RelativeOrAbsolute);
 
 
             // Create the new transfer request, passing in the URI of the file to 
@@ -1611,7 +1637,7 @@ namespace MusicBird
                     {
                         Group g = m.Groups[1];
                         string url = g.ToString();
-                        albumartImage.Source = new BitmapImage(new Uri(url, UriKind.Absolute));
+                        albumartImage.Source = new BitmapImage(new Uri(url, UriKind.RelativeOrAbsolute));
                     }
                 }
                 catch(WebException ex) {
@@ -1751,7 +1777,7 @@ namespace MusicBird
                         stream.Close();
                     }
                 }
-                catch(IsolatedStorageException e)
+                catch(IsolatedStorageException)
                 {
                     this.Dispatcher.BeginInvoke(() =>
                     {

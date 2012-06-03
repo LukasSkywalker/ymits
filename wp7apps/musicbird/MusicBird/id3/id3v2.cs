@@ -242,7 +242,6 @@ namespace MusicBird
                     }*/
 
                     var response = request.EndGetResponse(ar);
-                    String s;
                     using(var stream = response.GetResponseStream())
                     {
                         readFromStream(stream);

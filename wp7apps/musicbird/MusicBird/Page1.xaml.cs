@@ -90,7 +90,8 @@ namespace MusicBird
         private void dropboxUpload_Checked( object sender, RoutedEventArgs e )
         {
             Preferences.write("dropboxUpload", true);
-            if(Preferences.read("dropbox-access-token-key") == null){
+            if(Preferences.read("dropbox-access-token-key") == null)
+            {
                 dropboxAuthButton_Click(null, null);
             }
         }
@@ -188,7 +189,8 @@ namespace MusicBird
 
         private void infoButton_Click( object sender, RoutedEventArgs e )
         {
-            MessageBox.Show("MusicBird is a product by MonkeyTech. Visit http://lukasdiener.tk for more information.","About MusicBird",MessageBoxButton.OK);
+            string copyrightMessage = (Application.Current as App).copyrightMessage;
+            MessageBox.Show("MusicBird is a product by MonkeyTech. Visit http://lukasdiener.tk for more information. "+copyrightMessage,"About MusicBird",MessageBoxButton.OK);
         }
 
     }

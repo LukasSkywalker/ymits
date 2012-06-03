@@ -9,6 +9,7 @@ using System.Xml.Serialization;
 using Microsoft.Devices;
 using Microsoft.Phone.BackgroundAudio;
 using Microsoft.Phone.Marketplace;
+using System.Windows.Threading;
 
 namespace AudioPlaybackAgent1
 {
@@ -16,7 +17,18 @@ namespace AudioPlaybackAgent1
     {
         
         private static volatile bool _classInitialized;
-        public static int currentTrackNumber = 0;
+        public static int currentTrackNumber
+        {
+            get
+            {
+                return Preferences.readInt("currentTrackNumber");
+            }
+            set
+            {
+                Preferences.write("currentTrackNumber", value);
+            }
+        }
+        //private DispatcherTimer timer;
 
         public static List<AudioTrack> _playList = new List<AudioTrack>
         {
@@ -47,8 +59,14 @@ namespace AudioPlaybackAgent1
         public static void playAtPosition( int position, BackgroundAudioPlayer player ) {
             player.Volume = 1;
             List<string[]> playlist = readPlaylist();
-            if(playlist.Count <= position) position = 0;
-            if(position < 0) position = playlist.Count-1;
+            if(playlist.Count <= position)
+            {
+                position = 0;
+            }
+            if(position < 0)
+            {
+                position = playlist.Count - 1;
+            }
             
             System.Diagnostics.Debug.WriteLine("AudioPlayer.cs:playAtPosition _______ Starting playback...");
             AudioTrack currentTrack = getAudioTrackAt(position);
@@ -62,13 +80,6 @@ namespace AudioPlaybackAgent1
             currentTrackNumber = position;
 
             MediaHistoryItem mediaHistoryItem = new MediaHistoryItem();
-
-            //<hubTileImageStream> must be a valid ImageStream.
-
-            //WriteableBitmap wb = new WriteableBitmap(173,173);
-
-            /*var uri = new Uri("/MB_173.png", UriKind.Relative);
-            var info = Application.GetResourceStream(uri);*/
 
             Deployment.Current.Dispatcher.BeginInvoke(() =>
             {                
@@ -86,7 +97,6 @@ namespace AudioPlaybackAgent1
                 mediaHistoryItem.ImageStream = stream;
                 mediaHistoryItem.Source = String.Empty;
                 mediaHistoryItem.Title = currentTrack.Title;
-                System.Diagnostics.Debug.WriteLine("Setting current track to " + currentTrack.Title);
                 mediaHistoryItem.PlayerContext.Add("showPlayer", currentTrack.Artist+" - "+currentTrack.Title+".mp3");
                 MediaHistory.Instance.NowPlaying = mediaHistoryItem;
                 stream.Seek(0, SeekOrigin.Begin);
@@ -94,7 +104,6 @@ namespace AudioPlaybackAgent1
                 //add to the history
                 MediaHistory.Instance.WriteRecentPlay(mediaHistoryItem);
             });
-
 
             
         }

@@ -91,7 +91,7 @@ namespace MusicBird
                         writer.WriteLine("-> Product: " + ProductName);
 
                         // Application version
-                        writer.Write("-> Version: " + Utility.ApplicationVersion);
+                        writer.Write("-> Version: " + Utility.Helper.ApplicationVersion);
 #if DEBUG
                         writer.Write(" (Debug)");
 #endif
@@ -155,7 +155,7 @@ namespace MusicBird
                     if(ErrorLogContent == null)
                         return;
 
-                    string url = ErrorReportURL + "?p=" + ProductName + "&v=" + Utility.ApplicationVersion;
+                    string url = ErrorReportURL + "?p=" + ProductName + "&v=" + Utility.Helper.ApplicationVersion;
 #if DEBUG
                     url += "&d=1";
 #endif
