@@ -1,18 +1,9 @@
 ﻿using System;
 using System.IO.IsolatedStorage;
 using System.Windows;
-using Microsoft.Phone.Controls;
-using Microsoft.Phone.Tasks;
 using System.Windows.Navigation;
-using System.Net;
-using System.Collections.Generic;
-using System.Runtime.Serialization.Json;
-using System.ComponentModel;
-using System.Windows.Controls;
-using System.IO;
-using System.Text;
-using System.Threading;
 using Codeplex.OAuth;
+using Microsoft.Phone.Controls;
 using Microsoft.Phone.Reactive;
 
 namespace MusicBird
@@ -190,7 +181,7 @@ namespace MusicBird
         private void infoButton_Click( object sender, RoutedEventArgs e )
         {
             string copyrightMessage = (Application.Current as App).copyrightMessage;
-            MessageBox.Show("MusicBird is a product by MonkeyTech. Visit http://lukasdiener.tk for more information. "+copyrightMessage,"About MusicBird",MessageBoxButton.OK);
+            MessageBox.Show("MusicBird is a product by MonkeyTech. Visit http://lukasdiener.tk for more information. " + copyrightMessage, "About MusicBird", MessageBoxButton.OK);
         }
 
     }

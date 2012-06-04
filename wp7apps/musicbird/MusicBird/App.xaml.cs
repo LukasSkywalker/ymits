@@ -1,12 +1,12 @@
-﻿using System.IO.IsolatedStorage;
+﻿using System;
+using System.IO.IsolatedStorage;
+using System.Reflection;
 using System.Windows;
 using System.Windows.Navigation;
+using com.mtiks.winmobile;
 using Microsoft.Phone.Controls;
 using Microsoft.Phone.Marketplace;
 using Microsoft.Phone.Shell;
-using System.Reflection;
-using com.mtiks.winmobile;
-using System;
 
 
 namespace MusicBird
@@ -45,7 +45,7 @@ namespace MusicBird
         public App()
         {
             // Global handler for uncaught exceptions. 
-            UnhandledException += Application_UnhandledException;
+            UnhandledException += this.Application_UnhandledException;
 
             // Standard Silverlight initialization
             InitializeComponent();
@@ -191,10 +191,10 @@ namespace MusicBird
             // Create the frame but don't set it as RootVisual yet; this allows the splash
             // screen to remain active until the application is ready to render.
             RootFrame = new PhoneApplicationFrame();
-            RootFrame.Navigated += CompleteInitializePhoneApplication;
+            RootFrame.Navigated += this.CompleteInitializePhoneApplication;
 
             // Handle navigation failures
-            RootFrame.NavigationFailed += RootFrame_NavigationFailed;
+            RootFrame.NavigationFailed += this.RootFrame_NavigationFailed;
 
             // Ensure we don't initialize again
             phoneApplicationInitialized = true;
@@ -208,7 +208,7 @@ namespace MusicBird
                 RootVisual = RootFrame;
 
             // Remove this handler since it is no longer needed
-            RootFrame.Navigated -= CompleteInitializePhoneApplication;
+            RootFrame.Navigated -= this.CompleteInitializePhoneApplication;
         }
 
         #endregion

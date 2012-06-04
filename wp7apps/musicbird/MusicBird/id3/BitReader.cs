@@ -24,7 +24,7 @@ namespace MusicBird
             // 0 == falseu
             // 1 == true; duh
             bool[] myByte = new bool[8];
-            for(int i = 0 ; i < 8 ; i++)
+            for(int i = 0; i < 8; i++)
             {
                 // ANDing against each bit to set the bool value
                 if((myNum & (1 << (7 - i))) != 0)
@@ -40,7 +40,7 @@ namespace MusicBird
             char[] myChar = new char[8];
 
             bool[] myBool = ToBitBool(newByte);
-            for(int i = 0 ; i < 8 ; i++)
+            for(int i = 0; i < 8; i++)
             {
                 if(myBool[i])
                 {
@@ -62,7 +62,7 @@ namespace MusicBird
             foreach(byte b in myBytes)
             {
                 bool[] bit = ToBitBool(b);
-                for(int j = 0 ; j < 8 ; j++)
+                for(int j = 0; j < 8; j++)
                 {
                     if(bit[j])
                     {
@@ -84,7 +84,7 @@ namespace MusicBird
             foreach(byte b in myBytes)
             {
                 bool[] bit = ToBitBool(b);
-                for(int j = 0 ; j < 8 ; j++)
+                for(int j = 0; j < 8; j++)
                 {
                     if(bit[j])
                     {
@@ -102,7 +102,7 @@ namespace MusicBird
         public static byte ToByteChar( char[] myChar )
         {
             int myInt = 0;
-            for(int i = 0 ; i < 8 ; i++)
+            for(int i = 0; i < 8; i++)
             {
                 if(myChar[i].Equals("1"))
                     myInt += (int)Math.Pow(2, 7 - i);
@@ -113,7 +113,7 @@ namespace MusicBird
         public static byte ToByteBool( bool[] myBool )
         {
             int myInt = 0;
-            for(int i = 0 ; i < 8 ; i++)
+            for(int i = 0; i < 8; i++)
             {
                 if(myBool[i])
                     myInt += (int)Math.Pow(2, 7 - i);

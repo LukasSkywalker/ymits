@@ -49,8 +49,8 @@ namespace MusicBird
 
                         fileName.Text = filename;
                         creationDate.Text = creation.LocalDateTime.ToLongDateString() + " " + creation.LocalDateTime.ToLongTimeString();
-                        double mb = size/(double)1048576;
-                        fileSize.Text = mb.ToString("F2")+" MB";
+                        double mb = size / (double)1048576;
+                        fileSize.Text = mb.ToString("F2") + " MB";
 
 
                         //memoryBar.Maximum = quota;
@@ -72,11 +72,11 @@ namespace MusicBird
             {*/
                 using(IsolatedStorageFile myIsolatedStorage = IsolatedStorageFile.GetUserStoreForApplication())
                 {
-                    if(myIsolatedStorage.FileExists(oldFilename))
+                    if(myIsolatedStorage.FileExists(this.oldFilename))
                     {
                         /*try
                         {*/
-                            myIsolatedStorage.MoveFile(oldFilename, fileName.Text);
+                            myIsolatedStorage.MoveFile(this.oldFilename, this.fileName.Text);
                         /*}
                         catch(Exception exc) {
                             System.Diagnostics.Debug.WriteLine(exc.Message);

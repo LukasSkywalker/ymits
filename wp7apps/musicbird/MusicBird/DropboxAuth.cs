@@ -1,15 +1,5 @@
 ﻿using System;
 using System.Net;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Documents;
-using System.Windows.Ink;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Animation;
-using System.Windows.Shapes;
-using System.Text;
-using Microsoft.Phone.Reactive;
 
 namespace MusicBird
 {
@@ -42,7 +32,7 @@ namespace MusicBird
             Random rand = new Random();
             Char[] allowableChars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLOMNOPQRSTUVWXYZ0123456789".ToCharArray();
             string final = "";
-            for(int i = 0 ; i < length ; i++)
+            for(int i = 0; i < length; i++)
             {
                 final += allowableChars[rand.Next(allowableChars.Length - 1)];
             }

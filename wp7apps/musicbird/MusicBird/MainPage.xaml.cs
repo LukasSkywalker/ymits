@@ -7,24 +7,23 @@ using System.Net;
 using System.Net.NetworkInformation;
 using System.Text.RegularExpressions;
 using System.Windows;
-using System.Windows.Resources;
 using System.Windows.Controls;
 using System.Windows.Input;
-using Microsoft.Xna.Framework.Media;
+using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using System.Windows.Resources;
 using System.Windows.Threading;
 using System.Xml;
-using Microsoft.Devices;
 using System.Xml.Serialization;
+using Codeplex.OAuth;
+using com.mtiks.winmobile;
+using Microsoft.Devices;
 using Microsoft.Phone.BackgroundAudio;
 using Microsoft.Phone.BackgroundTransfer;
 using Microsoft.Phone.Controls;
 using Microsoft.Phone.Shell;
 using Microsoft.Phone.Tasks;
-using com.mtiks.winmobile;
-using Codeplex.OAuth;
-using System.Text;
-using System.Windows.Media;
+using Microsoft.Xna.Framework.Media;
 
 
 namespace MusicBird
@@ -64,7 +63,7 @@ namespace MusicBird
         {
             InitializeComponent();
             System.Diagnostics.Debug.WriteLine("Constructor called.");
-            this.Loaded += new RoutedEventHandler(MainPage_Loaded);
+            this.Loaded += new RoutedEventHandler(this.MainPage_Loaded);
             MainPage_Loaded(null, null);
             //initDropbox();
             //initSkydrive();
@@ -79,11 +78,11 @@ namespace MusicBird
             // Initialize a timer to update the UI every half-second.
             _timer = new DispatcherTimer();
             _timer.Interval = TimeSpan.FromSeconds(1);
-            _timer.Tick += new EventHandler(UpdatePlayer);
+            _timer.Tick += new EventHandler(this.UpdatePlayer);
 
             _tileTimer = new DispatcherTimer();
             _tileTimer.Interval = TimeSpan.FromSeconds(20);
-            _tileTimer.Tick += new EventHandler(setAppTile);
+            _tileTimer.Tick += new EventHandler(this.setAppTile);
             _tileTimer.Start();
 
             /*_downloadTimer = new DispatcherTimer();
@@ -92,19 +91,19 @@ namespace MusicBird
 
             _errorTimer = new DispatcherTimer();
             _errorTimer.Interval = TimeSpan.FromSeconds(8);
-            _errorTimer.Tick += new EventHandler(getErrors);
+            _errorTimer.Tick += new EventHandler(this.getErrors);
             _errorTimer.Start();
 
             _trialTimer = new DispatcherTimer();
             _trialTimer.Interval = TimeSpan.FromSeconds(20);
-            _trialTimer.Tick += new EventHandler(checkTrial);
+            _trialTimer.Tick += new EventHandler(this.checkTrial);
             _trialTimer.Start();
 
-            NetworkChange.NetworkAddressChanged += NetworkAddress_Changed;
+            NetworkChange.NetworkAddressChanged += this.NetworkAddress_Changed;
 
-            BackgroundAudioPlayer.Instance.PlayStateChanged += new EventHandler(Instance_PlayStateChanged);
+            BackgroundAudioPlayer.Instance.PlayStateChanged += new EventHandler(this.Instance_PlayStateChanged);
 
-            Instance_PlayStateChanged(null, null);
+            //Instance_PlayStateChanged(null, null);
 
             updatePlaylist();
             updateLibrary();
@@ -131,7 +130,7 @@ namespace MusicBird
             {
                 AdRotatorControl.IsEnabled = false;
                 AdRotatorControl.Visibility = Visibility.Collapsed;
-                Panorama.Margin = new System.Windows.Thickness(0, 0, 0, 0);
+                this.Panorama.Margin = new System.Windows.Thickness(0, 0, 0, 0);
             }
         }
 
@@ -165,7 +164,7 @@ namespace MusicBird
         void Instance_PlayStateChanged(object sender, EventArgs e)
         {
             if(readPlaylist().Count == 0) {
-                UpdateButtons(false, null, false);
+                updateButtonImage("play");
             }
 
             PlayState playerState = BackgroundAudioPlayer.Instance.PlayerState;
@@ -177,30 +176,32 @@ namespace MusicBird
                 case PlayState.Playing:
                     
                     // Update the UI.
-                    positionIndicator.IsIndeterminate = false;
                     positionIndicator.Maximum = BackgroundAudioPlayer.Instance.Track.Duration.TotalSeconds;
-                    UpdateButtons(true, false, true);
+                    updateButtonImage("pause");
+
+                    enablePlayerUI(true);
+                    
                     UpdatePlayer(null, null);
-                    ((ApplicationBarIconButton)(ApplicationBar.Buttons[playButton])).IsEnabled = true;
+
+                    checkAlbumArt();
 
                     // Start the timer for updating the UI.
                     _timer.Start();
-                    positionIndicator.IsIndeterminate = false;
+
+                    enablePlayerUI(true);
+
                     break;
 
                 case PlayState.Paused:
                     // Update the UI.
-                    UpdateButtons(true, true, true);
-                    UpdatePlayer(null, null);
-                    ((ApplicationBarIconButton)(ApplicationBar.Buttons[playButton])).IsEnabled = true;
-
+                    updateButtonImage("play");
+                    enablePlayerUI(true);
                     // Stop the timer for updating the UI.
                     _timer.Stop();
-                    positionIndicator.IsIndeterminate = false;
                     break;
                 case PlayState.Stopped:
-                    UpdateButtons(true, true, true);
-                    positionIndicator.IsIndeterminate = false;
+                    updateButtonImage("play");
+                    enablePlayerUI(true);
                     break;
             }
         }
@@ -215,11 +216,12 @@ namespace MusicBird
         /// <param name="e"></param>
         private void UpdatePlayer(object sender, EventArgs e)
         {
-            if(Panorama.SelectedIndex == 0)
+            if(this.Panorama.SelectedIndex == 0)
             {
                 System.Diagnostics.Debug.WriteLine("Updating player");
                 string ps = BackgroundAudioPlayer.Instance.PlayerState.ToString();
-                if(ps.Equals(PlayState.Unknown.ToString())){
+                if(ps.Equals(PlayState.Unknown.ToString()))
+                {
                     ps = "";
                 }
                 txtState.Text = ps;
@@ -239,7 +241,8 @@ namespace MusicBird
                     txtTrack.Text = string.Format("Track: {1} - {0}", arguments);
 
                     // Set the current position on the ProgressBar.
-                    if(BackgroundAudioPlayer.Instance.Position != null){
+                    if(BackgroundAudioPlayer.Instance.Position != null)
+                    {
                         positionIndicator.Value = BackgroundAudioPlayer.Instance.Position.TotalSeconds;
 
                         // Update the current playback position.
@@ -257,6 +260,24 @@ namespace MusicBird
             }
         }
 
+        private void enablePlayerUI(bool enable){
+            if(enable)
+            {
+                enableButtons(true);
+                positionIndicator.IsIndeterminate = false;
+            }
+            else {
+                enableButtons(false);
+                positionIndicator.IsIndeterminate = true;
+            }
+        }
+
+        private void enableButtons( bool enable ) {
+            ((ApplicationBarIconButton)(ApplicationBar.Buttons[prevButton])).IsEnabled = enable;
+            ((ApplicationBarIconButton)(ApplicationBar.Buttons[playButton])).IsEnabled = enable;
+            ((ApplicationBarIconButton)(ApplicationBar.Buttons[nextButton])).IsEnabled = enable;
+        }
+
 
         #region Replay Controls
         /// <summary>
@@ -266,14 +287,8 @@ namespace MusicBird
         /// <param name="e"></param>
         private void prevButton_Click( object sender, EventArgs e )
         {
-            // Show the indeterminate progress bar.
-            positionIndicator.IsIndeterminate = true;
-
-            // Disable the button so the user can't click it multiple times before 
-            // the background audio agent is able to handle their request.
-            ((ApplicationBarIconButton)(ApplicationBar.Buttons[prevButton])).IsEnabled = false;
-
-            // Tell the backgound audio agent to skip to the previous track.
+            updateButtonImage("pause");
+            enablePlayerUI(false);
             BackgroundAudioPlayer.Instance.SkipPrevious();
         }
 
@@ -288,10 +303,8 @@ namespace MusicBird
             if(PlayState.Playing == BackgroundAudioPlayer.Instance.PlayerState)
             {
                 BackgroundAudioPlayer.Instance.Pause();
-                ApplicationBarIconButton btn = sender as ApplicationBarIconButton;
-                btn.IconUri = new Uri("/Images/appbar.transport.play.rest.png", UriKind.Relative);
-                btn.IsEnabled = false;
-                positionIndicator.IsIndeterminate = false;
+                updateButtonImage("pause");
+                enablePlayerUI(false);
 
             }
             else
@@ -303,10 +316,8 @@ namespace MusicBird
                 else
                 {
                     BackgroundAudioPlayer.Instance.Play();
-                    ApplicationBarIconButton btn = sender as ApplicationBarIconButton;
-                    btn.IconUri = new Uri("/Images/appbar.transport.pause.rest.png", UriKind.Relative);
-                    btn.IsEnabled = false;
-                    positionIndicator.IsIndeterminate = true;
+                    updateButtonImage("pause");
+                    enablePlayerUI(false);
                 }
             }
         }
@@ -330,41 +341,24 @@ namespace MusicBird
         /// <param name="e"></param>
         private void nextButton_Click( object sender, EventArgs e )
         {
-            // Show the indeterminate progress bar.
-            positionIndicator.IsIndeterminate = true;
-
-            // Disable the button so the user can't click it multiple times before 
-            // the background audio agent is able to handle their request.
-            ((ApplicationBarIconButton)(ApplicationBar.Buttons[nextButton])).IsEnabled = false;
-
-            // Tell the backgound audio agent to skip to the next track.
+            updateButtonImage("pause");
+            enablePlayerUI(false);
             BackgroundAudioPlayer.Instance.SkipNext();
         }
 
-        /// <summary>
-        /// Helper method to update the state of the ApplicationBar.Buttons
-        /// </summary>
-        /// <param name="prevBtnEnabled"></param>
-        /// <param name="playBtnEnabled"></param>
-        /// <param name="pauseBtnEnabled"></param>
-        /// <param name="nextBtnEnabled"></param>
-        void UpdateButtons( bool prevBtnEnabled, bool? playBtnEnabled, bool nextBtnEnabled )
+        void updateButtonImage( string function )
         {
-            // Set the IsEnabled state of the ApplicationBar.Buttons array
-            ((ApplicationBarIconButton)(ApplicationBar.Buttons[prevButton])).IsEnabled = prevBtnEnabled;
-            if(playBtnEnabled.HasValue)
+            if(function.Equals("play"))
             {
-                if(playBtnEnabled.Value)
-                {
-                    ((ApplicationBarIconButton)(ApplicationBar.Buttons[playButton])).IconUri = new Uri("/Images/appbar.transport.play.rest.png", UriKind.Relative);
-                }
-                else
-                {
-                    ((ApplicationBarIconButton)(ApplicationBar.Buttons[playButton])).IconUri = new Uri("/Images/appbar.transport.pause.rest.png", UriKind.Relative);
-                }
+                ((ApplicationBarIconButton)(ApplicationBar.Buttons[playButton])).IconUri = new Uri("/Images/appbar.transport.play.rest.png", UriKind.Relative);
             }
-            ((ApplicationBarIconButton)(ApplicationBar.Buttons[nextButton])).IsEnabled = nextBtnEnabled;
+            else if(function.Equals("pause"))
+            {
+                ((ApplicationBarIconButton)(ApplicationBar.Buttons[playButton])).IconUri = new Uri("/Images/appbar.transport.pause.rest.png", UriKind.Relative);
+            }
+        }
 
+        private void checkAlbumArt() {
             if(Helper.Preferences.readBool("albumart") && BackgroundAudioPlayer.Instance.Track != null)
             {
                 try
@@ -402,7 +396,7 @@ namespace MusicBird
                 trackList.Clear();
                 getResults();
                 mtiks.Instance.postEventAttributes("SEARCH",
-                new Dictionary<string, string>() { { "SEARCHTERM", query } });
+                new Dictionary<string, string>() { { "SEARCHTERM", this.query } });
             }
         }
 
@@ -410,25 +404,25 @@ namespace MusicBird
         {
             trackList.Clear();
 
-            string url = "http://mp3skull.com/mp3/" + query.Trim().Replace(" ", "_") + ".html";
+            string url = "http://mp3skull.com/mp3/" + this.query.Trim().Replace(" ", "_") + ".html";
             System.Diagnostics.Debug.WriteLine("Opening URL " + url);
-            WebClient wc = new WebClient();
-            wc.OpenReadCompleted += new OpenReadCompletedEventHandler(wc_OpenReadCompleted);
+            WebClient wc_mp3skull = new WebClient();
+            wc_mp3skull.OpenReadCompleted += new OpenReadCompletedEventHandler(this.wc_mp3skull_OpenReadCompleted);
             NetworkAddress_Changed(null, null);
-            wc.OpenReadAsync(new Uri(url));
+            wc_mp3skull.OpenReadAsync(new Uri(url));
         }
 
         private void getResultsFromVpleer()
         {
-            string url = "http://de.vpleer.ru/?q=" + query.Trim().Replace(" ", "+");
+            string url = "http://de.vpleer.ru/?q=" + this.query.Trim().Replace(" ", "+");
             System.Diagnostics.Debug.WriteLine("Opening URL " + url);
-            WebClient wc2 = new WebClient();
-            wc2.OpenReadCompleted += new OpenReadCompletedEventHandler(wc2_OpenReadCompleted);
+            WebClient wc_vpleer = new WebClient();
+            wc_vpleer.OpenReadCompleted += new OpenReadCompletedEventHandler(this.wc_vpleer_OpenReadCompleted);
             NetworkAddress_Changed(null, null);
-            wc2.OpenReadAsync(new Uri(url));
+            wc_vpleer.OpenReadAsync(new Uri(url));
         }
 
-        private void wc_OpenReadCompleted( object sender, OpenReadCompletedEventArgs e )
+        private void wc_mp3skull_OpenReadCompleted( object sender, OpenReadCompletedEventArgs e )
         {
 
             Regex pattern = new Regex("<a href=\"(.*?.mp3)\" rel=\"nofollow\"", RegexOptions.IgnoreCase);
@@ -463,11 +457,11 @@ namespace MusicBird
                     string artist = name;
                     string title = name;
                     string url = g.ToString();
-                    string[] data = getArtistAndTitle(name);
+                    string[] data = this.getArtistAndTitle(name);
                     if(url.IndexOf("4shared") == -1)
                     {
                         TrackListItem item = new TrackListItem(data[0], data[1], url);
-                        if(matchCount<20) getSize(new Uri(url, UriKind.RelativeOrAbsolute));
+                        if(matchCount < 20) this.getSize(new Uri(url, UriKind.RelativeOrAbsolute));
                         //getTags(url);
                         trackList.Add(item);
                         matchCount++;
@@ -499,11 +493,11 @@ namespace MusicBird
             finally
             {
                 TrackListElement.ItemsSource = null;
-                TrackListElement.ItemsSource = trackList;
+                TrackListElement.ItemsSource = this.trackList;
             }
         }
 
-        private void wc2_OpenReadCompleted( object sender, OpenReadCompletedEventArgs e )
+        private void wc_vpleer_OpenReadCompleted( object sender, OpenReadCompletedEventArgs e )
         {
 
             //Regex pattern = new Regex("getSize([0-9]+, '(.*?)', '(.*?)', '0', '(.*?)', '(.*?)', 'vpeer.ru');", RegexOptions.IgnoreCase);
@@ -567,7 +561,7 @@ namespace MusicBird
                 stopThrobber();
 
                 TrackListElement.ItemsSource = null;
-                TrackListElement.ItemsSource = trackList;
+                TrackListElement.ItemsSource = this.trackList;
             }
         }
 
@@ -601,7 +595,7 @@ namespace MusicBird
                 else if(len > 1)                                      // Ex. JohnWayne Heaven or John Wayne Heaven
                 {
                     string[] nameArray = name.Split((char)32);
-                    for(int i = 0 ; i < len ; i++)
+                    for(int i = 0; i < len; i++)
                     {
                         if(i < len / 2)
                         {
@@ -623,7 +617,7 @@ namespace MusicBird
             {                                        // John Wayne - Heaven - Live at Brixton Academy
                 string[] parts = name.Split((char)45);
                 int len = parts.Length;
-                for(int i = 0 ; i < len ; i++)
+                for(int i = 0; i < len; i++)
                 {
                     if(i < len / 2)
                     {
@@ -681,10 +675,11 @@ namespace MusicBird
             return name;
         }
 
-        private void getSize(Uri uri){
+        private void getSize(Uri uri)
+        {
             HttpWebRequest req = (HttpWebRequest)WebRequest.Create(uri);
             req.Method = "HEAD";
-            req.BeginGetResponse(new AsyncCallback(gotSize), req);
+            req.BeginGetResponse(new AsyncCallback(this.gotSize), req);
         }
 
         private long getSizeLocal( String filename ) {
@@ -712,13 +707,13 @@ namespace MusicBird
         private void getTags( string url ) {
             Uri uri = new Uri(url, UriKind.RelativeOrAbsolute);
             ID3v2 reader = new ID3v2(uri);
-            reader.TagsRead += new ID3v2.TagsReadEventHandler(reader_TagsRead);
+            reader.TagsRead += new ID3v2.TagsReadEventHandler(this.reader_TagsRead);
             reader.Read();
         }
 
         void reader_TagsRead( string artist, string title, string url )
         {
-            foreach(TrackListItem trackListItem in trackList)
+            foreach(TrackListItem trackListItem in this.trackList)
             {
                 if(trackListItem.url.Equals(url))
                 {
@@ -735,15 +730,16 @@ namespace MusicBird
                 HttpWebResponse response = (HttpWebResponse)request.EndGetResponse(asynchronousResult);
                 int size = Convert.ToInt32(response.Headers["Content-Length"]);
                 string url = request.RequestUri.ToString();
-                foreach(TrackListItem trackListItem in trackList) {
-                    if(trackListItem.url.Equals(url)){
+                foreach(TrackListItem trackListItem in this.trackList) {
+                    if(trackListItem.url.Equals(url))
+                    {
                         trackListItem.setSize(size);
                     }
                 }
             }
             catch(WebException) {
                 // do nothing ?
-                System.Diagnostics.Debug.WriteLine("Error getting size for file "+request.RequestUri.ToString());
+                System.Diagnostics.Debug.WriteLine("Error getting size for file " + request.RequestUri.ToString());
             }
         }
 
@@ -760,22 +756,22 @@ namespace MusicBird
             addToPlaylist(selectedTrack.artist, selectedTrack.title, selectedTrack.url);
             updatePlaylist();
 
-            List<String[]> oldItems = readPlaylist();
+            List<String[]> oldItems = this.readPlaylist();
             int itemsCount = oldItems.Count;
 
             AudioPlaybackAgent1.AudioPlayer.playAtPosition(itemsCount - 1, BackgroundAudioPlayer.Instance);
             mtiks.Instance.postEventAttributes("TRACKITEM_PLAY",
                 new Dictionary<string, string>() { { "ARTIST_TITLE", selectedTrack.artist + " - " + selectedTrack.title } });
-            Instance_PlayStateChanged(null, null);
-            positionIndicator.IsIndeterminate = true;
-            Panorama.SelectedItem = playerItem;
+            //Instance_PlayStateChanged(null, null);
+            enablePlayerUI(false);
+            this.Panorama.SelectedItem = this.playerItem;
         }
 
         private void trackItem_Hold( object sender, RoutedEventArgs e )
         {
 
             // get selected Item
-            ListBoxItem selectedListBoxItem = getListBoxItem(sender);
+            ListBoxItem selectedListBoxItem = this.getListBoxItem(sender);
             if(selectedListBoxItem == null)
             {
                 return;
@@ -879,7 +875,7 @@ namespace MusicBird
             AudioTrack current = new AudioTrack(new Uri(selectedTrack.url, UriKind.RelativeOrAbsolute), selectedTrack.artist, selectedTrack.title, "", null);
             String[] current2 = new String[] { selectedTrack.artist, selectedTrack.title, selectedTrack.url };
 
-            List<string[]> oldItems = readPlaylist();
+            List<string[]> oldItems = this.readPlaylist();
 
             int counter = -1;
 
@@ -896,14 +892,14 @@ namespace MusicBird
             AudioPlaybackAgent1.AudioPlayer.playAtPosition(counter, BackgroundAudioPlayer.Instance);
             mtiks.Instance.postEventAttributes("PLSITEM_PLAY",
                 new Dictionary<string, string>() { { "ARTIST_TITLE", selectedTrack.artist + " - " + selectedTrack.title } });
-            Instance_PlayStateChanged(null, null);
-            positionIndicator.IsIndeterminate = true;
-            Panorama.SelectedItem = playerItem;
+            //Instance_PlayStateChanged(null, null);
+            enablePlayerUI(false);
+            this.Panorama.SelectedItem = this.playerItem;
         }
 
         private void playlistItem_Hold( object sender, RoutedEventArgs e )
         {
-            ListBoxItem selectedListBoxItem = PlaylistElement.ItemContainerGenerator.ContainerFromItem((sender as MenuItem).DataContext) as ListBoxItem;
+            ListBoxItem selectedListBoxItem = this.PlaylistElement.ItemContainerGenerator.ContainerFromItem((sender as MenuItem).DataContext) as ListBoxItem;
             if(selectedListBoxItem == null)
             {
                 System.Diagnostics.Debug.WriteLine("Selected LB is null");
@@ -915,11 +911,11 @@ namespace MusicBird
 
             // loop through items and check if item matches selectedItem (selectedIndex is not updated with context menu...)
             int i = 0;
-            TrackListItem currentTrack = (PlaylistElement.ItemContainerGenerator.ContainerFromIndex(0) as ListBoxItem).Content as TrackListItem;
+            TrackListItem currentTrack = (this.PlaylistElement.ItemContainerGenerator.ContainerFromIndex(0) as ListBoxItem).Content as TrackListItem;
             while(currentTrack != selectedTrack)
             {
                 i++;
-                currentTrack = (PlaylistElement.ItemContainerGenerator.ContainerFromIndex(i) as ListBoxItem).Content as TrackListItem;
+                currentTrack = (this.PlaylistElement.ItemContainerGenerator.ContainerFromIndex(i) as ListBoxItem).Content as TrackListItem;
             }
             int selectedIndex = i;
 
@@ -957,7 +953,7 @@ namespace MusicBird
         private void updatePlaylist()
         {
             List<TrackListItem> tList = new List<TrackListItem>();
-            List<String[]> trackList = readPlaylist();
+            List<String[]> trackList = this.readPlaylist();
             foreach(var item in trackList)
             {
                 tList.Add(new TrackListItem(item[0], item[1], item[2]));
@@ -972,7 +968,7 @@ namespace MusicBird
             LibraryItem selectedTrack = (sender as FrameworkElement).DataContext as LibraryItem;
             AudioTrack current = new AudioTrack(new Uri(selectedTrack.filename, UriKind.Relative), selectedTrack.filename, "", "", null);
 
-            String[] name = getArtistAndTitle(selectedTrack.filename);
+            String[] name = this.getArtistAndTitle(selectedTrack.filename);
 
             addToPlaylist(name[0], name[1], selectedTrack.filename);
             updatePlaylist();
@@ -980,21 +976,21 @@ namespace MusicBird
             //BackgroundAudioPlayer.Instance.Play();
             //updatePlaylist();
 
-            List<String[]> oldItems = readPlaylist();
+            List<String[]> oldItems = this.readPlaylist();
             int itemsCount = oldItems.Count;
 
             AudioPlaybackAgent1.AudioPlayer.playAtPosition(itemsCount - 1, BackgroundAudioPlayer.Instance);
             mtiks.Instance.postEventAttributes("LIBITEM_PLAY",
                 new Dictionary<string, string>() { { "FILENAME", selectedTrack.filename } });
-            Instance_PlayStateChanged(null, null);
-            positionIndicator.IsIndeterminate = true;
-            Panorama.SelectedItem = playerItem;
+            //Instance_PlayStateChanged(null, null);
+            enablePlayerUI(false);
+            this.Panorama.SelectedItem = this.playerItem;
 
         }
 
         private void libraryItem_Hold( object sender, RoutedEventArgs e )
         {
-            ListBoxItem selectedListBoxItem = LibraryElement.ItemContainerGenerator.ContainerFromItem((sender as MenuItem).DataContext) as ListBoxItem;
+            ListBoxItem selectedListBoxItem = this.LibraryElement.ItemContainerGenerator.ContainerFromItem((sender as MenuItem).DataContext) as ListBoxItem;
             if(selectedListBoxItem == null)
             {
                 return;
@@ -1021,11 +1017,11 @@ namespace MusicBird
                     NavigationService.Navigate(new Uri("/Properties.xaml?filename=" + Uri.EscapeDataString(selectedTrack.filename), UriKind.Relative));
                     break;
                 case "upload":
-                    AccessToken token = authenticate();
+                    AccessToken token = this.authenticate();
                     if(token != null)
                     {
                         sendFile(token, selectedTrack.filename);
-                        Panorama.SelectedItem = downloadItem;
+                        this.Panorama.SelectedItem = this.downloadItem;
                     }
                     break;
                 case "delete":
@@ -1035,7 +1031,7 @@ namespace MusicBird
                         {
                             try
                             {
-                                if(HttpUtility.UrlDecode(BackgroundAudioPlayer.Instance.Track.Source.ToString()).Equals(selectedTrack.filename))
+                                if (HttpUtility.UrlDecode(BackgroundAudioPlayer.Instance.Track.Source.ToString()).Equals(selectedTrack.filename))
                                 {
                                     MessageBox.Show("The track is currently played. Please try again later.");
                                 }
@@ -1046,7 +1042,7 @@ namespace MusicBird
                             }
                             catch(NullReferenceException)
                             {
-                                //No playback a.t.m.
+                                // No playback a.t.m.
                                 store.DeleteFile(selectedTrack.filename);
                             }
                         }
@@ -1073,12 +1069,12 @@ namespace MusicBird
                 string[] files = myStore.GetFileNames();
                 if(files.Length > 0)
                 {
-                    for(int i = 0 ; i < files.Length ; i++)
+                    for(int i = 0; i < files.Length; i++)
                     {
                         LibraryItem item = new LibraryItem(files[i]);
                         if(item.filename.IndexOf(".mp3") == item.filename.Length - 4)
                         {
-                            item.setSize(getSizeLocal(item.filename));
+                            item.setSize(this.getSizeLocal(item.filename));
                             trackList.Add(item);
                         }
                     }
@@ -1110,7 +1106,7 @@ namespace MusicBird
 
         private void getErrors( object sender, EventArgs e ) {
             string msg = Helper.BackgroundErrorNotifier.getError();
-            string message = "Player error: "+msg+". The error has been reported to the developer. Sorry for the inconvenience.";
+            string message = "Player error: " + msg + ". The error has been reported to the developer. Sorry for the inconvenience.";
             if(msg != null && msg != "")
             {
                 switch(msg) {
@@ -1130,7 +1126,7 @@ namespace MusicBird
                         message = "Invalid or corrupted file. Please try another.";
                         break;
                 }
-                MessageBox.Show(message,"Error",MessageBoxButton.OK);
+                MessageBox.Show(message, "Error", MessageBoxButton.OK);
                 Helper.BackgroundErrorNotifier.addError(null);
                 BackgroundAudioPlayer.Instance.SkipNext();
                 mtiks.Instance.AddException(new Exception("BAP Error: " + message));
@@ -1175,23 +1171,23 @@ namespace MusicBird
                 // Use the navigation context to find the song by name.
                 String songToPlay = NavigationContext.QueryString[_playSongKey];
 
-                System.Diagnostics.Debug.WriteLine("Trying to play song: "+songToPlay);
+                System.Diagnostics.Debug.WriteLine("Trying to play song: " + songToPlay);
 
-                String[] name = getArtistAndTitle(songToPlay);
+                String[] name = this.getArtistAndTitle(songToPlay);
 
                 addToPlaylist(name[0], name[1], songToPlay);
 
-                List<String[]> oldItems = readPlaylist();
+                List<String[]> oldItems = this.readPlaylist();
                 int itemsCount = oldItems.Count;
 
                 AudioPlaybackAgent1.AudioPlayer.playAtPosition(itemsCount - 1, BackgroundAudioPlayer.Instance);
-                Instance_PlayStateChanged(null, null);
-                positionIndicator.IsIndeterminate = true;
-                Panorama.SelectedItem = playerItem;
+                //Instance_PlayStateChanged(null, null);
+                enablePlayerUI(false);
+                this.Panorama.SelectedItem = this.playerItem;
             }
             else if(NavigationContext.QueryString.ContainsKey(_showPlayerKey))
             {
-                Panorama.SelectedItem = libraryItem;
+                this.Panorama.SelectedItem = this.libraryItem;
             }
 
         }
@@ -1269,13 +1265,13 @@ namespace MusicBird
                         var upload = Helper.Preferences.read("dropboxUpload");
                         if(upload != null && upload.Equals(true.ToString()))
                         {
-                            AccessToken token = authenticate();
+                            AccessToken token = this.authenticate();
                             sendFile(token, filename);
                         }
 
                         try
                         {
-                            if(Panorama.SelectedItem.Equals(downloadItem)) Panorama.SelectedItem = libraryItem;
+                            if(this.Panorama.SelectedItem.Equals(this.downloadItem)) this.Panorama.SelectedItem = this.libraryItem;
                         }
                         catch(NullReferenceException e)
                         {
@@ -1298,8 +1294,8 @@ namespace MusicBird
                         //<hubTileImageStream> must be a valid ImageStream.
                         mediaHistoryItem.ImageStream = stream;
                         mediaHistoryItem.Source = String.Empty;
-                        mediaHistoryItem.Title = getArtistAndTitle(filename)[0];
-                        System.Diagnostics.Debug.WriteLine("Adding " + getArtistAndTitle(filename)[0] + " as new");
+                        mediaHistoryItem.Title = this.getArtistAndTitle(filename)[0];
+                        System.Diagnostics.Debug.WriteLine("Adding " + this.getArtistAndTitle(filename)[0] + " as new");
                         mediaHistoryItem.PlayerContext.Add("playSong", filename);
                         MediaHistory.Instance.WriteAcquiredItem(mediaHistoryItem);
 
@@ -1371,7 +1367,7 @@ namespace MusicBird
 
         private void UpdateDownloads( object sender, EventArgs e )
         {
-            if(Panorama.SelectedItem.Equals(downloadItem))
+            if(this.Panorama.SelectedItem.Equals(this.downloadItem))
             {
                 System.Diagnostics.Debug.WriteLine("Updating Downloads");
 
@@ -1395,7 +1391,7 @@ namespace MusicBird
                     }*/
 
                 // Update the TransferListBox with the list of transfer requests.
-                TransferListBox.ItemsSource = transferRequests;
+                TransferListBox.ItemsSource = this.transferRequests;
             }
         }
 
@@ -1405,7 +1401,7 @@ namespace MusicBird
             // you dispose of the old references to avoid memory leaks.
             if (transferRequests != null)
             {
-                foreach (var request in transferRequests)
+                foreach (var request in this.transferRequests)
                 {
                     request.Dispose();
                 }
@@ -1492,10 +1488,10 @@ namespace MusicBird
             try
             {
                 BackgroundTransferService.Add(transferRequest);
-                transferRequest.TransferStatusChanged += new EventHandler<BackgroundTransferEventArgs>(transfer_TransferStatusChanged);
-                transferRequest.TransferProgressChanged += new EventHandler<BackgroundTransferEventArgs>(transfer_TransferProgressChanged);
+                transferRequest.TransferStatusChanged += new EventHandler<BackgroundTransferEventArgs>(this.transfer_TransferStatusChanged);
+                transferRequest.TransferProgressChanged += new EventHandler<BackgroundTransferEventArgs>(this.transfer_TransferProgressChanged);
                 UpdateDownloads(null, null);
-                Panorama.SelectedItem = downloadItem;
+                this.Panorama.SelectedItem = this.downloadItem;
                 //_downloadTimer.Start();
             }
             catch(InvalidOperationException ex)
@@ -1521,7 +1517,7 @@ namespace MusicBird
             }
             // Scan through the letters, checking for spaces.
             // ... Uppercase the lowercase letters following spaces.
-            for ( int i = 1 ; i < array.Length ; i++ )
+            for ( int i = 1; i < array.Length; i++ )
             {
                 if ( array[i - 1] == ' ' )
                 {
@@ -1549,7 +1545,7 @@ namespace MusicBird
 
         private void removeFromPlaylist( object item )
         {
-            List<String[]> pl = readPlaylist();
+            List<String[]> pl = this.readPlaylist();
             if(item is int)
             {
                 int index = (int)item;
@@ -1619,10 +1615,10 @@ namespace MusicBird
             String websiteURL = "http://api.bing.net/json.aspx?AppId=A34B1552C3B3DF826089895CCA0D868F5B4AE201&Query=" + searchterm.Trim() + "%20Cover&Sources=Image&Filters=Size:Small";
             WebClient c = new WebClient();
             c.DownloadStringAsync(new Uri(websiteURL));
-            c.DownloadStringCompleted += new DownloadStringCompletedEventHandler(c_DownloadStringCompleted);
+            c.DownloadStringCompleted += new DownloadStringCompletedEventHandler(this.c_DownloadStringCompleted);
         }
 
-        private void c_DownloadStringCompleted( object sender, DownloadStringCompletedEventArgs e )
+        private void c_DownloadStringCompleted( object sender, DownloadStringCompletedEventArgs e)
         {
             lock(this)
             {
@@ -1652,7 +1648,7 @@ namespace MusicBird
             var count = VisualTreeHelper.GetChildrenCount(parentElement);
             if(count == 0)
                 return null;
-            for(int i = 0 ; i < count ; i++)
+            for(int i = 0; i < count; i++)
             {
                 var child = VisualTreeHelper.GetChild(parentElement, i);
                 if(child != null && child is T)
@@ -1886,8 +1882,8 @@ namespace MusicBird
         #endregion
 
         private void log( Exception ex ) {
-            System.Diagnostics.Debug.WriteLine("Message         : "+ex.Message);
-            System.Diagnostics.Debug.WriteLine("Inner Exception : "+ex.InnerException);
+            System.Diagnostics.Debug.WriteLine("Message         : " + ex.Message);
+            System.Diagnostics.Debug.WriteLine("Inner Exception : " + ex.InnerException);
             System.Diagnostics.Debug.WriteLine("Stacktrace      : " + ex.InnerException);
             mtiks.Instance.AddException(ex);
         }
@@ -1913,7 +1909,7 @@ namespace MusicBird
 
         public void setSize( double size ) {
             this.size = size;
-            this.sizeText = (size/(double)1048576).ToString("F2")+" MB";
+            this.sizeText = (size / (double)1048576).ToString("F2") + " MB";
         }
     }
 
