@@ -49,7 +49,7 @@ namespace MusicBird
         public Dictionary<String, id3v2Frame> framesHash;
         public List<id3v2Frame> frames;
 
-        private bool fileOpen;
+        //private bool fileOpen;
 
         //public bool header;
 
@@ -78,7 +78,7 @@ namespace MusicBird
             this.FB_ExtendedHeader = false;
             this.FC_ExperimentalIndicator = false;
 
-            this.fileOpen = false;
+            //this.fileOpen = false;
 
             this.frames = new List<id3v2Frame>();
             this.framesHash = new Dictionary<String, id3v2Frame>();
@@ -93,7 +93,7 @@ namespace MusicBird
             this.extD_Restrictions = 0;
             this.extHeaderSize = 0;
             this.extNumFlagBytes = 0;
-            this.fileOpen = false;
+            //this.fileOpen = false;
             this.hasTag = false;
             this.headerSize = 0;
             this.Title = "";
