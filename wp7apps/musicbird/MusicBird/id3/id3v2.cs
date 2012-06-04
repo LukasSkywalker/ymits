@@ -42,7 +42,6 @@ namespace MusicBird
 
 
         private BinaryReader br;
-        private byte[] ba;
         public bool hasTag;
 
         public ulong headerSize;

@@ -1,8 +1,8 @@
 ﻿using System.Reflection;
 
-namespace Utility
+namespace Helper
 {
-    public static class Helper
+    public static class Utility
     {
         #region Application Version
 

@@ -59,55 +59,55 @@ namespace MusicBird
         #region settings
         private void albumart_Checked( object sender, RoutedEventArgs e )
         {
-            Preferences.write("albumart", true);
+            Helper.Preferences.write("albumart", true);
         }
 
         private void albumart_Unchecked( object sender, RoutedEventArgs e )
         {
-            Preferences.write("albumart", false);
+            Helper.Preferences.write("albumart", false);
         }
 
         private void allowCellular_Checked( object sender, RoutedEventArgs e )
         {
-            Preferences.write("allowCellular", true);
+            Helper.Preferences.write("allowCellular", true);
         }
 
         private void allowCellular_Unchecked( object sender, RoutedEventArgs e )
         {
-            Preferences.write("allowCellular", false);
+            Helper.Preferences.write("allowCellular", false);
         }
 
         private void allowBattery_Unchecked( object sender, RoutedEventArgs e )
         {
-            Preferences.write("allowBattery", false);
+            Helper.Preferences.write("allowBattery", false);
         }
 
         private void allowBattery_Checked( object sender, RoutedEventArgs e )
         {
-            Preferences.write("allowBattery", true);
+            Helper.Preferences.write("allowBattery", true);
         }
 
         private void dropboxUpload_Checked( object sender, RoutedEventArgs e )
         {
-            Preferences.write("dropboxUpload", true);
-            if(Preferences.read("dropbox-access-token-key") == null)
+            Helper.Preferences.write("dropboxUpload", true);
+            if(Helper.Preferences.read("dropbox-access-token-key") == null)
             {
                 dropboxAuthButton_Click(null, null);
             }
         }
 
         private void dropboxUpload_Unchecked( object sender, RoutedEventArgs e ) {
-            Preferences.write("dropboxUpload", false);
+            Helper.Preferences.write("dropboxUpload", false);
         }
 
         #endregion
 
         private void PhoneApplicationPage_Loaded( object sender, RoutedEventArgs e )
         {
-            albumart.IsChecked = Preferences.readBool("albumart");
-            /*allowCellular.IsChecked = Preferences.readBool("allowCellular");
-            allowBattery.IsChecked = Preferences.readBool("allowBattery");*/
-            //dropboxUpload.IsChecked = Preferences.readBool("dropboxUpload");
+            albumart.IsChecked = Helper.Preferences.readBool("albumart");
+            /*allowCellular.IsChecked = Helper.Preferences.readBool("allowCellular");
+            allowBattery.IsChecked = Helper.Preferences.readBool("allowBattery");*/
+            //dropboxUpload.IsChecked = Helper.Preferences.readBool("dropboxUpload");
         }
 
         private void playlistErrorButton_Click( object sender, RoutedEventArgs e )
@@ -178,8 +178,8 @@ namespace MusicBird
                 .Subscribe(token =>
                     {
                         this.accessToken = token.Token;
-                        Preferences.write("dropbox-access-token-key", this.accessToken.Key.ToString());
-                        Preferences.write("dropbox-access-token-secret", this.accessToken.Secret.ToString());
+                        Helper.Preferences.write("dropbox-access-token-key", this.accessToken.Key.ToString());
+                        Helper.Preferences.write("dropbox-access-token-secret", this.accessToken.Secret.ToString());
                         System.Diagnostics.Debug.WriteLine("Saved access token");
                     });
         }

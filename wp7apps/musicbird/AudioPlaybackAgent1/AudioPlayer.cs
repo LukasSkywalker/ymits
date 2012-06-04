@@ -21,11 +21,11 @@ namespace AudioPlaybackAgent1
         {
             get
             {
-                return Preferences.readInt("currentTrackNumber");
+                return Helper.Preferences.readInt("currentTrackNumber");
             }
             set
             {
-                Preferences.write("currentTrackNumber", value);
+                Helper.Preferences.write("currentTrackNumber", value);
             }
         }
         //private DispatcherTimer timer;
@@ -295,7 +295,7 @@ namespace AudioPlaybackAgent1
         {
             System.Diagnostics.Debug.WriteLine("Error in BAP!");
             System.Diagnostics.Debug.WriteLine(error.Message);
-            BackgroundErrorNotifier.addError(error);
+            Helper.BackgroundErrorNotifier.addError(error);
             System.Diagnostics.Debug.WriteLine("Error was added");
             if (isFatal)
             {
@@ -356,7 +356,7 @@ namespace AudioPlaybackAgent1
 
         private static void setFlag(String type){
             //type is Limit or NotFound
-            Preferences.write(type, true);
+            Helper.Preferences.write(type, true);
         }
 
         private  static List<String[]> readPlaylist()
@@ -388,7 +388,7 @@ namespace AudioPlaybackAgent1
             if(this.trialRead){
                 return this.IsTrial;
             }else{
-                this.IsTrial = Preferences.readBool("trial");
+                this.IsTrial = Helper.Preferences.readBool("trial");
                 this.trialRead = true;
             }
             System.Diagnostics.Debug.WriteLine("AudioPlayer.cs:isTrial ______________ isTrial: "+IsTrial.ToString());
@@ -401,16 +401,16 @@ namespace AudioPlaybackAgent1
             now = DateTime.Now;
             DateTime date = now.Date;
 
-            string playbackDate = Preferences.read("playback-date");
-            string playbackNumber = Preferences.read("playback-number");
+            string playbackDate = Helper.Preferences.read("playback-date");
+            string playbackNumber = Helper.Preferences.read("playback-number");
 
             if(playbackDate == null || DateTime.Parse(playbackDate) != date)
             {
                 //last date was yesterday
                 System.Diagnostics.Debug.WriteLine("Dates do not match. Counter set to 1.");
                 playbackDate = date.ToString();
-                Preferences.write("playback-number", 1);
-                Preferences.write("playback-date", playbackDate);
+                Helper.Preferences.write("playback-number", 1);
+                Helper.Preferences.write("playback-date", playbackDate);
                 return false;
             }else{
                 //already played today
@@ -426,8 +426,8 @@ namespace AudioPlaybackAgent1
                     //less than 5 replays. Count 1 up.
                     System.Diagnostics.Debug.WriteLine("Not exceeded. " + Convert.ToInt32(playbackNumber) + " plays.");
                     playbackNumber = (Convert.ToInt32(playbackNumber) + 1).ToString();
-                    Preferences.write("playback-date", playbackDate);
-                    Preferences.write("playback-number", playbackNumber);
+                    Helper.Preferences.write("playback-date", playbackDate);
+                    Helper.Preferences.write("playback-number", playbackNumber);
                     return false;
                 }
             }

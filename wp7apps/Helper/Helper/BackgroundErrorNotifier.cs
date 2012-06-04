@@ -9,6 +9,8 @@ using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Shapes;
 
+namespace Helper
+{
     public static class BackgroundErrorNotifier
     {
         public static void addError( Exception ex )
@@ -26,3 +28,4 @@ using System.Windows.Shapes;
             return Preferences.read("background-exception");
         }
     }
+}
