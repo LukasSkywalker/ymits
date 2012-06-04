@@ -365,7 +365,7 @@ namespace MusicBird
             }
             ((ApplicationBarIconButton)(ApplicationBar.Buttons[nextButton])).IsEnabled = nextBtnEnabled;
 
-            if(Preferences.readBool("albumart") && BackgroundAudioPlayer.Instance.Track != null)
+            if(Helper.Preferences.readBool("albumart") && BackgroundAudioPlayer.Instance.Track != null)
             {
                 try
                 {
@@ -1109,7 +1109,7 @@ namespace MusicBird
         }
 
         private void getErrors( object sender, EventArgs e ) {
-            string msg = BackgroundErrorNotifier.getError();
+            string msg = Helper.BackgroundErrorNotifier.getError();
             string message = "Player error: "+msg+". The error has been reported to the developer. Sorry for the inconvenience.";
             if(msg != null && msg != "")
             {
@@ -1131,7 +1131,7 @@ namespace MusicBird
                         break;
                 }
                 MessageBox.Show(message,"Error",MessageBoxButton.OK);
-                BackgroundErrorNotifier.addError(null);
+                Helper.BackgroundErrorNotifier.addError(null);
                 BackgroundAudioPlayer.Instance.SkipNext();
                 mtiks.Instance.AddException(new Exception("BAP Error: " + message));
             }
@@ -1266,7 +1266,7 @@ namespace MusicBird
                         }
 
                         updateLibrary();
-                        var upload = Preferences.read("dropboxUpload");
+                        var upload = Helper.Preferences.read("dropboxUpload");
                         if(upload != null && upload.Equals(true.ToString()))
                         {
                             AccessToken token = authenticate();
@@ -1471,8 +1471,8 @@ namespace MusicBird
             transferRequest.Headers.Add("User-Agent", "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:7.0.1) Gecko/20100101 Firefox/7.0.12011-10-16 20:23:00");
             System.Diagnostics.Debug.WriteLine(transferRequest.Headers["User-Agent"]);
 
-            /*bool allowCellular = Preferences.readBool("allowCellular");
-            bool allowBattery = Preferences.readBool("allowBattery");
+            /*bool allowCellular = Helper.Preferences.readBool("allowCellular");
+            bool allowBattery = Helper.Preferences.readBool("allowBattery");
             if(allowCellular && allowBattery)
             {*/
             transferRequest.TransferPreferences = TransferPreferences.AllowCellularAndBattery;
@@ -1671,46 +1671,46 @@ namespace MusicBird
 
         /*private void toggleRepeat( object sender, RoutedEventArgs e )
         {
-            if(Preferences.readBool("repeat"))   //disable it!
+            if(Helper.Preferences.readBool("repeat"))   //disable it!
             {
                 repeatButton.Opacity = 0.4;
-                Preferences.write("repeat", false);
+                Helper.Preferences.write("repeat", false);
             }
             else {  //enable it
                 repeatButton.Opacity = 1;
-                Preferences.write("repeat", true);
+                Helper.Preferences.write("repeat", true);
             }
         }
 
         private void toggleShuffle( object sender, RoutedEventArgs e )
         {
-            if(Preferences.readBool("shuffle"))   //disable it!
+            if(Helper.Preferences.readBool("shuffle"))   //disable it!
             {
                 shuffleButton.Opacity = 0.4;
-                Preferences.write("shuffle", false);
+                Helper.Preferences.write("shuffle", false);
             }
             else
             {  //enable it
                 shuffleButton.Opacity = 1;
-                Preferences.write("shuffle", true);
+                Helper.Preferences.write("shuffle", true);
             }
         }*/
 
         private static bool checkFlag(String type)
         {
-            bool value = Preferences.readBool(type);
-            if(value) Preferences.write(type, false);
+            bool value = Helper.Preferences.readBool(type);
+            if(value) Helper.Preferences.write(type, false);
             return value;
         }
 
         #region Dropbox Upload
         private AccessToken authenticate()
         {
-            if(Preferences.read("dropbox-access-token-key") != null)
+            if(Helper.Preferences.read("dropbox-access-token-key") != null)
             {
                 System.Diagnostics.Debug.WriteLine("Access token exists");
-                string key = Preferences.read("dropbox-access-token-key");
-                string secret = Preferences.read("dropbox-access-token-secret");
+                string key = Helper.Preferences.read("dropbox-access-token-key");
+                string secret = Helper.Preferences.read("dropbox-access-token-secret");
                 return new AccessToken(key, secret);
             }
             else

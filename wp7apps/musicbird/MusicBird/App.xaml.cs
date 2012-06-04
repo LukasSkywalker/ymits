@@ -53,8 +53,6 @@ namespace MusicBird
             // Phone-specific initialization
             InitializePhoneApplication();
 
-            CrashReporter.Initialize(RootFrame);
-
             // Show graphics profiling information while debugging.
             if (System.Diagnostics.Debugger.IsAttached)
             {
@@ -153,7 +151,7 @@ namespace MusicBird
         #else
             _isTrial = _licenseInfo.IsTrial();
         #endif
-            Preferences.write("trial", _isTrial);
+            Helper.Preferences.write("trial", _isTrial);
         }
 
         private void checkIfUpdated() {
