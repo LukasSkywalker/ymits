@@ -10,7 +10,7 @@ namespace MusicBird
     /// <summary>
     /// Summary description for ID3v2.
     /// </summary>
-    public class ID3v2
+    public class ID3v2 : IDisposable
     {
         public delegate void TagsReadEventHandler( string artist, string title, string url );
         public event TagsReadEventHandler TagsRead;
@@ -792,6 +792,22 @@ namespace MusicBird
 
         }
 
-    }
+        public void Dispose() {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
 
+        protected virtual void Dispose( bool disposing )
+        {
+            if(disposing)
+            {
+                // free managed resources
+                if(br != null)
+                {
+                    br.Dispose();
+                    br = null;
+                }
+            }
+        }
+    }
 }
