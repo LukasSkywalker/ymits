@@ -42,11 +42,11 @@ namespace MusicBird
         bool WaitingForWiFi;
 
         // Timer for updating the UI
-        DispatcherTimer _timer;
-        DispatcherTimer _tileTimer;
+        DispatcherTimer playerProgressUpdateTimer;
+        DispatcherTimer tileTimer;
         //DispatcherTimer _downloadTimer;
-        DispatcherTimer _errorTimer;
-        DispatcherTimer _trialTimer;
+        DispatcherTimer playerErrorTimer;
+        DispatcherTimer trialCheckTimer;
 
         // Indexes into the array of ApplicationBar.Buttons
         const int prevButton = 0;
@@ -75,35 +75,28 @@ namespace MusicBird
 
             toggleAds();
 
-            // Initialize a timer to update the UI every half-second.
-            _timer = new DispatcherTimer();
-            _timer.Interval = TimeSpan.FromSeconds(1);
-            _timer.Tick += new EventHandler(this.UpdatePlayer);
+            playerProgressUpdateTimer = new DispatcherTimer();
+            playerProgressUpdateTimer.Interval = TimeSpan.FromSeconds(1);
+            playerProgressUpdateTimer.Tick += new EventHandler(this.updatePlayerProgress);
 
-            _tileTimer = new DispatcherTimer();
-            _tileTimer.Interval = TimeSpan.FromSeconds(20);
-            _tileTimer.Tick += new EventHandler(this.setAppTile);
-            _tileTimer.Start();
+            tileTimer = new DispatcherTimer();
+            tileTimer.Interval = TimeSpan.FromSeconds(20);
+            tileTimer.Tick += new EventHandler(this.setAppTile);
+            tileTimer.Start();
 
-            /*_downloadTimer = new DispatcherTimer();
-            _downloadTimer.Interval = TimeSpan.FromSeconds(2);
-            _downloadTimer.Tick += new EventHandler(UpdateUI);*/
+            playerErrorTimer = new DispatcherTimer();
+            playerErrorTimer.Interval = TimeSpan.FromSeconds(8);
+            playerErrorTimer.Tick += new EventHandler(this.getErrors);
+            playerErrorTimer.Start();
 
-            _errorTimer = new DispatcherTimer();
-            _errorTimer.Interval = TimeSpan.FromSeconds(8);
-            _errorTimer.Tick += new EventHandler(this.getErrors);
-            _errorTimer.Start();
-
-            _trialTimer = new DispatcherTimer();
-            _trialTimer.Interval = TimeSpan.FromSeconds(20);
-            _trialTimer.Tick += new EventHandler(this.checkTrial);
-            _trialTimer.Start();
+            trialCheckTimer = new DispatcherTimer();
+            trialCheckTimer.Interval = TimeSpan.FromSeconds(20);
+            trialCheckTimer.Tick += new EventHandler(this.checkTrial);
+            trialCheckTimer.Start();
 
             NetworkChange.NetworkAddressChanged += this.NetworkAddress_Changed;
 
             BackgroundAudioPlayer.Instance.PlayStateChanged += new EventHandler(this.Instance_PlayStateChanged);
-
-            //Instance_PlayStateChanged(null, null);
 
             updatePlaylist();
             updateLibrary();
@@ -163,62 +156,47 @@ namespace MusicBird
         /// <param name="e"></param>
         void Instance_PlayStateChanged(object sender, EventArgs e)
         {
-            if(readPlaylist().Count == 0) {
-                updateButtonImage("play");
-            }
-
+            this.updateArtistAndTitle();
+            this.updatePlayerProgress(null, null);
             PlayState playerState = BackgroundAudioPlayer.Instance.PlayerState;
-            //if(playerState != PlayState.Unknown) txtState.Text = playerState.ToString();
-
-            //_tileTimer.Start();
             switch (playerState)
             {
                 case PlayState.Playing:
-                    
-                    // Update the UI.
                     positionIndicator.Maximum = BackgroundAudioPlayer.Instance.Track.Duration.TotalSeconds;
-                    updateButtonImage("pause");
-
-                    enablePlayerUI(true);
                     
-                    UpdatePlayer(null, null);
-
-                    checkAlbumArt();
-
-                    // Start the timer for updating the UI.
-                    _timer.Start();
-
+                    updateButtonImage("pause");
                     enablePlayerUI(true);
-
+                    playerProgressUpdateTimer.Start();
+                    
+                    checkAlbumArt();
                     break;
 
                 case PlayState.Paused:
-                    // Update the UI.
                     updateButtonImage("play");
                     enablePlayerUI(true);
-                    // Stop the timer for updating the UI.
-                    _timer.Stop();
+                    playerProgressUpdateTimer.Stop();
                     break;
                 case PlayState.Stopped:
                     updateButtonImage("play");
                     enablePlayerUI(true);
+                    playerProgressUpdateTimer.Stop();
+                    break;
+                case PlayState.BufferingStarted:
+                    updateButtonImage("pause");
+                    enablePlayerUI(false);
+                    playerProgressUpdateTimer.Stop();
+                    break;
+                case PlayState.BufferingStopped:
+                    updateButtonImage("play");
+                    enablePlayerUI(true);
+                    playerProgressUpdateTimer.Start();
                     break;
             }
         }
 
-
-
-
-        /// <summary>
-        /// Updates the status indicators including the State, Track title, 
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void UpdatePlayer(object sender, EventArgs e)
-        {
+        private void updateArtistAndTitle() {
             if(this.Panorama.SelectedIndex == 0)
             {
-                System.Diagnostics.Debug.WriteLine("Updating player");
                 string ps = BackgroundAudioPlayer.Instance.PlayerState.ToString();
                 if(ps.Equals(PlayState.Unknown.ToString()))
                 {
@@ -226,10 +204,6 @@ namespace MusicBird
                 }
                 txtState.Text = ps;
 
-                if(BackgroundAudioPlayer.Instance.PlayerState == PlayState.Stopped) {
-                    return;
-                }
-            
                 if(BackgroundAudioPlayer.Instance.Track != null)
                 {
                     String artist = "";
@@ -239,7 +213,23 @@ namespace MusicBird
 
                     string[] arguments = new string[] { title, artist };
                     txtTrack.Text = string.Format("Track: {1} - {0}", arguments);
+                }
+            }
+        }
 
+        private void updatePlayerProgress(object sender, EventArgs e)
+        {
+            if(this.Panorama.SelectedIndex == 0)
+            {
+                if(BackgroundAudioPlayer.Instance.PlayerState != PlayState.Playing)
+                {
+                    return;
+                }
+                
+                System.Diagnostics.Debug.WriteLine("Updating player progress");
+
+                if(BackgroundAudioPlayer.Instance.Track != null)
+                {
                     // Set the current position on the ProgressBar.
                     if(BackgroundAudioPlayer.Instance.Position != null)
                     {
@@ -255,7 +245,6 @@ namespace MusicBird
                          TimeSpan timeRemaining = BackgroundAudioPlayer.Instance.Track.Duration - position;
                         textRemaining.Text = String.Format("-{0:d2}:{1:d2}:{2:d2}", timeRemaining.Hours, timeRemaining.Minutes, timeRemaining.Seconds);
                     }
-                    
                 }
             }
         }
@@ -372,15 +361,6 @@ namespace MusicBird
             }
         }
         #endregion
-
-        private void seek( object sender, EventArgs e )
-        {
-            // Show the indeterminate progress bar.
-            positionIndicator.IsIndeterminate = true;
-
-            // Tell the backgound audio agent to skip to the next track.
-            BackgroundAudioPlayer.Instance.Position = new TimeSpan(0, 1, 1);
-        }
 
         #endregion
 

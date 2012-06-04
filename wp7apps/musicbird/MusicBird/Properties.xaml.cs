@@ -66,7 +66,7 @@ namespace MusicBird
             }*/
         }
 
-        private void button1_Click( object sender, RoutedEventArgs e )
+        private void saveButton_Click( object sender, RoutedEventArgs e )
         {
             /*try
             {*/
@@ -88,11 +88,6 @@ namespace MusicBird
                 System.Diagnostics.Debug.WriteLine(ex.Message);
             }*/
             NavigationService.Navigate(new Uri("/MainPage.xaml", UriKind.Relative));
-        }
-
-        private void dbUpload_Click( object sender, RoutedEventArgs e )
-        {
-            MessageBox.Show("Not implemented.");
         }
     }
 }
