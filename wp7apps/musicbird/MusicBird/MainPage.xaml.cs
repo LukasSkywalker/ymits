@@ -24,6 +24,7 @@ using Microsoft.Phone.Controls;
 using Microsoft.Phone.Shell;
 using Microsoft.Phone.Tasks;
 using Microsoft.Xna.Framework.Media;
+using System.Globalization;
 
 
 namespace MusicBird
@@ -662,19 +663,19 @@ namespace MusicBird
             req.BeginGetResponse(new AsyncCallback(this.gotSize), req);
         }
 
-        private long getSizeLocal( String filename ) {
+        private long getSizeLocal( String fileName ) {
             using(IsolatedStorageFile store = IsolatedStorageFile.GetUserStoreForApplication())
             {
-                if(!store.FileExists(filename))
+                if(!store.FileExists(fileName))
                     return 0;
                 else {
                     long size = 0;
                     AudioTrack currentTrack = BackgroundAudioPlayer.Instance.Track;
-                    if(currentTrack != null && filename == HttpUtility.UrlDecode(currentTrack.Source.ToString()))
+                    if(currentTrack != null && fileName == HttpUtility.UrlDecode(currentTrack.Source.ToString()))
                         size = 0;
                     else
                     {
-                        using(IsolatedStorageFileStream stream = store.OpenFile(filename, FileMode.Open))
+                        using(IsolatedStorageFileStream stream = store.OpenFile(fileName, FileMode.Open))
                         {
                             size = stream.Length;
                         }
@@ -691,7 +692,7 @@ namespace MusicBird
             reader.Read();
         }
 
-        void reader_TagsRead( string artist, string title, string url )
+        void reader_TagsRead( object sender, string artist, string title, string url )
         {
             foreach(TrackListItem trackListItem in this.trackList)
             {
@@ -708,7 +709,7 @@ namespace MusicBird
             try
             {
                 HttpWebResponse response = (HttpWebResponse)request.EndGetResponse(asynchronousResult);
-                int size = Convert.ToInt32(response.Headers["Content-Length"]);
+                int size = Convert.ToInt32(response.Headers["Content-Length"], CultureInfo.InvariantCulture);
                 string url = request.RequestUri.ToString();
                 foreach(TrackListItem trackListItem in this.trackList) {
                     if(trackListItem.url.Equals(url))
@@ -946,11 +947,11 @@ namespace MusicBird
         private void libraryItem_Click( object sender, RoutedEventArgs e )
         {
             LibraryItem selectedTrack = (sender as FrameworkElement).DataContext as LibraryItem;
-            AudioTrack current = new AudioTrack(new Uri(selectedTrack.filename, UriKind.Relative), selectedTrack.filename, "", "", null);
+            AudioTrack current = new AudioTrack(new Uri(selectedTrack.fileName, UriKind.Relative), selectedTrack.fileName, "", "", null);
 
-            String[] name = this.getArtistAndTitle(selectedTrack.filename);
+            String[] name = this.getArtistAndTitle(selectedTrack.fileName);
 
-            addToPlaylist(name[0], name[1], selectedTrack.filename);
+            addToPlaylist(name[0], name[1], selectedTrack.fileName);
             updatePlaylist();
 
             //BackgroundAudioPlayer.Instance.Play();
@@ -961,7 +962,7 @@ namespace MusicBird
 
             AudioPlaybackAgent1.AudioPlayer.playAtPosition(itemsCount - 1, BackgroundAudioPlayer.Instance);
             mtiks.Instance.postEventAttributes("LIBITEM_PLAY",
-                new Dictionary<string, string>() { { "FILENAME", selectedTrack.filename } });
+                new Dictionary<string, string>() { { "FILENAME", selectedTrack.fileName } });
             //Instance_PlayStateChanged(null, null);
             enablePlayerUI(false);
             this.Panorama.SelectedItem = this.playerItem;
@@ -977,7 +978,7 @@ namespace MusicBird
             }
             // get selected Track
             LibraryItem selectedTrack = selectedListBoxItem.DataContext as LibraryItem;
-            AudioTrack current = new AudioTrack(new Uri(selectedTrack.filename, UriKind.Relative), selectedTrack.filename, "", "", null);
+            AudioTrack current = new AudioTrack(new Uri(selectedTrack.fileName, UriKind.Relative), selectedTrack.fileName, "", "", null);
 
             // get selected Context menu item
             var menuItem = (MenuItem)sender;
@@ -994,41 +995,41 @@ namespace MusicBird
                     libraryItem_Click(sender, e);
                     break;
                 case "properties":
-                    NavigationService.Navigate(new Uri("/Properties.xaml?filename=" + Uri.EscapeDataString(selectedTrack.filename), UriKind.Relative));
+                    NavigationService.Navigate(new Uri("/Properties.xaml?fileName=" + Uri.EscapeDataString(selectedTrack.fileName), UriKind.Relative));
                     break;
                 case "upload":
                     AccessToken token = this.authenticate();
                     if(token != null)
                     {
-                        sendFile(token, selectedTrack.filename);
+                        sendFile(token, selectedTrack.fileName);
                         this.Panorama.SelectedItem = this.downloadItem;
                     }
                     break;
                 case "delete":
                     using(var store = IsolatedStorageFile.GetUserStoreForApplication())
                     {
-                        if(store.FileExists(selectedTrack.filename))
+                        if(store.FileExists(selectedTrack.fileName))
                         {
                             try
                             {
-                                if (HttpUtility.UrlDecode(BackgroundAudioPlayer.Instance.Track.Source.ToString()).Equals(selectedTrack.filename))
+                                if (HttpUtility.UrlDecode(BackgroundAudioPlayer.Instance.Track.Source.ToString()).Equals(selectedTrack.fileName))
                                 {
                                     MessageBox.Show("The track is currently played. Please try again later.");
                                 }
                                 else
                                 {
-                                    store.DeleteFile(selectedTrack.filename);
+                                    store.DeleteFile(selectedTrack.fileName);
                                 }
                             }
                             catch(NullReferenceException)
                             {
                                 // No playback a.t.m.
-                                store.DeleteFile(selectedTrack.filename);
+                                store.DeleteFile(selectedTrack.fileName);
                             }
                         }
                         else
                         {
-                            MessageBox.Show(selectedTrack.filename);
+                            MessageBox.Show(selectedTrack.fileName);
                         }
                     }
                     updateLibrary();
@@ -1052,9 +1053,9 @@ namespace MusicBird
                     for(int i = 0; i < files.Length; i++)
                     {
                         LibraryItem item = new LibraryItem(files[i]);
-                        if(item.filename.IndexOf(".mp3") == item.filename.Length - 4)
+                        if(item.fileName.IndexOf(".mp3") == item.fileName.Length - 4)
                         {
-                            item.setSize(this.getSizeLocal(item.filename));
+                            item.setSize(this.getSizeLocal(item.fileName));
                             trackList.Add(item);
                         }
                     }
@@ -1230,15 +1231,15 @@ namespace MusicBird
 
                         // In this example, the downloaded file is moved into the root
                         // Isolated Storage directory
-                        string filename = "";
+                        string fileName = "";
                         using(IsolatedStorageFile isoStore = IsolatedStorageFile.GetUserStoreForApplication())
                         {
-                            filename = transfer.Tag;
-                            if(isoStore.FileExists(filename))
+                            fileName = transfer.Tag;
+                            if(isoStore.FileExists(fileName))
                             {
-                                isoStore.DeleteFile(filename);
+                                isoStore.DeleteFile(fileName);
                             }
-                            isoStore.MoveFile(transfer.DownloadLocation.OriginalString, filename);
+                            isoStore.MoveFile(transfer.DownloadLocation.OriginalString, fileName);
                         }
 
                         updateLibrary();
@@ -1246,7 +1247,7 @@ namespace MusicBird
                         if(upload != null && upload.Equals(true.ToString()))
                         {
                             AccessToken token = this.authenticate();
-                            sendFile(token, filename);
+                            sendFile(token, fileName);
                         }
 
                         try
@@ -1274,9 +1275,9 @@ namespace MusicBird
                         //<hubTileImageStream> must be a valid ImageStream.
                         mediaHistoryItem.ImageStream = stream;
                         mediaHistoryItem.Source = String.Empty;
-                        mediaHistoryItem.Title = this.getArtistAndTitle(filename)[0];
-                        System.Diagnostics.Debug.WriteLine("Adding " + this.getArtistAndTitle(filename)[0] + " as new");
-                        mediaHistoryItem.PlayerContext.Add("playSong", filename);
+                        mediaHistoryItem.Title = this.getArtistAndTitle(fileName)[0];
+                        System.Diagnostics.Debug.WriteLine("Adding " + this.getArtistAndTitle(fileName)[0] + " as new");
+                        mediaHistoryItem.PlayerContext.Add("playSong", fileName);
                         MediaHistory.Instance.WriteAcquiredItem(mediaHistoryItem);
 
                         stream.Close();
@@ -1393,12 +1394,12 @@ namespace MusicBird
             //System.Diagnostics.Debug.WriteLine(Microsoft.Phone.Info.DeviceStatus.ApplicationCurrentMemoryUsage.ToString());
         }
 
-        private void saveTrack( string filename, string uri )
+        private void saveTrack( string fileName, string uri )
         {
             uri = Uri.EscapeUriString(uri);
             System.Diagnostics.Debug.WriteLine(uri);
             mtiks.Instance.postEventAttributes("DOWNLOAD",
-            new Dictionary<string, string>() { { "FILENAME_URI", filename + " @ " + uri } });
+            new Dictionary<string, string>() { { "FILENAME_URI", fileName + " @ " + uri } });
             // Check to see if the maximum number of requests per app has been exceeded.
             /*try
             {*/
@@ -1416,7 +1417,7 @@ namespace MusicBird
 
             // Get the URI of the file to be transferred from the Tag property
             // of the button that was clicked.
-            string transferFileName = filename;
+            string transferFileName = fileName;
             Uri transferUri = new Uri(uri, UriKind.RelativeOrAbsolute);
 
 
@@ -1438,12 +1439,12 @@ namespace MusicBird
                 }
             }
 
-            System.Diagnostics.Debug.WriteLine("filename is " + filename + ".mp3");
-            transferRequest.DownloadLocation = new Uri("/shared/transfers/" + filename + ".mp3", UriKind.Relative);
+            System.Diagnostics.Debug.WriteLine("fileName is " + fileName + ".mp3");
+            transferRequest.DownloadLocation = new Uri("/shared/transfers/" + fileName + ".mp3", UriKind.Relative);
 
             // Pass custom data with the Tag property. In this example, the friendly name
             // is passed.
-            transferRequest.Tag = filename + ".mp3";
+            transferRequest.Tag = fileName + ".mp3";
             transferRequest.Headers.Add("User-Agent", "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:7.0.1) Gecko/20100101 Firefox/7.0.12011-10-16 20:23:00");
             System.Diagnostics.Debug.WriteLine(transferRequest.Headers["User-Agent"]);
 
@@ -1696,22 +1697,22 @@ namespace MusicBird
             }
         }
 
-        private void sendFile( AccessToken accessToken, String filename )
+        private void sendFile( AccessToken accessToken, String fileName )
         {
-            System.Diagnostics.Debug.WriteLine(accessToken.Key + " " + accessToken.Secret + " " + filename);
+            System.Diagnostics.Debug.WriteLine(accessToken.Key + " " + accessToken.Secret + " " + fileName);
             var client = new OAuthClient(DropboxAuth.consumerKey, DropboxAuth.consumerSecret, accessToken);
-            string remoteName = Regex.Replace(filename, "[^A-Za-z0-9.-]", "");
+            string remoteName = Regex.Replace(fileName, "[^A-Za-z0-9.-]", "");
             System.Diagnostics.Debug.WriteLine("Remote name is " + remoteName);
             client.Url = "https://api-content.dropbox.com/1/files_put/sandbox/" + remoteName;
             client.Parameters.Add("overwrite", "true");
             client.MethodType = MethodType.Put;
             var webRequest = client.CreateWebRequest();
-            webRequest.BeginGetRequestStream(this.StartUpload, new object[] { webRequest, filename, remoteName });
+            webRequest.BeginGetRequestStream(this.StartUpload, new object[] { webRequest, fileName, remoteName });
             addUploadCounter(1);
         }
 
-        private void receiveFile( AccessToken accessToken, string filename ) {
-            System.Diagnostics.Debug.WriteLine(accessToken.Key + " " + accessToken.Secret + " " + filename);
+        private void receiveFile( AccessToken accessToken, string fileName ) {
+            System.Diagnostics.Debug.WriteLine(accessToken.Key + " " + accessToken.Secret + " " + fileName);
             var client = new OAuthClient(DropboxAuth.consumerKey, DropboxAuth.consumerSecret, accessToken);
             client.Url = "https://api-content.dropbox.com/1/metadata/sandbox/";
             client.Parameters.Add("overwrite", "true");
@@ -1739,14 +1740,14 @@ namespace MusicBird
         {
             object[] args = (object[])asyncResult.AsyncState;
             HttpWebRequest request = (HttpWebRequest)args[0];
-            string filename = (string)args[1];
+            string fileName = (string)args[1];
 
             var postStream = request.EndGetRequestStream(asyncResult);
             using(var isolatedStorage = IsolatedStorageFile.GetUserStoreForApplication())
             {
                 try
                 {
-                    using(var stream = isolatedStorage.OpenFile(filename, FileMode.Open))
+                    using(var stream = isolatedStorage.OpenFile(fileName, FileMode.Open))
                     {
                         stream.CopyTo(postStream);
                         postStream.Close();
@@ -1761,14 +1762,14 @@ namespace MusicBird
                     });
                 }
             }
-            request.BeginGetResponse(this.EndUpload, new object[] { request, filename });
+            request.BeginGetResponse(this.EndUpload, new object[] { request, fileName });
         }
 
         private void EndUpload( IAsyncResult asyncResult )
         {
             object[] args = (object[])asyncResult.AsyncState;
             HttpWebRequest request = (HttpWebRequest)args[0];
-            string filename = (string)args[1];
+            string fileName = (string)args[1];
 
             int statusCode = 0;
 
@@ -1835,7 +1836,7 @@ namespace MusicBird
                     /*if(statusCode != 0) MessageBox.Show(msg, "Dropbox Upload", MessageBoxButton.OK);
                     if(statusCode == 401) NavigationService.Navigate(new Uri("/Page1.xaml?action=dropboxauth", UriKind.Relative));
                     mtiks.Instance.postEventAttributes("UPLOAD",
-                            new Dictionary<string, string>() { { statusCode.ToString(), filename + "-->" + remoteName } });
+                            new Dictionary<string, string>() { { statusCode.ToString(), fileName + "-->" + remoteName } });
 
                     //Count the 'running uploads' counter down
 
@@ -1895,13 +1896,13 @@ namespace MusicBird
 
     public class LibraryItem
     {
-        public string filename { get; set; }
+        public string fileName { get; set; }
         public long size { get; set; }
         public string sizeText { get; set; }
 
-        public LibraryItem( String filename )
+        public LibraryItem( String fileName )
         {
-            this.filename = filename;
+            this.fileName = fileName;
         }
 
         public void setSize( long size )

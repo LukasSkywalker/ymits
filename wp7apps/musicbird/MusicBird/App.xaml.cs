@@ -7,6 +7,7 @@ using com.mtiks.winmobile;
 using Microsoft.Phone.Controls;
 using Microsoft.Phone.Marketplace;
 using Microsoft.Phone.Shell;
+using System.Globalization;
 
 
 namespace MusicBird
@@ -22,12 +23,18 @@ namespace MusicBird
 
         private static LicenseInformation _licenseInfo = new LicenseInformation();
 
-        public string copyrightMessage = "Please note that listening to copyright protected music may not be allowed in some countries. MusicBird doesn't share/upload music, it simply streams them from publicly available web sites.";
+        private string CopyrightMessage = "Please note that listening to copyright protected music may not be allowed in some countries. MusicBird doesn't share/upload music, it simply streams them from publicly available web sites.";
+        
+        public string copyrightMessage{
+            get{
+                return CopyrightMessage;
+            }
+            private set{
+                CopyrightMessage = value;
+            }
+        }
 
         private static bool _isTrial = true;
-
-        public static bool shuffle = false;
-        public static bool repeat = false;
 
         public bool IsTrial
         {
@@ -164,7 +171,7 @@ namespace MusicBird
             }
             else
             {
-                int version = Convert.ToInt32(settings["version"]);
+                int version = Convert.ToInt32(settings["version"], CultureInfo.InvariantCulture);
                 if(version != 23) {
                     updateAction();
                     settings["version"] = 23;
@@ -174,7 +181,7 @@ namespace MusicBird
         }
 
         private void updateAction() {
-            MessageBox.Show(copyrightMessage, "MusicBird", MessageBoxButton.OK);
+            MessageBox.Show(this.copyrightMessage, "MusicBird", MessageBoxButton.OK);
         }
 
         #region Phone application initialization

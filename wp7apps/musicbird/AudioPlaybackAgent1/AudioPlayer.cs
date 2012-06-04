@@ -8,6 +8,7 @@ using System.Windows.Resources;
 using System.Xml.Serialization;
 using Microsoft.Devices;
 using Microsoft.Phone.BackgroundAudio;
+using System.Globalization;
 
 namespace AudioPlaybackAgent1
 {
@@ -352,15 +353,16 @@ namespace AudioPlaybackAgent1
                 if(playbackNumber == null){
                     playbackNumber = 0.ToString();
                 }
-                if(Convert.ToInt32(playbackNumber) >= 4){
+                if(Convert.ToInt32(playbackNumber, CultureInfo.InvariantCulture) >= 4)
+                {
                     //more than or exactly 5 playbacks. Exceeded.
-                    System.Diagnostics.Debug.WriteLine("Playback limit exceeded. "+Convert.ToInt32(playbackNumber)+" plays.");
+                    System.Diagnostics.Debug.WriteLine("Playback limit exceeded. " + Convert.ToInt32(playbackNumber, CultureInfo.InvariantCulture) + " plays.");
                     return true;
                 }
                 else{
                     //less than 5 replays. Count 1 up.
-                    System.Diagnostics.Debug.WriteLine("Not exceeded. " + Convert.ToInt32(playbackNumber) + " plays.");
-                    playbackNumber = (Convert.ToInt32(playbackNumber) + 1).ToString();
+                    System.Diagnostics.Debug.WriteLine("Not exceeded. " + Convert.ToInt32(playbackNumber, CultureInfo.InvariantCulture) + " plays.");
+                    playbackNumber = (Convert.ToInt32(playbackNumber, CultureInfo.InvariantCulture) + 1).ToString();
                     Helper.Preferences.write("playback-date", playbackDate);
                     Helper.Preferences.write("playback-number", playbackNumber);
                     return false;

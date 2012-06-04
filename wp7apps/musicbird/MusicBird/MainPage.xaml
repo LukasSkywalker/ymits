@@ -150,7 +150,7 @@
                                     <Button.Content>
                                         <StackPanel Orientation="Horizontal" Margin="0,0,0,17" x:Name="spItem">
                                             <StackPanel Width="311">
-                                                <TextBlock TextWrapping="Wrap" Text="{Binding filename}" Style="{StaticResource PhoneTextExtraLargeStyle}" FontSize="{StaticResource PhoneFontSizeMediumLarge}"/>
+                                                <TextBlock TextWrapping="Wrap" Text="{Binding fileName}" Style="{StaticResource PhoneTextExtraLargeStyle}" FontSize="{StaticResource PhoneFontSizeMediumLarge}"/>
                                             <TextBlock TextWrapping="Wrap" Text="{Binding sizeText}" Margin="12,-6,0,0" Style="{StaticResource PhoneTextSubtleStyle}" TextAlignment="Right" />
                                         </StackPanel>
                                         </StackPanel>

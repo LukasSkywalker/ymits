@@ -29,12 +29,12 @@
         <!--ContentPanel - place additional content here-->
         <Grid x:Name="ContentPanel" Grid.Row="1" Margin="12,0,12,0">
             <TextBlock Height="30" HorizontalAlignment="Left" Margin="6,6,0,0" Name="nameLabel" Text="Name (change &amp; save to rename)" VerticalAlignment="Top" />
-            <TextBox Height="72" HorizontalAlignment="Left" Margin="6,42,0,0" Name="fileName" Text="" VerticalAlignment="Top" Width="444" />
+            <TextBox Height="72" HorizontalAlignment="Left" Margin="6,42,0,0" Name="filename" Text="" VerticalAlignment="Top" Width="444" />
             <TextBlock Height="30" HorizontalAlignment="Left" Margin="6,133,0,0" Name="creationDateLabel" Text="Creation date" VerticalAlignment="Top" />
             <TextBlock Height="30" HorizontalAlignment="Left" Margin="6,169,0,0" Name="creationDate" Text="" VerticalAlignment="Top" Width="444" />
             <TextBlock Height="30" HorizontalAlignment="Left" Margin="6,229,0,0" Name="sizeLabel" Text="Size" VerticalAlignment="Top" />
             <TextBlock Height="30" HorizontalAlignment="Left" Margin="6,265,0,0" Name="fileSize" Text="" VerticalAlignment="Top" Width="444" />
-            <Button Content="Save" Height="72" HorizontalAlignment="Left" Margin="290,327,0,0" Name="saveButton" VerticalAlignment="Top" Width="160" Click="saveButton_Click" />
+            <Button Height="72" HorizontalAlignment="Left" Margin="290,327,0,0" Name="saveButton" Content="Save" VerticalAlignment="Top" Width="160" Click="saveButton_Click" />
             <TextBlock Height="30" HorizontalAlignment="Left" Margin="232,543,0,0" Name="freeMemory" Text="" VerticalAlignment="Top" Width="218" TextAlignment="Right" />
         </Grid>
     </Grid>
