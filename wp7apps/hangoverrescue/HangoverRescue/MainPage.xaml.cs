@@ -2,6 +2,7 @@
 using System.Device.Location;
 using System.IO.IsolatedStorage;
 using System.Linq;
+using System.Net.NetworkInformation;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media.Imaging;
@@ -30,6 +31,7 @@ namespace HangoverRescue
 
         protected override void OnNavigatedTo( NavigationEventArgs e )
         {
+
             getLocation(null, null);
             getDateTime();
             getCalendar();
@@ -43,6 +45,9 @@ namespace HangoverRescue
             {
                 locationTextBlock.Text = "Please enable location detection in\n"+
 "the settings to use this feature";
+            }else if( !NetworkInterface.GetIsNetworkAvailable() ){
+                locationTextBlock.Text = "Please connect to the internet to\n"+
+"get your location";
             }
             else
             {

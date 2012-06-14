@@ -36,7 +36,7 @@
 and to calculate your way home.
 Your location is sent to Bing&#xae; if you choose to
 calculate your way home. No other data is
-transmitted." VerticalAlignment="Top" Width="438" />
+transmitted." VerticalAlignment="Top" Width="438" TextWrapping="Wrap" />
         </Grid>
     </Grid>
  
