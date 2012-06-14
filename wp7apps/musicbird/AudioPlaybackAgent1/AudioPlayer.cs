@@ -8,6 +8,7 @@ using System.Windows.Resources;
 using System.Xml.Serialization;
 using Microsoft.Devices;
 using Microsoft.Phone.BackgroundAudio;
+using System.Globalization;
 
 namespace AudioPlaybackAgent1
 {

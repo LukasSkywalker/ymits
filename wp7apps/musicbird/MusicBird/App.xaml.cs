@@ -7,6 +7,8 @@ using com.mtiks.winmobile;
 using Microsoft.Phone.Controls;
 using Microsoft.Phone.Marketplace;
 using Microsoft.Phone.Shell;
+using System.Collections.Generic;
+using System.Globalization;
 
 
 namespace MusicBird
@@ -20,8 +22,8 @@ namespace MusicBird
         /// <returns>The root frame of the Phone Application.</returns>
         public PhoneApplicationFrame RootFrame { get; private set; }
 
-        // this is 2.4
-        private int appVersion = 24;
+        // this is 2.5
+        private int appVersion = 25;
 
         private static LicenseInformation _licenseInfo = new LicenseInformation();
 
