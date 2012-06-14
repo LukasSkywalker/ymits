@@ -35,11 +35,11 @@
         <!--Panorama control-->
         <controls:Pivot Title="" x:Name="Panorama" Margin="0,60
                         ,0,0">
-            <!--<controls:Panorama.Background>
-                <ImageBrush ImageSource="PanoramaBackground.png"/>
-            </controls:Panorama.Background>-->
+            <!--<controls:this.Panorama.Background>
+                <ImageBrush ImageSource="this.PanoramaBackground.png"/>
+            </controls:this.Panorama.Background>-->
  
-            <!--Panorama item one-->
+            <!--this.Panorama item one-->
             <controls:PivotItem Header="player" x:Name="playerItem">
                 <!--Double line list with text wrapping-->
                 <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
@@ -69,11 +69,11 @@
                 </Grid>
             </controls:PivotItem>
  
-            <!--Panorama item two-->
+            <!--this.Panorama item two-->
             <!--Use 'Orientation="Horizontal"' to enable a panel that lays out horizontally-->
             <controls:PivotItem Header="search" FontSize="15" x:Name="searchItem">
-                <StackPanel>
-                    <TextBox x:Name="queryTextbox" Text="" InputScope="Search" KeyUp="search_KeyUp"></TextBox>
+                <StackPanel TextInputStart="search_textInputStart">
+                    <toolkit:AutoCompleteBox x:Name="queryTextbox" InputScope="Search" KeyUp="search_KeyUp" Height="75" Margin="0,-5,0,0" />
                     <!--<Button Content="Search" Height="72" Margin="246,0,0,0" Name="queryButton" Width="160" Click="queryButton_Click" />-->
                     <toolkit:PerformanceProgressBar IsIndeterminate="False" x:Name="queryProgress" Visibility="Collapsed"/>
                     
@@ -150,7 +150,7 @@
                                     <Button.Content>
                                         <StackPanel Orientation="Horizontal" Margin="0,0,0,17" x:Name="spItem">
                                             <StackPanel Width="311">
-                                                <TextBlock TextWrapping="Wrap" Text="{Binding filename}" Style="{StaticResource PhoneTextExtraLargeStyle}" FontSize="{StaticResource PhoneFontSizeMediumLarge}"/>
+                                                <TextBlock TextWrapping="Wrap" Text="{Binding fileName}" Style="{StaticResource PhoneTextExtraLargeStyle}" FontSize="{StaticResource PhoneFontSizeMediumLarge}"/>
                                             <TextBlock TextWrapping="Wrap" Text="{Binding sizeText}" Margin="12,-6,0,0" Style="{StaticResource PhoneTextSubtleStyle}" TextAlignment="Right" />
                                         </StackPanel>
                                         </StackPanel>

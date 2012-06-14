@@ -20,37 +20,37 @@ namespace MusicBird
         protected override void OnNavigatedTo( NavigationEventArgs e)
         {
             base.OnNavigatedTo(e);
-            init(NavigationContext.QueryString["filename"]);
+            init(NavigationContext.QueryString["fileName"]);
         }
 
-        private void init( String filename ) {
-            System.Diagnostics.Debug.WriteLine(filename);
-            this.oldFilename =  filename;
+        private void init( String fileName ) {
+            System.Diagnostics.Debug.WriteLine(fileName);
+            this.oldFilename =  fileName;
             /*try
             {*/
                 using(IsolatedStorageFile myIsolatedStorage = IsolatedStorageFile.GetUserStoreForApplication())
                 {
-                    if(!myIsolatedStorage.FileExists(filename))
+                    if(!myIsolatedStorage.FileExists(fileName))
                     {
-                        throw new IsolatedStorageException("File " + filename + " not found");
+                        throw new IsolatedStorageException("File " + fileName + " not found");
                     }else{
-                        DateTimeOffset creation = myIsolatedStorage.GetCreationTime(filename);
-                        //DateTimeOffset access = myIsolatedStorage.GetLastAccessTime(filename);
-                        //DateTimeOffset write = myIsolatedStorage.GetLastWriteTime(filename);
+                        DateTimeOffset creation = myIsolatedStorage.GetCreationTime(fileName);
+                        //DateTimeOffset access = myIsolatedStorage.GetLastAccessTime(fileName);
+                        //DateTimeOffset write = myIsolatedStorage.GetLastWriteTime(fileName);
                         long free = myIsolatedStorage.AvailableFreeSpace;
                         //long quota = myIsolatedStorage.Quota;
 
                         long size = 0;
 
-                        using(IsolatedStorageFileStream stream = myIsolatedStorage.OpenFile(filename, FileMode.Open))
+                        using(IsolatedStorageFileStream stream = myIsolatedStorage.OpenFile(fileName, FileMode.Open))
                         {
                             size = stream.Length;
                         }
 
-                        fileName.Text = filename;
+                        filename.Text = fileName;
                         creationDate.Text = creation.LocalDateTime.ToLongDateString() + " " + creation.LocalDateTime.ToLongTimeString();
-                        double mb = size/(double)1048576;
-                        fileSize.Text = mb.ToString("F2")+" MB";
+                        double mb = size / (double)1048576;
+                        fileSize.Text = mb.ToString("F2") + " MB";
 
 
                         //memoryBar.Maximum = quota;
@@ -66,17 +66,17 @@ namespace MusicBird
             }*/
         }
 
-        private void button1_Click( object sender, RoutedEventArgs e )
+        private void saveButton_Click( object sender, RoutedEventArgs e )
         {
             /*try
             {*/
                 using(IsolatedStorageFile myIsolatedStorage = IsolatedStorageFile.GetUserStoreForApplication())
                 {
-                    if(myIsolatedStorage.FileExists(oldFilename))
+                    if(myIsolatedStorage.FileExists(this.oldFilename))
                     {
                         /*try
                         {*/
-                            myIsolatedStorage.MoveFile(oldFilename, fileName.Text);
+                            myIsolatedStorage.MoveFile(this.oldFilename, this.filename.Text);
                         /*}
                         catch(Exception exc) {
                             System.Diagnostics.Debug.WriteLine(exc.Message);
@@ -88,11 +88,6 @@ namespace MusicBird
                 System.Diagnostics.Debug.WriteLine(ex.Message);
             }*/
             NavigationService.Navigate(new Uri("/MainPage.xaml", UriKind.Relative));
-        }
-
-        private void dbUpload_Click( object sender, RoutedEventArgs e )
-        {
-            MessageBox.Show("Not implemented.");
         }
     }
 }

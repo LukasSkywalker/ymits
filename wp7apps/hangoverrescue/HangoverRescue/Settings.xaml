@@ -31,6 +31,12 @@
             <TextBox Height="72" HorizontalAlignment="Left" Margin="0,76,0,0" Name="textBox1" Text="" VerticalAlignment="Top" Width="450"/>
             <TextBlock Height="30" HorizontalAlignment="Left" Margin="12,54,0,0" Name="textBlock1" Text="Where do you live?" VerticalAlignment="Top" />
             <Button Content="Save" Height="72" HorizontalAlignment="Left" Margin="290,154,0,0" Name="button1" VerticalAlignment="Top" Width="160" Click="saveAddress" />
+            <CheckBox Content="Enable location detection" Height="72" HorizontalAlignment="Left" Margin="9,263,0,0" Name="locationCheckbox" VerticalAlignment="Top" Width="441" Click="saveAllowLocation" />
+            <TextBlock Height="165" HorizontalAlignment="Left" Margin="12,341,0,0" Name="textBlock2" Text="Your location is used to show you your position
+and to calculate your way home.
+Your location is sent to Bing&#xae; if you choose to
+calculate your way home. No other data is
+transmitted." VerticalAlignment="Top" Width="438" />
         </Grid>
     </Grid>
  

@@ -5,6 +5,7 @@
     xmlns:phone="clr-namespace:Microsoft.Phone.Controls;assembly=Microsoft.Phone"
     xmlns:shell="clr-namespace:Microsoft.Phone.Shell;assembly=Microsoft.Phone"
     xmlns:controls="clr-namespace:Microsoft.Phone.Controls;assembly=Microsoft.Phone.Controls"
+    xmlns:toolkit="clr-namespace:Microsoft.Phone.Controls;assembly=Microsoft.Phone.Controls.Toolkit"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d" d:DesignWidth="480" d:DesignHeight="768"
@@ -40,6 +41,38 @@
                 <Grid x:Name="timeItemGrid">
                     <TextBlock Height="97" HorizontalAlignment="Left" Margin="6,7,0,0" Name="timeTextBlock" Text="" VerticalAlignment="Top" Width="444" FontSize="35" TextWrapping="Wrap" />
                     <TextBlock Height="479" HorizontalAlignment="Left" Margin="6,121,0,0" Name="calendarTextBlock" Text="" VerticalAlignment="Top" Width="445" FontSize="25" TextWrapping="Wrap" />
+                </Grid>
+            </controls:PivotItem>
+            <controls:PivotItem Header="images" x:Name="imageItem">
+                <Grid x:Name="imageItemGrid">
+                    <!--<ListBox x:Name="lstImages" SelectionChanged="lstImages_SelectionChanged" Height="218" Margin="0,389,0,0">
+                        <ListBox.ItemTemplate>
+                            <DataTemplate>
+                                <Image Source="{Binding ImageFile}" Width="100" Height="100"/>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                        <ListBox.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <StackPanel Orientation="Horizontal"/>
+                            </ItemsPanelTemplate>
+                        </ListBox.ItemsPanel>
+                    </ListBox>-->
+                    <ListBox x:Name="myList" SelectionChanged="lstImages_SelectionChanged" Tap="lstImages_SelectionChanged2">
+                        <ListBox.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <toolkit:WrapPanel ItemHeight="150" ItemWidth="150"/>
+                            </ItemsPanelTemplate>
+                        </ListBox.ItemsPanel>
+                        <ListBox.ItemTemplate>
+                            <DataTemplate>
+                                <StackPanel>
+                                    <Image Source="{Binding ImageFile}" Width="140" Height="140"/>
+                                </StackPanel>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
+                    <Image x:Name="imgSelectedPhoto" Height="596" HorizontalAlignment="Center" Margin="6,6,0,0" Stretch="Uniform" VerticalAlignment="Center" Width="446" Tap="image_Tap" LostFocus="image_Tap2" />
+                    <TextBlock Height="30" HorizontalAlignment="Left" Margin="10,264,0,0" Name="textBlock3" Text="No images from the last 24 hours found :-)" VerticalAlignment="Top" Width="441" Visibility="Collapsed"/>
                 </Grid>
             </controls:PivotItem>
         </controls:Pivot>

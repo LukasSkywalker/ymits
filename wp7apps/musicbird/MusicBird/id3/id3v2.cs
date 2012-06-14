@@ -1,22 +1,22 @@
 ﻿using System;
-using System.Collections;
-using System.Text;
-using System.IO;
 using System.Collections.Generic;
+using System.IO;
 using System.IO.IsolatedStorage;
 using System.Net;
+using System.Text;
+using System.Globalization;
 
 namespace MusicBird
 {
     /// <summary>
     /// Summary description for ID3v2.
     /// </summary>
-    public class ID3v2
+    public class ID3v2 : IDisposable
     {
-        public delegate void TagsReadEventHandler( string artist, string title, string url );
+        public delegate void TagsReadEventHandler( object sender, string artist, string title, string url );
         public event TagsReadEventHandler TagsRead;
 
-        public string filename;
+        public string fileName;
         public Uri uri;
 
         // id3v2 header
@@ -68,7 +68,7 @@ namespace MusicBird
 
         private void Initialize_Components()
         {
-            this.filename = "";
+            this.fileName = "";
             this.uri = null;
 
             this.MajorVersion = 0;
@@ -112,22 +112,13 @@ namespace MusicBird
         public ID3v2( string fileName )
         {
             Initialize_Components();
-            this.filename = fileName;
+            this.fileName = fileName;
         }
 
         public ID3v2( Uri uri ) {
             Initialize_Components();
             this.uri = uri;
         }
-
-
-        private void CloseFile()
-        {
-            br.Close();
-
-        }
-
-
 
         private void ReadHeader()
         {
@@ -136,7 +127,7 @@ namespace MusicBird
             // bring in the first three bytes.  it must be ID3 or we have no tag
             // TODO add logic to check the end of the file for "3D1" and other
             // possible starting spots
-            string id3start = new string(br.ReadChars(3));
+            string id3start = new string(this.br.ReadChars(3));
 
             // check for a tag
             if(!id3start.Equals("ID3"))
@@ -154,11 +145,11 @@ namespace MusicBird
                 // read id3 version.  2 bytes:
                 // The first byte of ID3v2 version is it's major version,
                 // while the second byte is its revision number
-                this.MajorVersion = System.Convert.ToInt32(br.ReadByte());
-                this.MinorVersion = System.Convert.ToInt32(br.ReadByte());
+                this.MajorVersion = System.Convert.ToInt32(this.br.ReadByte(), CultureInfo.InvariantCulture);
+                this.MinorVersion = System.Convert.ToInt32(this.br.ReadByte(), CultureInfo.InvariantCulture);
 
-                //read next byte for flags
-                bool[] boolar = BitReader.ToBitBool(br.ReadByte());
+                // read next byte for flags
+                bool[] boolar = BitReader.ToBitBool(this.br.ReadByte());
                 // set the flags
                 this.FA_Unsynchronisation = boolar[0];
                 this.FB_ExtendedHeader = boolar[1];
@@ -167,7 +158,7 @@ namespace MusicBird
                 // read teh size
                 // this code is courtesy of Daniel E. White w/ minor modifications by me  Thanx Dan
                 //Dan Code 
-                char[] tagSize = br.ReadChars(4);    // I use this to read the bytes in from the file
+                char[] tagSize = this.br.ReadChars(4);    // I use this to read the bytes in from the file
                 int[] bytes = new int[4];      // for bit shifting
                 ulong newSize = 0;    // for the final number
                 // The ID3v2 tag size is encoded with four bytes
@@ -199,28 +190,28 @@ namespace MusicBird
             id3v2Frame f = new id3v2Frame();
             do
             {
-                f = f.ReadFrame(br, this.MajorVersion);
+                f = f.ReadFrame(this.br, this.MajorVersion);
 
                 // check if we have hit the padding.
                 if(f.padding == true)
                 {
                     //we hit padding.  lets advance to end and stop reading.
-                    br.BaseStream.Position = System.Convert.ToInt64(headerSize);
+                    this.br.BaseStream.Position = System.Convert.ToInt64(this.headerSize);
                     break;
                 }
                 this.frames.Add(f);
                 this.framesHash.Add(f.frameName, f);
 
-            } while(br.BaseStream.Position <= System.Convert.ToInt64(this.headerSize));
+            } while(this.br.BaseStream.Position <= System.Convert.ToInt64(this.headerSize));
         }
 
         public void Read()
         {
-            if(!this.filename.Equals(""))
+            if(!String.IsNullOrEmpty(this.fileName))
             {
                 using(IsolatedStorageFile store = IsolatedStorageFile.GetUserStoreForApplication())
                 {
-                    using(IsolatedStorageFileStream fs = store.OpenFile(this.filename, FileMode.Open, FileAccess.Read))
+                    using(IsolatedStorageFileStream fs = store.OpenFile(this.fileName, FileMode.Open, FileAccess.Read))
                     {
                         readFromStream(fs);
                         fs.Close();
@@ -229,7 +220,7 @@ namespace MusicBird
             }
             else if(this.uri != null)
             {
-                HttpWebRequest request = (HttpWebRequest)HttpWebRequest.Create(uri);
+                HttpWebRequest request = (HttpWebRequest)HttpWebRequest.Create(this.uri);
                 request.Headers["Range"] = "bytes=0-1000";
                 request.BeginGetResponse(( ar ) =>
                 {
@@ -249,7 +240,7 @@ namespace MusicBird
                 }, null);
             }
             else {
-                throw new Exception("no filename / url");
+                throw new Exception("no fileName / url");
             }
         }
 
@@ -273,10 +264,11 @@ namespace MusicBird
                 ParseCommonHeaders();
             }
 
-            br.Close();
-            if(this.TagsRead != null){
-                this.TagsRead(this.Artist, this.Title, this.uri.ToString());
-                System.Diagnostics.Debug.WriteLine("Found "+this.Artist+" "+this.Title);
+            this.br.Close();
+            if(this.TagsRead != null)
+            {
+                this.TagsRead(null, this.Artist, this.Title, this.uri.ToString());
+                System.Diagnostics.Debug.WriteLine("Found " + this.Artist + " " + this.Title);
             }
         }
 
@@ -289,15 +281,14 @@ namespace MusicBird
 
                     byte[] bytes = ((id3v2Frame)this.framesHash["TT2"]).frameContents;
                     StringBuilder sb = new StringBuilder();
-                    byte textEncoding;
 
 
-                    for(int i = 1 ; i < bytes.Length ; i++)
+                    for(int i = 1; i < bytes.Length; i++)
                     {
                         if(i == 0)
                         {
-                            //read the text encoding.
-                            textEncoding = bytes[i];
+                            // read the text encoding.
+                            
                         }
                         else
                         {
@@ -315,14 +306,14 @@ namespace MusicBird
                 {
                     StringBuilder sb = new StringBuilder();
                     byte[] bytes = ((id3v2Frame)this.framesHash["TP1"]).frameContents;
-                    byte textEncoding;
+                    
 
-                    for(int i = 0 ; i < bytes.Length ; i++)
+                    for(int i = 0; i < bytes.Length; i++)
                     {
                         if(i == 0)
                         {
-                            //read the text encoding.
-                            textEncoding = bytes[i];
+                            // read the text encoding.
+                            
                         }
                         else
                         {
@@ -335,14 +326,14 @@ namespace MusicBird
                 {
                     StringBuilder sb = new StringBuilder();
                     byte[] bytes = ((id3v2Frame)this.framesHash["TAL"]).frameContents;
-                    byte textEncoding;
+                    
 
-                    for(int i = 0 ; i < bytes.Length ; i++)
+                    for(int i = 0; i < bytes.Length; i++)
                     {
                         if(i == 0)
                         {
-                            //read the text encoding.
-                            textEncoding = bytes[i];
+                            // read the text encoding.
+                            
                         }
                         else
                         {
@@ -355,14 +346,14 @@ namespace MusicBird
                 {
                     StringBuilder sb = new StringBuilder();
                     byte[] bytes = ((id3v2Frame)this.framesHash["TYE"]).frameContents;
-                    byte textEncoding;
+                    
 
-                    for(int i = 0 ; i < bytes.Length ; i++)
+                    for(int i = 0; i < bytes.Length; i++)
                     {
                         if(i == 0)
                         {
-                            //read the text encoding.
-                            textEncoding = bytes[i];
+                            // read the text encoding.
+                            
                         }
                         else
                         {
@@ -375,14 +366,14 @@ namespace MusicBird
                 {
                     StringBuilder sb = new StringBuilder();
                     byte[] bytes = ((id3v2Frame)this.framesHash["TRK"]).frameContents;
-                    byte textEncoding;
+                    
 
-                    for(int i = 0 ; i < bytes.Length ; i++)
+                    for(int i = 0; i < bytes.Length; i++)
                     {
                         if(i == 0)
                         {
-                            //read the text encoding.
-                            textEncoding = bytes[i];
+                            // read the text encoding.
+                            
                         }
                         else
                         {
@@ -395,14 +386,14 @@ namespace MusicBird
                 {
                     StringBuilder sb = new StringBuilder();
                     byte[] bytes = ((id3v2Frame)this.framesHash["TCO"]).frameContents;
-                    byte textEncoding;
+                    
 
-                    for(int i = 0 ; i < bytes.Length ; i++)
+                    for(int i = 0; i < bytes.Length; i++)
                     {
                         if(i == 0)
                         {
-                            //read the text encoding.
-                            textEncoding = bytes[i];
+                            // read the text encoding.
+                            
                         }
                         else
                         {
@@ -415,14 +406,14 @@ namespace MusicBird
                 {
                     StringBuilder sb = new StringBuilder();
                     byte[] bytes = ((id3v2Frame)this.framesHash["COM"]).frameContents;
-                    byte textEncoding;
+                    
 
-                    for(int i = 0 ; i < bytes.Length ; i++)
+                    for(int i = 0; i < bytes.Length; i++)
                     {
                         if(i == 0)
                         {
-                            //read the text encoding.
-                            textEncoding = bytes[i];
+                            // read the text encoding.
+                            
                         }
                         else
                         {
@@ -439,15 +430,15 @@ namespace MusicBird
 
                     byte[] bytes = ((id3v2Frame)this.framesHash["TIT2"]).frameContents;
                     StringBuilder sb = new StringBuilder();
-                    byte textEncoding;
+                    
 
 
-                    for(int i = 1 ; i < bytes.Length ; i++)
+                    for(int i = 1; i < bytes.Length; i++)
                     {
                         if(i == 0)
                         {
-                            //read the text encoding.
-                            textEncoding = bytes[i];
+                            // read the text encoding.
+                            
                         }
                         else
                         {
@@ -465,14 +456,14 @@ namespace MusicBird
                 {
                     StringBuilder sb = new StringBuilder();
                     byte[] bytes = ((id3v2Frame)this.framesHash["TPE1"]).frameContents;
-                    byte textEncoding;
+                    
 
-                    for(int i = 0 ; i < bytes.Length ; i++)
+                    for(int i = 0; i < bytes.Length; i++)
                     {
                         if(i == 0)
                         {
-                            //read the text encoding.
-                            textEncoding = bytes[i];
+                            // read the text encoding.
+                            
                         }
                         else
                         {
@@ -485,14 +476,14 @@ namespace MusicBird
                 {
                     StringBuilder sb = new StringBuilder();
                     byte[] bytes = ((id3v2Frame)this.framesHash["TALB"]).frameContents;
-                    byte textEncoding;
+                    
 
-                    for(int i = 0 ; i < bytes.Length ; i++)
+                    for(int i = 0; i < bytes.Length; i++)
                     {
                         if(i == 0)
                         {
-                            //read the text encoding.
-                            textEncoding = bytes[i];
+                            // read the text encoding.
+                            
                         }
                         else
                         {
@@ -505,14 +496,13 @@ namespace MusicBird
                 {
                     StringBuilder sb = new StringBuilder();
                     byte[] bytes = ((id3v2Frame)this.framesHash["TYER"]).frameContents;
-                    byte textEncoding;
+                    
 
-                    for(int i = 0 ; i < bytes.Length ; i++)
+                    for(int i = 0; i < bytes.Length; i++)
                     {
                         if(i == 0)
                         {
-                            //read the text encoding.
-                            textEncoding = bytes[i];
+                            // read the text encoding.
                         }
                         else
                         {
@@ -525,14 +515,14 @@ namespace MusicBird
                 {
                     StringBuilder sb = new StringBuilder();
                     byte[] bytes = ((id3v2Frame)this.framesHash["TRCK"]).frameContents;
-                    byte textEncoding;
+                    
 
-                    for(int i = 0 ; i < bytes.Length ; i++)
+                    for(int i = 0; i < bytes.Length; i++)
                     {
                         if(i == 0)
                         {
-                            //read the text encoding.
-                            textEncoding = bytes[i];
+                            // read the text encoding.
+                            
                         }
                         else
                         {
@@ -545,14 +535,14 @@ namespace MusicBird
                 {
                     StringBuilder sb = new StringBuilder();
                     byte[] bytes = ((id3v2Frame)this.framesHash["TCON"]).frameContents;
-                    byte textEncoding;
+                    
 
-                    for(int i = 0 ; i < bytes.Length ; i++)
+                    for(int i = 0; i < bytes.Length; i++)
                     {
                         if(i == 0)
                         {
-                            //read the text encoding.
-                            textEncoding = bytes[i];
+                            // read the text encoding.
+                            
                         }
                         else
                         {
@@ -565,14 +555,14 @@ namespace MusicBird
                 {
                     StringBuilder sb = new StringBuilder();
                     byte[] bytes = ((id3v2Frame)this.framesHash["COMM"]).frameContents;
-                    byte textEncoding;
+                    
 
-                    for(int i = 0 ; i < bytes.Length ; i++)
+                    for(int i = 0; i < bytes.Length; i++)
                     {
                         if(i == 0)
                         {
-                            //read the text encoding.
-                            textEncoding = bytes[i];
+                            // read the text encoding.
+                            
                         }
                         else
                         {
@@ -596,7 +586,7 @@ namespace MusicBird
             // bring in the first three bytes.  it must be ID3 or we have no tag
             // TODO add logic to check the end of the file for "3D1" and other
             // possible starting spots
-            string id3start = new string(br.ReadChars(3));
+            string id3start = new string(this.br.ReadChars(3));
 
             // check for a tag
             if(!id3start.Equals("3DI"))
@@ -614,8 +604,8 @@ namespace MusicBird
             // read id3 version.  2 bytes:
             // The first byte of ID3v2 version is it's major version,
             // while the second byte is its revision number
-            this.MajorVersion = System.Convert.ToInt32(br.ReadByte());
-            this.MinorVersion = System.Convert.ToInt32(br.ReadByte());
+            this.MajorVersion = System.Convert.ToInt32(this.br.ReadByte(), CultureInfo.InvariantCulture);
+            this.MinorVersion = System.Convert.ToInt32(this.br.ReadByte(), CultureInfo.InvariantCulture);
 
             // here is where we get fancy.  I am useing silisoft's php code as 
             // a reference here.  we are going to try and parse for 2.2, 2.3 and 2.4
@@ -624,8 +614,8 @@ namespace MusicBird
             if((this.hasTag) && (this.MajorVersion <= 4)) // probably won't work on higher versions
             {
                 // (%ab000000 in v2.2, %abc00000 in v2.3, %abcd0000 in v2.4.x)
-                //read next byte for flags
-                bool[] boolar = BitReader.ToBitBool(br.ReadByte());
+                // read next byte for flags
+                bool[] boolar = BitReader.ToBitBool(this.br.ReadByte());
                 // set the flags
                 if(this.MajorVersion == 2)
                 {
@@ -650,8 +640,8 @@ namespace MusicBird
 
                 // read teh size
                 // this code is courtesy of Daniel E. White w/ minor modifications by me  Thanx Dan
-                //Dan Code 
-                char[] tagSize = br.ReadChars(4);    // I use this to read the bytes in from the file
+                //Dan Code       
+                char[] tagSize = this.br.ReadChars(4);    // I use this to read the bytes in from the file
                 int[] bytes = new int[4];      // for bit shifting
                 ulong newSize = 0;    // for the final number
                 // The ID3v2 tag size is encoded with four bytes
@@ -691,7 +681,7 @@ namespace MusicBird
             // read teh size
             // this code is courtesy of Daniel E. White w/ minor modifications by me  Thanx Dan
             //Dan Code 
-            char[] extHeaderSize = br.ReadChars(4);    // I use this to read the bytes in from the file
+            char[] extHeaderSize = this.br.ReadChars(4);    // I use this to read the bytes in from the file
             int[] bytes = new int[4];      // for bit shifting
             ulong newSize = 0;    // for the final number
             // The ID3v2 tag size is encoded with four bytes
@@ -717,10 +707,10 @@ namespace MusicBird
             this.extHeaderSize = newSize;
             // next we read the number of flag bytes
 
-            this.extNumFlagBytes = System.Convert.ToInt32(br.ReadByte());
+            this.extNumFlagBytes = System.Convert.ToInt32(this.br.ReadByte(), CultureInfo.InvariantCulture);
 
             // read the flag byte(s) and set the flags
-            bool[] extFlags = BitReader.ToBitBools(br.ReadBytes(this.extNumFlagBytes));
+            bool[] extFlags = BitReader.ToBitBools(this.br.ReadBytes(this.extNumFlagBytes));
 
             this.EB_Update = extFlags[1];
             this.EC_CRC = extFlags[2];
@@ -732,22 +722,22 @@ namespace MusicBird
                 // this tag has no data but will have a null byte so we need to read it in
                 //Flag data length      $00
 
-                br.ReadByte();
+                this.br.ReadByte();
             }
 
             if(this.EC_CRC)
             {
-                //        Flag data length       $05
+                
                 //       Total frame CRC    5 * %0xxxxxxx
                 // read the first byte and check to make sure it is 5.  if not the header is corrupt
                 // we will still try to process but we may be funked.
 
-                int extC_FlagDataLength = System.Convert.ToInt32(br.ReadByte());
+                int extC_FlagDataLength = System.Convert.ToInt32(this.br.ReadByte(), CultureInfo.InvariantCulture);
                 if(extC_FlagDataLength == 5)
                 {
 
 
-                    extHeaderSize = br.ReadChars(5);    // I use this to read the bytes in from the file
+                    extHeaderSize = this.br.ReadChars(5);    // I use this to read the bytes in from the file
                     bytes = new int[4];      // for bit shifting
                     newSize = 0;    // for the final number
                     // The ID3v2 tag size is encoded with four bytes
@@ -782,17 +772,32 @@ namespace MusicBird
             if(this.ED_Restrictions)
             {
                 // Flag data length       $01
-                //Restrictions           %ppqrrstt
+                // restrictions           %ppqrrstt
 
                 // advance past flag data lenght byte
-                br.ReadByte();
+                this.br.ReadByte();
 
-                this.extD_Restrictions = br.ReadByte();
-
+                this.extD_Restrictions = this.br.ReadByte();
             }
 
         }
 
-    }
+        public void Dispose() {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
 
+        protected virtual void Dispose( bool disposing )
+        {
+            if(disposing)
+            {
+                // free managed resources
+                if(br != null)
+                {
+                    br.Dispose();
+                    br = null;
+                }
+            }
+        }
+    }
 }

@@ -87,7 +87,7 @@ namespace MusicBird
 
             if(version == 2)
             {
-                // only have 3 bytes for size ;
+                // only have 3 bytes for size;
 
 
                 tagSize = br.ReadChars(3);    // I use this to read the bytes in from the file

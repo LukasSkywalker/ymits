@@ -20,14 +20,23 @@ namespace MusicBird
         /// <returns>The root frame of the Phone Application.</returns>
         public PhoneApplicationFrame RootFrame { get; private set; }
 
+        // this is 2.4
+        private int appVersion = 24;
+
         private static LicenseInformation _licenseInfo = new LicenseInformation();
 
-        public string copyrightMessage = "Please note that listening to copyright protected music may not be allowed in some countries. MusicBird doesn't share/upload music, it simply streams them from publicly available web sites.";
+        private string CopyrightMessage = "Please note that listening to copyright protected music may not be allowed in some countries. MusicBird doesn't share/upload music, it simply streams them from publicly available web sites.";
+        
+        public string copyrightMessage{
+            get{
+                return CopyrightMessage;
+            }
+            private set{
+                CopyrightMessage = value;
+            }
+        }
 
         private static bool _isTrial = true;
-
-        public static bool shuffle = false;
-        public static bool repeat = false;
 
         public bool IsTrial
         {
@@ -45,7 +54,7 @@ namespace MusicBird
         public App()
         {
             // Global handler for uncaught exceptions. 
-            UnhandledException += Application_UnhandledException;
+            UnhandledException += this.Application_UnhandledException;
 
             // Standard Silverlight initialization
             InitializeComponent();
@@ -154,27 +163,35 @@ namespace MusicBird
             Helper.Preferences.write("trial", _isTrial);
         }
 
-        private void checkIfUpdated() {
+        public void checkIfUpdated() {
             var settings = IsolatedStorageSettings.ApplicationSettings;
+            if(!settings.Contains("firstrun"))
+            {
+                mtiks.Instance.postEventAttributes("FIRSTRUN", new Dictionary<string, string>() { { "TRIAL", _isTrial.ToString() } });
+                settings.Add("firstrun", true);
+            }
+            else {
+                
+            }
             if(!settings.Contains("version"))
             {
                 updateAction();
-                settings.Add("version", 23);
-                settings.Save();
+                settings.Add("version", this.appVersion);
             }
             else
             {
-                int version = Convert.ToInt32(settings["version"]);
-                if(version != 23) {
+                int version = Convert.ToInt32(settings["version"], CultureInfo.InvariantCulture);
+                if(version != this.appVersion) {
                     updateAction();
-                    settings["version"] = 23;
-                    settings.Save();
+                    mtiks.Instance.postEventAttributes("UPDATE", new Dictionary<string, string>() { { "VERSION", this.appVersion.ToString() } });
+                    settings["version"] = this.appVersion;
                 }
             }
+            settings.Save();
         }
 
         private void updateAction() {
-            MessageBox.Show(copyrightMessage, "MusicBird", MessageBoxButton.OK);
+            MessageBox.Show(this.copyrightMessage, "MusicBird", MessageBoxButton.OK);
         }
 
         #region Phone application initialization
@@ -191,10 +208,10 @@ namespace MusicBird
             // Create the frame but don't set it as RootVisual yet; this allows the splash
             // screen to remain active until the application is ready to render.
             RootFrame = new PhoneApplicationFrame();
-            RootFrame.Navigated += CompleteInitializePhoneApplication;
+            RootFrame.Navigated += this.CompleteInitializePhoneApplication;
 
             // Handle navigation failures
-            RootFrame.NavigationFailed += RootFrame_NavigationFailed;
+            RootFrame.NavigationFailed += this.RootFrame_NavigationFailed;
 
             // Ensure we don't initialize again
             phoneApplicationInitialized = true;
@@ -208,7 +225,7 @@ namespace MusicBird
                 RootVisual = RootFrame;
 
             // Remove this handler since it is no longer needed
-            RootFrame.Navigated -= CompleteInitializePhoneApplication;
+            RootFrame.Navigated -= this.CompleteInitializePhoneApplication;
         }
 
         #endregion

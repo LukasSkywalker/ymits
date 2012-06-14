@@ -135,26 +135,7 @@ namespace AudioPlaybackAgent1
             switch (playState)
             {
                 case PlayState.TrackEnded:
-                    /*Dictionary<String,String> prefs = readPrefs();
-                    try
-                    {
-                        if(prefs["repeat"].Equals("true"))
-                        {
-                            playAtPosition(currentTrackNumber, player);
-                            break;
-                        }
-                        if(prefs["shuffle"].Equals("true"))
-                        {
-                            Random rand = new Random(DateTime.Now.Millisecond);
-                            int pos = rand.Next() % _playList.Count;
-                            playAtPosition(pos, player);
-                            break;
-                        }
-                    }
-                    catch(Exception e) {
-                        System.Diagnostics.Debug.WriteLine(e.Message);
-                    }*/
-                    playAtPosition(currentTrackNumber+1, player);
+                    playAtPosition(currentTrackNumber + 1, player);
                     break;
                 case PlayState.TrackReady:
                     if(isTrial()){
@@ -235,59 +216,16 @@ namespace AudioPlaybackAgent1
                     }
                     break;
                 case UserAction.SkipNext:
-                    /*try
-                    {
-                        if(prefs["repeat"].Equals("true"))
-                        {
-                            playAtPosition(currentTrackNumber, player);
-                            break;
-                        }
-                        if(prefs["shuffle"].Equals("true"))
-                        {
-                            Random rand = new Random(DateTime.Now.Millisecond);
-                            int pos = rand.Next() % _playList.Count;
-                            playAtPosition(pos, player);
-                            break;
-                        }
-                    }
-                    catch(Exception e)
-                    {
-                        System.Diagnostics.Debug.WriteLine(e.Message);
-                    }*/
                     playAtPosition(currentTrackNumber + 1, player);
                     break;
                 case UserAction.SkipPrevious:
-                    /*try
-                    {
-                        if(prefs["repeat"].Equals("true"))
-                        {
-                            playAtPosition(currentTrackNumber, player);
-                            break;
-                        }
-                        if(prefs["shuffle"].Equals("true"))
-                        {
-                            Random rand = new Random(DateTime.Now.Millisecond);
-                            int pos = rand.Next() % _playList.Count;
-                            playAtPosition(pos, player);
-                            break;
-                        }
-                    }
-                    catch(Exception e)
-                    {
-                        System.Diagnostics.Debug.WriteLine(e.Message);
-                    }*/
-                    playAtPosition(currentTrackNumber -1, player);
+                    if(player.Position.TotalSeconds < 5) playAtPosition(currentTrackNumber, player);
+                    else playAtPosition(currentTrackNumber - 1, player);
                     break;
             }
 
             NotifyComplete();
         }
-
-        /* Called whenever there is an error with playback, such as an AudioTrack not downloading correctly
-         * 
-         * This method is not guaranteed to be called in all cases. For example, if the background agent
-         * itself has an unhandled exception, it won't get called back to handle its own errors.
-         */
 
         protected override void OnError(BackgroundAudioPlayer player, AudioTrack track, Exception error, bool isFatal)
         {
@@ -312,7 +250,6 @@ namespace AudioPlaybackAgent1
          * Once the request is Cancelled, the agent gets 5 seconds to finish its work,
          * by calling NotifyComplete()/Abort().
          */
-
         protected override void OnCancel()
         {
 
@@ -415,15 +352,16 @@ namespace AudioPlaybackAgent1
                 if(playbackNumber == null){
                     playbackNumber = 0.ToString();
                 }
-                if(Convert.ToInt32(playbackNumber) >= 4){
+                if(Convert.ToInt32(playbackNumber, CultureInfo.InvariantCulture) >= 4)
+                {
                     //more than or exactly 5 playbacks. Exceeded.
-                    System.Diagnostics.Debug.WriteLine("Playback limit exceeded. "+Convert.ToInt32(playbackNumber)+" plays.");
+                    System.Diagnostics.Debug.WriteLine("Playback limit exceeded. " + Convert.ToInt32(playbackNumber, CultureInfo.InvariantCulture) + " plays.");
                     return true;
                 }
                 else{
                     //less than 5 replays. Count 1 up.
-                    System.Diagnostics.Debug.WriteLine("Not exceeded. " + Convert.ToInt32(playbackNumber) + " plays.");
-                    playbackNumber = (Convert.ToInt32(playbackNumber) + 1).ToString();
+                    System.Diagnostics.Debug.WriteLine("Not exceeded. " + Convert.ToInt32(playbackNumber, CultureInfo.InvariantCulture) + " plays.");
+                    playbackNumber = (Convert.ToInt32(playbackNumber, CultureInfo.InvariantCulture) + 1).ToString();
                     Helper.Preferences.write("playback-date", playbackDate);
                     Helper.Preferences.write("playback-number", playbackNumber);
                     return false;
