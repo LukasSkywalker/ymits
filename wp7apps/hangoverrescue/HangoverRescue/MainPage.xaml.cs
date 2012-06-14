@@ -1,22 +1,17 @@
-﻿using System.IO.IsolatedStorage;
-using Microsoft.Phone.Controls.Maps;
-using System;
-using Microsoft.Phone.UserData;
-using System.Collections.Generic;
+﻿using System;
+using System.Device.Location;
+using System.IO.IsolatedStorage;
 using System.Linq;
-using System.Net;
-using Microsoft.Phone.Tasks;
-using System.Windows.Navigation;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Animation;
-using System.Windows.Shapes;
-using Microsoft.Phone.Controls;
+using System.Windows.Media.Imaging;
+using System.Windows.Navigation;
 using HangoverRescue.GeoCodeService;
-using System.Device.Location;
+using Microsoft.Phone.Controls;
+using Microsoft.Phone.Controls.Maps;
+using Microsoft.Phone.Tasks;
+using Microsoft.Phone.UserData;
+using Microsoft.Xna.Framework.Media;
 
 namespace HangoverRescue
 {
@@ -31,19 +26,33 @@ namespace HangoverRescue
         public MainPage()
         {
             InitializeComponent();
+        }
+
+        protected override void OnNavigatedTo( NavigationEventArgs e )
+        {
             getLocation(null, null);
             getDateTime();
             getCalendar();
+            getPhotos();
         }
 
         public void getLocation( object sender, RoutedEventArgs e )
         {
-            locationTextBlock.Text = "Please wait, I'm getting the data...";
-            watcher = new GeoCoordinateWatcher(GeoPositionAccuracy.High); // using high accuracy
-            watcher.MovementThreshold = 20; // use MovementThreshold to ignore noise in the signal
-            watcher.StatusChanged += new EventHandler<GeoPositionStatusChangedEventArgs>(watcher_StatusChanged);
-            watcher.PositionChanged += new EventHandler<GeoPositionChangedEventArgs<GeoCoordinate>>(watcher_PositionChanged);
-            watcher.Start();
+            var settings = IsolatedStorageSettings.ApplicationSettings;
+            if(!settings.Contains("location") || !(bool)settings["location"])
+            {
+                locationTextBlock.Text = "Please enable location detection in\n"+
+"the settings to use this feature";
+            }
+            else
+            {
+                locationTextBlock.Text = "Please wait, I'm getting the data...";
+                watcher = new GeoCoordinateWatcher(GeoPositionAccuracy.High); // using high accuracy
+                watcher.MovementThreshold = 20; // use MovementThreshold to ignore noise in the signal
+                watcher.StatusChanged += new EventHandler<GeoPositionStatusChangedEventArgs>(watcher_StatusChanged);
+                watcher.PositionChanged += new EventHandler<GeoPositionChangedEventArgs<GeoCoordinate>>(watcher_PositionChanged);
+                watcher.Start();
+            }
         }
 
         public void getDateTime() {
@@ -103,7 +112,8 @@ namespace HangoverRescue
                     if(watcher.Permission == GeoPositionPermission.Denied)
                     {
                         // The user has disabled the Location Service on their device.
-                        locationTextBlock.Text = "you have to enable access to location for this application.";
+                        locationTextBlock.Text = "you have to enable location detection in\n"+
+"the phone settings to use this feature.";
                     }
                     else
                     {
@@ -115,6 +125,7 @@ namespace HangoverRescue
                 case GeoPositionStatus.Initializing:
                     // The Location Service is initializing.
                     // Disable the Start Location button.
+                    locationTextBlock.Text = "waiting for location data...";
                     //startLocationButton.IsEnabled = false;
                     break;
 
@@ -227,7 +238,7 @@ namespace HangoverRescue
             }
         }
 
-        public String getAddress() {
+        private String getAddress() {
             var settings = IsolatedStorageSettings.ApplicationSettings;
             if(!settings.Contains("address")){
                 return "";
@@ -240,6 +251,63 @@ namespace HangoverRescue
         private void button3_Click( object sender, RoutedEventArgs e )
         {
             NavigationService.Navigate(new Uri("/Settings.xaml", UriKind.Relative));
+        }
+
+        private void getPhotos() {
+            MediaLibrary mediaLibrary = new MediaLibrary();
+            var pictures = mediaLibrary.Pictures;
+            myList.Items.Clear();
+            int counter = 0;
+            foreach(var picture in pictures)
+            {
+                if(picture.Date > DateTime.Now.AddHours(-24) && picture.Date <= DateTime.Now)
+                {
+                    BitmapImage image = new BitmapImage();
+                    image.SetSource(picture.GetThumbnail());
+                    MediaImage mediaImage = new MediaImage(counter);
+                    mediaImage.ImageFile = image;
+                    myList.Items.Add(mediaImage);
+                }
+                counter++;
+            }
+            if(myList.Items.Count() == 0) textBlock3.Visibility = Visibility.Visible;
+            else textBlock3.Visibility = Visibility.Collapsed;
+        }
+
+        public class MediaImage
+        {
+            public MediaImage( int index ) {
+                this.index = index;
+            }
+
+            public int index;
+            public BitmapImage ImageFile { get; set; }
+        }
+
+        private void lstImages_SelectionChanged( object sender, SelectionChangedEventArgs e )
+        {
+            MediaImage mI = (sender as ListBox).SelectedItem as MediaImage;
+            MediaLibrary mediaLibrary = new MediaLibrary();
+            BitmapImage image = new BitmapImage();
+            if(mI != null) image.SetSource(mediaLibrary.Pictures[mI.index].GetImage());
+            imgSelectedPhoto.Source = image;
+            imgSelectedPhoto.Visibility = Visibility.Visible;
+
+        }
+
+        private void image_Tap( object sender, System.Windows.Input.GestureEventArgs e )
+        {
+            imgSelectedPhoto.Visibility = Visibility.Collapsed;
+        }
+
+        private void image_Tap2( object sender, RoutedEventArgs e )
+        {
+            imgSelectedPhoto.Visibility = Visibility.Collapsed;
+        }
+
+        private void lstImages_SelectionChanged2( object sender, System.Windows.Input.GestureEventArgs e )
+        {
+            lstImages_SelectionChanged(sender, null);
         }
     }
 }

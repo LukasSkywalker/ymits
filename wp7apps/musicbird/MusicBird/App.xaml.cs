@@ -8,6 +8,7 @@ using Microsoft.Phone.Controls;
 using Microsoft.Phone.Marketplace;
 using Microsoft.Phone.Shell;
 using System.Globalization;
+using System.Collections.Generic;
 
 
 namespace MusicBird
@@ -20,6 +21,9 @@ namespace MusicBird
         /// </summary>
         /// <returns>The root frame of the Phone Application.</returns>
         public PhoneApplicationFrame RootFrame { get; private set; }
+
+        // this is 2.4
+        private int appVersion = 24;
 
         private static LicenseInformation _licenseInfo = new LicenseInformation();
 
@@ -161,23 +165,31 @@ namespace MusicBird
             Helper.Preferences.write("trial", _isTrial);
         }
 
-        private void checkIfUpdated() {
+        public void checkIfUpdated() {
             var settings = IsolatedStorageSettings.ApplicationSettings;
+            if(!settings.Contains("firstrun"))
+            {
+                mtiks.Instance.postEventAttributes("FIRSTRUN", new Dictionary<string, string>() { { "TRIAL", _isTrial.ToString() } });
+                settings.Add("firstrun", true);
+            }
+            else {
+                
+            }
             if(!settings.Contains("version"))
             {
                 updateAction();
-                settings.Add("version", 23);
-                settings.Save();
+                settings.Add("version", this.appVersion);
             }
             else
             {
                 int version = Convert.ToInt32(settings["version"], CultureInfo.InvariantCulture);
-                if(version != 23) {
+                if(version != this.appVersion) {
                     updateAction();
-                    settings["version"] = 23;
-                    settings.Save();
+                    mtiks.Instance.postEventAttributes("UPDATE", new Dictionary<string, string>() { { "VERSION", this.appVersion.ToString() } });
+                    settings["version"] = this.appVersion;
                 }
             }
+            settings.Save();
         }
 
         private void updateAction() {

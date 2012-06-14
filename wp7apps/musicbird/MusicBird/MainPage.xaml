@@ -72,8 +72,8 @@
             <!--this.Panorama item two-->
             <!--Use 'Orientation="Horizontal"' to enable a panel that lays out horizontally-->
             <controls:PivotItem Header="search" FontSize="15" x:Name="searchItem">
-                <StackPanel>
-                    <TextBox x:Name="queryTextbox" Text="" InputScope="Search" KeyUp="search_KeyUp"></TextBox>
+                <StackPanel TextInputStart="search_textInputStart">
+                    <toolkit:AutoCompleteBox x:Name="queryTextbox" InputScope="Search" KeyUp="search_KeyUp" Height="75" Margin="0,-5,0,0" />
                     <!--<Button Content="Search" Height="72" Margin="246,0,0,0" Name="queryButton" Width="160" Click="queryButton_Click" />-->
                     <toolkit:PerformanceProgressBar IsIndeterminate="False" x:Name="queryProgress" Visibility="Collapsed"/>
                     
