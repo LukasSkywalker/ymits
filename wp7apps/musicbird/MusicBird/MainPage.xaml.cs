@@ -1147,20 +1147,26 @@ namespace MusicBird
             if(msg != null && msg != "")
             {
                 switch(msg) {
+                    case "-1072873852":
+                        message = "Invalid or corrupted file. Please try another.";
+                        break;
                     case "-1072889830":
                         message = "The file could not be found. Please try another.";
-                        break;
-                    case "-2147012889":
-                        message = "Can’t find the server (is the phone in flight mode?)";
                         break;
                     case "-2147012696":
                         message = "No available network connection";
                         break;
+                    case "-2147012889":
+                        message = "Can’t find the server (is the phone in flight mode?)";
+                        break;
+                    case "-2147024638":
+                        message = "Connection timeout. Please check if you have a working internet connection.";
+                        break;
+                    case "-2147024891":
+                        message = "Access denied error. Please check if you are allowed to access this file.";
+                        break;
                     case "-2147467259":
                         message = "Generic error. The error has been reported to the developer. Sorry for the inconvenience.";
-                        break;
-                    case "-1072873852":
-                        message = "Invalid or corrupted file. Please try another.";
                         break;
                 }
                 MessageBox.Show(message, "Player Error", MessageBoxButton.OK);
