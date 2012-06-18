@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Deployment xmlns="http://schemas.microsoft.com/windowsphone/2009/deployment" AppPlatformVersion="7.1">
-  <App xmlns="" ProductID="{6418ac10-8bff-4382-9d17-ecd2754783ec}" Title="MusicBird" RuntimeType="Silverlight" Version="1.0.0.0" Genre="apps.normal" Author="MusicBird author" Description="Sample description" Publisher="MusicBird" HubType="1">
+  <App xmlns="" ProductID="{6418ac10-8bff-4382-9d17-ecd2754783ec}" Title="MusicBird" RuntimeType="Silverlight" Version="2.6.0.0" Genre="apps.normal" Author="MusicBird author" Description="Sample description" Publisher="MusicBird" HubType="1">
     <IconPath IsRelative="true" IsResource="false">Images\MB_62_dark.png</IconPath>
     <Capabilities>
       <Capability Name="ID_CAP_GAMERSERVICES" />
