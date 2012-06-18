@@ -1,19 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
+﻿using System.Collections.Generic;
+using System.Device.Location;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Animation;
 using System.Windows.Navigation;
-using System.Windows.Shapes;
 using Microsoft.Phone.Controls;
 using Microsoft.Phone.Shell;
 using Microsoft.Phone.Tasks;
-using System.Device.Location;
 
 namespace FastFoodFinder
 {
@@ -24,8 +15,6 @@ namespace FastFoodFinder
         /// </summary>
         /// <returns>The root frame of the Phone Application.</returns>
         public PhoneApplicationFrame RootFrame { get; private set; }
-
-        public readonly string appKey = "AIzaSyD59rBnMgHdYzHzBvN48B9H1nGVM9WbHsI";
 
         public double lat = 0;
         public double lng = 0;
