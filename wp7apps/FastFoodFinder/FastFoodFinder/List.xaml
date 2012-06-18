@@ -1,16 +1,16 @@
 ﻿<phone:PhoneApplicationPage 
-    x:Class="FastFoodFinder.MainPage"
+    x:Class="FastFoodFinder.List"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:phone="clr-namespace:Microsoft.Phone.Controls;assembly=Microsoft.Phone"
     xmlns:shell="clr-namespace:Microsoft.Phone.Shell;assembly=Microsoft.Phone"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    mc:Ignorable="d" d:DesignWidth="480" d:DesignHeight="768"
     FontFamily="{StaticResource PhoneFontFamilyNormal}"
     FontSize="{StaticResource PhoneFontSizeNormal}"
     Foreground="{StaticResource PhoneForegroundBrush}"
     SupportedOrientations="Portrait" Orientation="Portrait"
+    mc:Ignorable="d" d:DesignHeight="768" d:DesignWidth="480"
     shell:SystemTray.IsVisible="True">
 
     <!--LayoutRoot is the root grid where all page content is placed-->
@@ -23,13 +23,31 @@
         <!--TitlePanel contains the name of the application and page title-->
         <StackPanel x:Name="TitlePanel" Grid.Row="0" Margin="12,17,0,28">
             <TextBlock x:Name="ApplicationTitle" Text="FASTFOOD FINDER" Style="{StaticResource PhoneTextNormalStyle}"/>
-            <TextBlock x:Name="PageTitle" Text="search" Margin="9,-7,0,0" Style="{StaticResource PhoneTextTitle1Style}"/>
+            <TextBlock x:Name="PageTitle" Text="list" Margin="9,-7,0,0" Style="{StaticResource PhoneTextTitle1Style}"/>
         </StackPanel>
 
         <!--ContentPanel - place additional content here-->
         <Grid x:Name="ContentPanel" Grid.Row="1" Margin="12,0,12,0">
-            <Button Content="Search" Height="152" HorizontalAlignment="Left" Margin="107,70,0,0" Name="searchButton" VerticalAlignment="Top" Width="237" Click="searchButton_Click" />
-            <TextBlock HorizontalAlignment="Left" Margin="12,278,0,162" Name="statusTextBlock" Text="" Width="438" />
+            <ListBox Name="ListElement" Margin="0,6,0,84">
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <Button Click="listItem_Click">
+                            <Button.Content>
+                                <StackPanel Orientation="Horizontal" Margin="0,0,0,17">
+                                    <!--Replace rectangle with image-->
+
+                                    <StackPanel Width="311">
+                                        <TextBlock TextWrapping="Wrap" Text="{Binding Name}" Style="{StaticResource PhoneTextExtraLargeStyle}" FontSize="{StaticResource PhoneFontSizeMediumLarge}"/>
+                                        <TextBlock TextWrapping="Wrap" Text="{Binding Address}" Margin="12,-6,12,0" Style="{StaticResource PhoneTextSubtleStyle}"/>
+                                        <!--<TextBlock TextWrapping="Wrap" Text="{Binding sizeText}" Margin="12,-6,0,0" Style="{StaticResource PhoneTextSubtleStyle}" TextAlignment="Right" />-->
+                                    </StackPanel>
+                                </StackPanel>
+                            </Button.Content>
+                        </Button>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+            <Button Content="Map" Height="72" HorizontalAlignment="Left" Margin="148,529,0,0" Name="mapButton" VerticalAlignment="Top" Width="160" Click="mapButton_Click" />
         </Grid>
     </Grid>
  

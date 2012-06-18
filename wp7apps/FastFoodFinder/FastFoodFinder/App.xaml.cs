@@ -12,6 +12,8 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using Microsoft.Phone.Controls;
 using Microsoft.Phone.Shell;
+using Microsoft.Phone.Tasks;
+using System.Device.Location;
 
 namespace FastFoodFinder
 {
@@ -22,6 +24,13 @@ namespace FastFoodFinder
         /// </summary>
         /// <returns>The root frame of the Phone Application.</returns>
         public PhoneApplicationFrame RootFrame { get; private set; }
+
+        public readonly string appKey = "AIzaSyD59rBnMgHdYzHzBvN48B9H1nGVM9WbHsI";
+
+        public double lat = 0;
+        public double lng = 0;
+
+        public List<SearchResult> searchResults = new List<SearchResult>();
 
         /// <summary>
         /// Constructor for the Application object.
@@ -103,6 +112,23 @@ namespace FastFoodFinder
             }
         }
 
+        public void startNavigation( string name, double lat, double lng )
+        {
+            BingMapsDirectionsTask Direction = new BingMapsDirectionsTask();
+            LabeledMapLocation start = new LabeledMapLocation();
+
+            double latStart = (App.Current as App).lat;
+            double lngStart = (App.Current as App).lng;
+            start.Location = new GeoCoordinate(latStart, lngStart);
+
+            double latEnd = lat;
+            double lngEnd = lng;
+            LabeledMapLocation End = new LabeledMapLocation(name, new GeoCoordinate(latEnd, lngEnd));
+            Direction.Start = start;
+            Direction.End = End;
+            Direction.Show();
+        }
+
         #region Phone application initialization
 
         // Avoid double-initialization
@@ -138,5 +164,19 @@ namespace FastFoodFinder
         }
 
         #endregion
+
+        public class SearchResult {
+            public string Name { get; set; }
+            public string Address { get; set; }
+            public double Latitude { get; set; }
+            public double Longitude { get; set; }
+            public SearchResult( string name, string addr, double lat, double lng )
+            {
+                this.Name = name;
+                this.Address = addr;
+                this.Latitude = lat;
+                this.Longitude = lng;
+            }
+        }
     }
 }
