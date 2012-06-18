@@ -381,7 +381,7 @@ namespace MusicBird
                 queryProgress.Visibility = Visibility.Visible;
                 searchItem.Focus();
                 query = queryTextbox.Text;
-                trackList.Clear();
+                TrackListElement.ItemsSource = null;
                 getResults();
                 this.NetworkAddress_Changed(null, null);
                 mtiks.Instance.postEventAttributes("SEARCH",
