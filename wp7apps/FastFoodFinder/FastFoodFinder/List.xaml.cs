@@ -14,7 +14,9 @@ namespace FastFoodFinder
 
         protected override void OnNavigatedTo( NavigationEventArgs e )
         {
+            (App.Current as App).searchResults.Sort(( x, y ) => String.Compare(x.Distance, y.Distance));
             ListElement.ItemsSource = (App.Current as App).searchResults;
+
         }
 
         private void mapButton_Click( object sender, RoutedEventArgs e )

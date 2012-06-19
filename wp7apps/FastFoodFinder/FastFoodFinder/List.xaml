@@ -39,7 +39,7 @@
                                     <StackPanel Width="311">
                                         <TextBlock TextWrapping="Wrap" Text="{Binding Name}" Style="{StaticResource PhoneTextExtraLargeStyle}" FontSize="{StaticResource PhoneFontSizeMediumLarge}"/>
                                         <TextBlock TextWrapping="Wrap" Text="{Binding Address}" Margin="12,-6,12,0" Style="{StaticResource PhoneTextSubtleStyle}"/>
-                                        <!--<TextBlock TextWrapping="Wrap" Text="{Binding sizeText}" Margin="12,-6,0,0" Style="{StaticResource PhoneTextSubtleStyle}" TextAlignment="Right" />-->
+                                        <TextBlock TextWrapping="Wrap" Text="{Binding Distance}" Margin="12,-6,0,0" Style="{StaticResource PhoneTextSubtleStyle}" TextAlignment="Right" />
                                     </StackPanel>
                                 </StackPanel>
                             </Button.Content>

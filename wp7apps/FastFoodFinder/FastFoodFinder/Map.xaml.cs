@@ -32,7 +32,7 @@ namespace FastFoodFinder
         private void updateMap( double lat, double lon )
         {
             map1.Center = new GeoCoordinate(lat, lon);
-            map1.ZoomLevel = 14;
+            map1.ZoomLevel = 13;
             map1.ZoomBarVisibility = System.Windows.Visibility.Visible;
             map1.Children.Clear();
 

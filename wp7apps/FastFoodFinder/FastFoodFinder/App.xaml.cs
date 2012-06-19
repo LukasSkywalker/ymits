@@ -5,6 +5,7 @@ using System.Windows.Navigation;
 using Microsoft.Phone.Controls;
 using Microsoft.Phone.Shell;
 using Microsoft.Phone.Tasks;
+using System;
 
 namespace FastFoodFinder
 {
@@ -18,6 +19,7 @@ namespace FastFoodFinder
 
         public double lat = 0;
         public double lng = 0;
+        public int rad = 10000;
 
         public List<SearchResult> searchResults = new List<SearchResult>();
 
@@ -39,7 +41,7 @@ namespace FastFoodFinder
             if(System.Diagnostics.Debugger.IsAttached)
             {
                 // Display the current frame rate counters.
-                Application.Current.Host.Settings.EnableFrameRateCounter = true;
+                //Application.Current.Host.Settings.EnableFrameRateCounter = true;
 
                 // Show the areas of the app that are being redrawn in each frame.
                 //Application.Current.Host.Settings.EnableRedrawRegions = true;
@@ -159,12 +161,14 @@ namespace FastFoodFinder
             public string Address { get; set; }
             public double Latitude { get; set; }
             public double Longitude { get; set; }
-            public SearchResult( string name, string addr, double lat, double lng )
+            public string Distance { get; set; }
+            public SearchResult( string name, string addr, double lat, double lng, double dist )
             {
                 this.Name = name;
                 this.Address = addr;
                 this.Latitude = lat;
                 this.Longitude = lng;
+                this.Distance = Math.Floor(dist)+" km";
             }
         }
     }

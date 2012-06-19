@@ -28,8 +28,17 @@
 
         <!--ContentPanel - place additional content here-->
         <Grid x:Name="ContentPanel" Grid.Row="1" Margin="12,0,12,0">
-            <Button Content="Search" Height="152" HorizontalAlignment="Left" Margin="107,70,0,0" Name="searchButton" VerticalAlignment="Top" Width="237" Click="searchButton_Click" />
-            <TextBlock HorizontalAlignment="Left" Margin="12,278,0,162" Name="statusTextBlock" Text="" Width="438" />
+            <Button Content="Search" Height="152" HorizontalAlignment="Left" Margin="107,57,0,0" Name="searchButton" VerticalAlignment="Top" Width="237" Click="searchButton_Click" />
+            <TextBlock HorizontalAlignment="Left" Margin="12,438,0,75" Name="statusTextBlock" Text="" Width="434" TextAlignment="Center" FontSize="24" />
+            <Slider Height="85" HorizontalAlignment="Left" Margin="41,228,0,0" Name="slider1" VerticalAlignment="Top" Width="382" Maximum="50" Value="10"/>
+            <TextBlock Height="30" HorizontalAlignment="Left" Margin="55,215,0,0" Name="radiusTextBlock" Text="10 km" VerticalAlignment="Top" Width="83" TextAlignment="Left" />
+            <ListBox Height="113" HorizontalAlignment="Left" Margin="12,319,0,0" Name="listBox1" VerticalAlignment="Top" Width="434" BorderBrush="{StaticResource PhoneForegroundBrush}" SelectedIndex="0">
+                <ListBoxItem Content="McDonalds" Tag="mcdonald%27s" FontSize="28"/>
+                <ListBoxItem Content="Burgerking" Tag="burger%20king" FontSize="28"/>
+                <ListBoxItem Content="KFC" Tag="kfc" FontSize="28"/>
+            </ListBox>
+            <CheckBox Content="Enable location detection" Height="72" HorizontalAlignment="Left" Margin="12,529,0,0" Name="locationCheckBox" VerticalAlignment="Top" Width="349" Checked="locationCheckBox_Checked" Unchecked="locationCheckBox_UnChecked" />
+            <Button Content="?" Height="72" HorizontalAlignment="Left" Margin="365,529,0,0" Name="helButton" VerticalAlignment="Top" Width="81" Click="helButton_Click" />
         </Grid>
     </Grid>
  
