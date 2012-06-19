@@ -46,9 +46,16 @@ namespace BingSlideshow2
 
         private void Button1_Click( object sender, RoutedEventArgs e )
         {
-            queryProgress.Visibility = Visibility.Visible;
-            queryProgress.IsIndeterminate = true;
-            getResults(TextBox1.Text);
+            if(!NetworkInterface.GetIsNetworkAvailable())
+            {
+                MessageBox.Show("Please connect to the internet");
+            }
+            else
+            {
+                queryProgress.Visibility = Visibility.Visible;
+                queryProgress.IsIndeterminate = true;
+                getResults(TextBox1.Text);
+            }
         }
 
         private void getResults( String searchterm )
@@ -56,10 +63,7 @@ namespace BingSlideshow2
             System.Diagnostics.Debug.WriteLine("Searching "+searchterm);
             imageDownloadCounter = 0;
             urls.Clear();
-            if(!NetworkInterface.GetIsNetworkAvailable())
-            {
-                MessageBox.Show("Please connect to the internet");
-            }
+            
             int count = 0;
             System.Diagnostics.Debug.WriteLine("Removing " + (slideshowPivot.Items.Count - 1) + " items");
             while(slideshowPivot.Items.Count > 1)
