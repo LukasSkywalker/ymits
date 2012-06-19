@@ -38,11 +38,14 @@ namespace ChuckNorrisJokes
             if(!NetworkInterface.GetIsNetworkAvailable())
             {
                 MessageBox.Show("Please connect to the internet");
+                textBlock1.Text = "No internet connection available.";
             }
-
-            String url = "http://api.icndb.com/jokes/random";
-            Uri uri = new Uri(url);
-            wc.OpenReadAsync(uri);
+            else
+            {
+                String url = "http://api.icndb.com/jokes/random";
+                Uri uri = new Uri(url);
+                wc.OpenReadAsync(uri);
+            }
         }
 
         private void wc_OpenReadCompleted( object sender, OpenReadCompletedEventArgs e )
