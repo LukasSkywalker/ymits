@@ -43,12 +43,12 @@
                 <TextBlock.RenderTransform>
                     <ScaleTransform ScaleY="-1" ScaleX="-1" />
                 </TextBlock.RenderTransform></TextBlock>
-            <Button Content="Stop" Height="72" HorizontalAlignment="Center" Margin="373,81,-217,0" Name="player2Button" VerticalAlignment="Top" Width="300" Click="player2Button_Click">
+            <Button Content="Stop" Height="72" HorizontalAlignment="Center" Margin="373,81,-217,0" Name="player2Button" VerticalAlignment="Top" Width="300" Click="player2Button_Click" ClickMode="Press">
                 <Button.RenderTransform >
                     <ScaleTransform ScaleY="-1" ScaleX="-1"/>
                 </Button.RenderTransform>
             </Button>
-            <Button Content="Stop" Height="72" HorizontalAlignment="Center" Margin="6,0" Name="player1Button" VerticalAlignment="Bottom" Width="300" Click="player1Button_Click" />
+            <Button Content="Stop" Height="72" HorizontalAlignment="Center" Margin="6,0" Name="player1Button" VerticalAlignment="Bottom" Width="300" Click="player1Button_Click" ClickMode="Press" />
             <TextBlock Height="44" HorizontalAlignment="Left" Margin="373,714,0,0" Name="player1Time" Text="" VerticalAlignment="Top" Width="67" />
         </Grid>
     </Grid>
