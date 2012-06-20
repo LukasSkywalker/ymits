@@ -82,6 +82,7 @@
     <Reference Include="PhonePerformance">
       <HintPath>..\..\libraries\PhonePerformance.dll</HintPath>
     </Reference>
+    <Reference Include="ReactiveOAuth.WP7, Version=0.4.0.0, Culture=neutral, processorArchitecture=MSIL" />
     <Reference Include="System.Observable" />
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Servicemodel.Web" />
@@ -182,10 +183,6 @@
     <Content Include="SplashScreenImage.jpg" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\ReactiveOAuth\ReactiveOAuth.WP7\ReactiveOAuth.WP7.csproj">
-      <Project>{8D2500E1-3BE9-4945-9918-5B092AEF3C63}</Project>
-      <Name>ReactiveOAuth.WP7</Name>
-    </ProjectReference>
     <ProjectReference Include="..\AudioPlaybackAgent1\AudioPlaybackAgent1.csproj">
       <Project>{8EE9D35B-2A5C-49B1-937A-3ABDB52F81C8}</Project>
       <Name>AudioPlaybackAgent1</Name>
