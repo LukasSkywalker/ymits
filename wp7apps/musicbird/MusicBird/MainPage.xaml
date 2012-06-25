@@ -44,14 +44,16 @@
                 <!--Double line list with text wrapping-->
                 <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
                     
-                    <Grid x:Name="ContentPanel" Margin="0,0,0,297" HorizontalAlignment="Stretch" Height="215">
-                        <TextBlock Height="32" HorizontalAlignment="Left" Margin="12,161,0,0" x:Name="txtState" Text="Paused" VerticalAlignment="Top" Width="438" />
-                        <TextBlock Height="45" HorizontalAlignment="Left" Margin="12,24,0,0" x:Name="txtTrack" Text="Track:" VerticalAlignment="Top" Width="438" FontSize="28" />
-                        <ProgressBar HorizontalAlignment="Stretch" Margin="0,100,0,0" x:Name="positionIndicator" VerticalAlignment="Top" Height="5" />
-                        <TextBlock Height="30" CacheMode="BitmapCache" HorizontalAlignment="Left" Margin="46,119,0,0" Name="textPosition" Text="00:00:00" VerticalAlignment="Top" />
-                        <TextBlock Height="30" CacheMode="BitmapCache" HorizontalAlignment="Left" Margin="316,120,0,0" Name="textRemaining" Text="-00:00:00" VerticalAlignment="Top" />
+                    <Grid x:Name="ContentPanel" Margin="0,-6,0,7" HorizontalAlignment="Stretch" Height="533">
+                        <TextBlock Height="32" HorizontalAlignment="Left" Margin="12,213,0,0" x:Name="txtState" Text="Paused" VerticalAlignment="Top" Width="438" />
+                        <TextBlock Height="65" HorizontalAlignment="Left" Margin="11,0,0,460" x:Name="txtArtist" Text="" VerticalAlignment="Bottom" Width="438" FontSize="24" TextWrapping="Wrap" />
+                        <TextBlock Height="95" HorizontalAlignment="Left" Margin="12,78,0,0" x:Name="txtTitle" Text="" VerticalAlignment="Top" Width="438" FontSize="32" TextWrapping="Wrap" />
+                        <ProgressBar HorizontalAlignment="Stretch" Margin="0,180,0,0" x:Name="positionIndicator" VerticalAlignment="Top" Height="5" />
+                        <TextBlock Height="30" CacheMode="BitmapCache" HorizontalAlignment="Left" Margin="46,185,0,0" Name="textPosition" Text="00:00:00" VerticalAlignment="Top" />
+                        <TextBlock Height="30" CacheMode="BitmapCache" HorizontalAlignment="Left" Margin="316,186,0,0" Name="textRemaining" Text="-00:00:00" VerticalAlignment="Top" />
+                        <Image Height="300" HorizontalAlignment="Center" Margin="77,257,79,0" Name="albumartImage" Stretch="Uniform" VerticalAlignment="Top" Width="300"/>
                     </Grid>
-                    <Image Height="300" HorizontalAlignment="Center" Margin="78,259,78,0" Name="albumartImage" Stretch="Uniform" VerticalAlignment="Top" Width="300"/>
+                    
                     <!--<Button Height="48" HorizontalAlignment="Left" Margin="383,284,0,0" Name="shuffleButton" VerticalAlignment="Top" Width="48" Click="toggleShuffle" Opacity="0.4">
                         <Button.Template>
                             <ControlTemplate>
@@ -196,7 +198,7 @@
                             </DataTemplate>
                         </ListBox.ItemTemplate>
                     </ListBox>
-                    <Grid x:Name="UploadPanel" Height="83" VerticalAlignment="Bottom" Width="456">
+                    <!--<Grid x:Name="UploadPanel" Height="83" VerticalAlignment="Bottom" Width="456">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="231*" />
                             <ColumnDefinition Width="225*" />
@@ -204,7 +206,7 @@
                         <TextBlock Text="Dropbox Uploads" Margin="0,-11,0,56" Grid.ColumnSpan="2" FontSize="26"/>
                         <TextBlock x:Name="uploadCounter" Text="0 running uploads" Margin="0,20,0,0" Grid.ColumnSpan="2" />
                         <toolkit:PerformanceProgressBar IsIndeterminate="False" x:Name="uploadProgress" Visibility="Collapsed" Margin="0,50,0,0" Grid.ColumnSpan="2" />
-                    </Grid>
+                    </Grid>-->
                 </Grid>
             </controls:PivotItem>
         </controls:Pivot>

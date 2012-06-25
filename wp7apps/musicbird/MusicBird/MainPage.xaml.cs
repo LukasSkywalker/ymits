@@ -210,22 +210,15 @@ namespace MusicBird
 
                 if(BackgroundAudioPlayer.Instance.Track != null)
                 {
-                    String artist = "";
-                    String title = "";
-                    title = BackgroundAudioPlayer.Instance.Track.Title;
-                    artist = BackgroundAudioPlayer.Instance.Track.Artist;
-
-                    string[] arguments = new string[] { title, artist };
-                    txtTrack.Text = string.Format("Track: {1} - {0}", arguments);
+                    txtArtist.Text = BackgroundAudioPlayer.Instance.Track.Title;
+                    txtTitle.Text = BackgroundAudioPlayer.Instance.Track.Artist;
                 }
             }
         }
 
         private void updatePlayerProgress(object sender, EventArgs e)
         {
-            bool force = false;
-            if(sender != null) force = (sender as String).Equals("force");
-            if(this.Panorama.SelectedIndex == 0 || force)
+            if(this.Panorama.SelectedIndex == 0)
             {
                 /*if(BackgroundAudioPlayer.Instance.PlayerState != PlayState.Playing)
                 {
@@ -233,25 +226,35 @@ namespace MusicBird
                 }*/
                 
                 System.Diagnostics.Debug.WriteLine("Updating player progress");
-
-                if(BackgroundAudioPlayer.Instance.Track != null)
+                AudioTrack track = BackgroundAudioPlayer.Instance.Track;
+                if(track != null)
                 {
-                    if(force) positionIndicator.Maximum = BackgroundAudioPlayer.Instance.Track.Duration.TotalSeconds;
 
-                    // Set the current position on the ProgressBar.
-                    if(BackgroundAudioPlayer.Instance.Position != null)
+                    if(track.Duration != null)
                     {
-                        positionIndicator.Value = BackgroundAudioPlayer.Instance.Position.TotalSeconds;
+                        positionIndicator.Maximum = track.Duration.TotalSeconds;
 
-                        // Update the current playback position.
-                        TimeSpan position = new TimeSpan(0, 0, 0, 0, 0);
+                        // Set the current position on the ProgressBar.
+                        TimeSpan position;
+                        try
+                        {
+                            position = BackgroundAudioPlayer.Instance.Position;
+                        }
+                        catch(Exception ex) {
+                            position = TimeSpan.FromSeconds(0);
+                        }
 
-                        position = BackgroundAudioPlayer.Instance.Position;
-                        textPosition.Text = String.Format("{0:d2}:{1:d2}:{2:d2}", position.Hours, position.Minutes, position.Seconds);
+                        if(position != null)
+                        {
+                            positionIndicator.Value = position.TotalSeconds;
 
-                        // Update the time remaining digits.
-                         TimeSpan timeRemaining = BackgroundAudioPlayer.Instance.Track.Duration - position;
-                        textRemaining.Text = String.Format("-{0:d2}:{1:d2}:{2:d2}", timeRemaining.Hours, timeRemaining.Minutes, timeRemaining.Seconds);
+                            // Update the current playback position.
+                            textPosition.Text = String.Format("{0:d2}:{1:d2}:{2:d2}", position.Hours, position.Minutes, position.Seconds);
+
+                            // Update the time remaining digits.
+                            TimeSpan timeRemaining = BackgroundAudioPlayer.Instance.Track.Duration - position;
+                            textRemaining.Text = String.Format("-{0:d2}:{1:d2}:{2:d2}", timeRemaining.Hours, timeRemaining.Minutes, timeRemaining.Seconds);
+                        }
                     }
                 }
             }
@@ -1407,8 +1410,14 @@ namespace MusicBird
         private void RemoveTransferRequest( string transferID )
         {
             // Use Find to retrieve the transfer request with the specified ID.
-            BackgroundTransferRequest transferToRemove = BackgroundTransferService.Find(transferID);
-            BackgroundTransferService.Remove(transferToRemove);
+            try
+            {
+                BackgroundTransferRequest transferToRemove = BackgroundTransferService.Find(transferID);
+                BackgroundTransferService.Remove(transferToRemove);
+            }
+            catch(Exception e) {
+                // Do nothing.
+            }
         }
 
         private void UpdateDownloads( object sender, EventArgs e, bool force )
@@ -1482,7 +1491,6 @@ namespace MusicBird
 
             // Get the URI of the file to be transferred from the Tag property
             // of the button that was clicked.
-            string transferFileName = fileName;
             Uri transferUri = new Uri(uri, UriKind.RelativeOrAbsolute);
 
 
@@ -1503,6 +1511,9 @@ namespace MusicBird
                     isoStore.CreateDirectory("/shared/transfers");
                 }
             }
+
+            //Prevent PathTooLongException
+            if(fileName.Length > 150) fileName = fileName.Substring(0, 150);
 
             System.Diagnostics.Debug.WriteLine("fileName is " + fileName + ".mp3");
             transferRequest.DownloadLocation = new Uri("/shared/transfers/" + fileName + ".mp3", UriKind.Relative);
@@ -1915,15 +1926,15 @@ namespace MusicBird
             int counter = (Application.Current as App).dropboxUploads += howMany;
             if(counter == 0)
             {
-                uploadProgress.Visibility = Visibility.Collapsed;
-                uploadProgress.IsIndeterminate = false;
+                /*uploadProgress.Visibility = Visibility.Collapsed;
+                uploadProgress.IsIndeterminate = false;*/
             }
             if(counter > 0)
             {
-                uploadProgress.Visibility = Visibility.Visible;
-                uploadProgress.IsIndeterminate = true;
+               /* uploadProgress.Visibility = Visibility.Visible;
+                uploadProgress.IsIndeterminate = true;*/
             }
-            uploadCounter.Text = counter.ToString() + " running uploads";
+            //uploadCounter.Text = counter.ToString() + " running uploads";
         } 
         #endregion
 
