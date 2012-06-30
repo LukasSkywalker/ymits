@@ -14,7 +14,7 @@ using System.Windows.Shapes;
 using System.Collections.ObjectModel;
 
 
-namespace BingSlideshow2
+namespace WebSlideshow
 {
     public class MainViewModel : INotifyPropertyChanged
     {

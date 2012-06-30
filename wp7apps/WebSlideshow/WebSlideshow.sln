@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 11.00
 # Visual Studio 2010 Express for Windows Phone
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Slideshow2", "BingSlideshow2\Slideshow2.csproj", "{3EBEF925-8426-4936-BAE4-270C9204C515}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebSlideshow", "WebSlideshow\WebSlideshow.csproj", "{3EBEF925-8426-4936-BAE4-270C9204C515}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

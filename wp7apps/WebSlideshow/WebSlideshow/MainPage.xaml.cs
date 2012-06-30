@@ -11,7 +11,7 @@ using System.IO;
 using System.Net.NetworkInformation;
 using System.Windows.Media.Imaging;
 
-namespace BingSlideshow2
+namespace WebSlideshow
 {
     public partial class MainPage : PhoneApplicationPage
     {
@@ -87,7 +87,13 @@ namespace BingSlideshow2
             String url = "http://api.bing.net/json.aspx?AppId=A34B1552C3B3DF826089895CCA0D868F0A81EF9D&Query=" + searchterm + "&Sources=Image&Image.Count=20&Image.Filters=Size:Medium";
             System.Diagnostics.Debug.WriteLine("Getting "+url);
             Uri uri = new Uri(url);
-            wc.OpenReadAsync(uri);
+            try {
+                wc.OpenReadAsync(uri);
+            }
+            catch(NotSupportedException ex)
+            {
+                MessageBox.Show("Unknown error occured. Please try again.");
+            }
         }
 
         private void loadImage( String url )
@@ -145,44 +151,59 @@ namespace BingSlideshow2
             //"MediaUrl":"http:\/\/support.microsoft.com\/library\/images\/support\/kbgraphics\/Public\/EN-US\/XBOX\/360s\/opticalport360s.jpg"
             Regex pattern = new Regex("\"MediaUrl\":\"(.*?)\",", RegexOptions.IgnoreCase);
             String s;
-            Stream response = e.Result;
             try
             {
-                StreamReader sr = new StreamReader(response, System.Text.Encoding.UTF8);
+                Stream response = e.Result;
                 try
                 {
-                    s = sr.ReadToEnd();
-                    s = s.Replace("\\/", "/");
+                    StreamReader sr = new StreamReader(response, System.Text.Encoding.UTF8);
+                    try
+                    {
+                        s = sr.ReadToEnd();
+                        s = s.Replace("\\/", "/");
+                    }
+                    finally
+                    {
+                        sr.Close();
+                    }
+
+
+                    // Match the regular expression pattern against a text string.
+                    Match m = pattern.Match(s);
+                    //Dim urls(m.Length) As String
+                    int matchCount = 0;
+                    while(m.Success)
+                    {
+                        Group g = m.Groups[1];
+                        urls.Push(g.ToString());
+                        matchCount += 1;
+                        m = m.NextMatch();
+                    }
+
+                    System.Diagnostics.Debug.WriteLine("URLs matched");
+
+                    //urls holds an array of URLs
+                    //downloadImages(urls);
+                    startDownload();
+                    //step();
+
                 }
                 finally
                 {
-                    sr.Close();
+                    response.Close();
+                    queryProgress.Visibility = Visibility.Collapsed;
+                    queryProgress.IsIndeterminate = false;
                 }
-
-
-                // Match the regular expression pattern against a text string.
-                Match m = pattern.Match(s);
-                //Dim urls(m.Length) As String
-                int matchCount = 0;
-                while(m.Success)
-                {
-                    Group g = m.Groups[1];
-                    urls.Push(g.ToString());
-                    matchCount += 1;
-                    m = m.NextMatch();
-                }
-
-                System.Diagnostics.Debug.WriteLine("URLs matched");
-
-                //urls holds an array of URLs
-                //downloadImages(urls);
-                startDownload();
-                //step();
-
+            }
+            catch(WebException ex) {
+                MessageBox.Show("No internet connection available. Please connect.");
+            }
+            catch(NotSupportedException ex)
+            {
+                MessageBox.Show("No internet connection available. Please connect.");
             }
             finally
             {
-                response.Close();
                 queryProgress.Visibility = Visibility.Collapsed;
                 queryProgress.IsIndeterminate = false;
             }
