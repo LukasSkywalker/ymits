@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Deployment xmlns="http://schemas.microsoft.com/windowsphone/2009/deployment" AppPlatformVersion="7.1">
   <App xmlns="" ProductID="{aee5a013-cb3b-4a58-816b-4c94c4c5e59b}" Title="ChuckNorrisJokes" RuntimeType="Silverlight" Version="1.0.0.0" Genre="apps.normal" Author="ChuckNorrisJokes author" Description="Sample description" Publisher="ChuckNorrisJokes">
-    <IconPath IsRelative="true" IsResource="false">CN_62.png</IconPath>
+    <IconPath IsRelative="true" IsResource="false">ChuckNorrisJokes_62.png</IconPath>
     <Capabilities>
       <Capability Name="ID_CAP_GAMERSERVICES" />
       <Capability Name="ID_CAP_IDENTITY_DEVICE" />
@@ -24,7 +24,7 @@
     <Tokens>
       <PrimaryToken TokenID="ChuckNorrisJokesToken" TaskName="_default">
         <TemplateType5>
-          <BackgroundImageURI IsRelative="true" IsResource="false">CN_173.png</BackgroundImageURI>
+          <BackgroundImageURI IsRelative="true" IsResource="false">ChuckNorrisJokes_173.png</BackgroundImageURI>
           <Count>0</Count>
           <Title>ChuckNorrisJokes</Title>
         </TemplateType5>

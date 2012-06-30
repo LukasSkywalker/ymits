@@ -27,8 +27,11 @@
 
         <!--ContentPanel - place additional content here-->
         <Grid x:Name="ContentPanel" Grid.Row="1" Margin="12,0,12,0">
-            <Button Content="Get new" Height="72" HorizontalAlignment="Left" Margin="148,618,0,0" Name="button1" VerticalAlignment="Top" Width="160" Click="button1_Click" />
-            <TextBlock Height="472" HorizontalAlignment="Left" Margin="6,140,0,84" Name="textBlock1" Text="" VerticalAlignment="Center" Width="444" TextAlignment="Center" TextWrapping="Wrap" FontSize="32" />
+            <Button Content="Get new" Height="72" HorizontalAlignment="Left" Margin="147,562,0,0" Name="button1" VerticalAlignment="Top" Width="160" Click="button1_Click" />
+            <TextBlock Height="416" HorizontalAlignment="Left" Margin="6,140,0,140" Name="textBlock1" Text="Please connect to the
+internet. Chuck Norris
+won't connect to you." VerticalAlignment="Center" Width="444" TextAlignment="Center" TextWrapping="Wrap" FontSize="32" />
+            <TextBlock Height="30" HorizontalAlignment="Left" Margin="6,6,0,0" Name="textBlock2" Text="No internet connection. Displaying cached facts." VerticalAlignment="Top" Visibility="Collapsed"/>
         </Grid>
     </Grid>
  
