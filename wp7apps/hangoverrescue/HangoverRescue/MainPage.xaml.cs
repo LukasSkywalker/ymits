@@ -210,12 +210,18 @@ namespace HangoverRescue
         public void geocodeService_ReverseGeocodeCompleted( object sender, ReverseGeocodeCompletedEventArgs e )
         {
             // The result is a GeocodeResponse object
-            GeocodeResponse geocodeResponse = e.Result;
+            try
+            {
+                GeocodeResponse geocodeResponse = e.Result;
 
-            if(geocodeResponse.Results.Count() > 0)
-                locationTextBlock.Text = geocodeResponse.Results[0].DisplayName;
-            else
-                locationTextBlock.Text = "No Results found";
+                if(geocodeResponse.Results.Count() > 0)
+                    locationTextBlock.Text = geocodeResponse.Results[0].DisplayName;
+                else
+                    locationTextBlock.Text = "No Results found";
+            }
+            catch(Exception ex) {
+                getLocation(null, null);
+            }
         }
 
         private void stopLocationButton_Click( object sender, RoutedEventArgs e )

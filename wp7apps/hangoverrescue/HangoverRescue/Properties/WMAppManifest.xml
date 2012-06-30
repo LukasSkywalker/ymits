@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Deployment xmlns="http://schemas.microsoft.com/windowsphone/2009/deployment" AppPlatformVersion="7.1">
   <App xmlns="" ProductID="{857690a6-b3ab-4b3c-95d1-b0587a348952}" Title="HangoverRescue" RuntimeType="Silverlight" Version="1.0.0.0" Genre="apps.normal" Author="HangoverRescue author" Description="Sample description" Publisher="HangoverRescue">
-    <IconPath IsRelative="true" IsResource="false">HR_62.png</IconPath>
+    <IconPath IsRelative="true" IsResource="false">HangoverRescue_62.png</IconPath>
     <Capabilities>
       <Capability Name="ID_CAP_GAMERSERVICES" />
       <Capability Name="ID_CAP_IDENTITY_DEVICE" />
@@ -24,7 +24,7 @@
     <Tokens>
       <PrimaryToken TokenID="HangoverRescueToken" TaskName="_default">
         <TemplateType5>
-          <BackgroundImageURI IsRelative="true" IsResource="false">HR_173.png</BackgroundImageURI>
+          <BackgroundImageURI IsRelative="true" IsResource="false">HangoverRescue_173.png</BackgroundImageURI>
           <Count>0</Count>
           <Title>HangoverRescue</Title>
         </TemplateType5>

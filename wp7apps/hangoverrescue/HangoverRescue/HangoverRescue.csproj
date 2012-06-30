@@ -108,21 +108,15 @@
       <DependentUpon>Reference.svcmap</DependentUpon>
     </None>
     <None Include="Service References\GeoCodeService\service.xsd" />
-    <Content Include="HR_173.png">
+    <Content Include="HangoverRescue_173.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="HR_62.png">
+    <Content Include="HangoverRescue_62.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="ServiceReferences.ClientConfig" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="ApplicationIcon.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Background.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
     <None Include="Service References\GeoCodeService\configuration91.svcinfo" />
     <None Include="Service References\GeoCodeService\configuration.svcinfo" />
     <None Include="Service References\GeoCodeService\Reference.svcmap">
