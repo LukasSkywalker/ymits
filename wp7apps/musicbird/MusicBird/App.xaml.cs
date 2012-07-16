@@ -22,8 +22,8 @@ namespace MusicBird
         /// <returns>The root frame of the Phone Application.</returns>
         public PhoneApplicationFrame RootFrame { get; private set; }
 
-        // this is 2.7.0.0
-        private int appVersion = 27;
+        // this is 2.8.0.0
+        private int appVersion = 28;
 
         private static LicenseInformation _licenseInfo = new LicenseInformation();
 

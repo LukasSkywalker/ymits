@@ -25,6 +25,7 @@ using Microsoft.Phone.Shell;
 using Microsoft.Phone.Tasks;
 using Microsoft.Xna.Framework.Media;
 using System.Globalization;
+using System.Reflection;
 
 
 namespace MusicBird
@@ -78,6 +79,7 @@ namespace MusicBird
             System.Diagnostics.Debug.WriteLine("MainPage_Loaded");
 
             toggleAds();
+            toggleLibAndDownloads();
 
             playerProgressUpdateTimer = new DispatcherTimer();
             playerProgressUpdateTimer.Interval = TimeSpan.FromSeconds(1);
@@ -104,17 +106,16 @@ namespace MusicBird
 
             updatePlaylist();
             updateLibrary();
+
+            var assembly = Assembly.GetExecutingAssembly().FullName;
+            var fullVersionNumber = assembly.Split('=')[1].Split(',')[0];
+
+            System.Diagnostics.Debug.WriteLine("MusicBird Version: "+new Version(fullVersionNumber));
+
         } 
         #endregion
 
         #region Trial Checks
-        private void showNagScreen()
-        {
-            if((Application.Current as App).IsTrial)
-            {
-                marketPlaceMessage();
-            }
-        }
 
         private void toggleAds()
         {
@@ -131,6 +132,16 @@ namespace MusicBird
             }
         }
 
+        private void toggleLibAndDownloads()
+        {
+            if((Application.Current as App).IsTrial)
+            {
+                System.Diagnostics.Debug.WriteLine("Hiding unused panorama items...");
+                Panorama.Items.Remove(libraryItem);
+                Panorama.Items.Remove(downloadItem);
+            }
+        }
+
         private void marketPlaceMessage()
         {
             if(MessageBox.Show("You are using MusicBird in trial mode. Please purchase " +
@@ -144,11 +155,11 @@ namespace MusicBird
 
         private void checkTrial( object sender, EventArgs e )
         {
-            if(checkFlag("LimitExceeded"))
+            /*if(checkFlag("LimitExceeded"))
             {
                 BackgroundAudioPlayer.Instance.Stop();
                 marketPlaceMessage();
-            }
+            }*/
         }
         #endregion
 
@@ -309,16 +320,16 @@ namespace MusicBird
             }
             else
             {
-                if((Application.Current as App).IsTrial)
+                /*if((Application.Current as App).IsTrial)
                 {
                     marketPlaceMessage();
                 }
                 else
-                {
+                {*/
                     BackgroundAudioPlayer.Instance.Play();
                     updateButtonImage("pause");
                     enablePlayerUI(false);
-                }
+                //}
             }
         }
 
@@ -788,8 +799,6 @@ namespace MusicBird
         #region Track View
         private void trackItem_Click( object sender, RoutedEventArgs e )
         {
-            showNagScreen();
-
             TrackListItem selectedTrack = (sender as FrameworkElement).DataContext as TrackListItem;
             AudioTrack current = new AudioTrack(new Uri(selectedTrack.url, UriKind.RelativeOrAbsolute), selectedTrack.artist, selectedTrack.title, "", null);
 
@@ -909,8 +918,6 @@ namespace MusicBird
         #region Playlist View
         private void playlistItem_Click( object sender, RoutedEventArgs e )
         {
-            showNagScreen();
-
             TrackListItem selectedTrack = (sender as FrameworkElement).DataContext as TrackListItem;
             AudioTrack current = new AudioTrack(new Uri(selectedTrack.url, UriKind.RelativeOrAbsolute), selectedTrack.artist, selectedTrack.title, "", null);
             String[] current2 = new String[] { selectedTrack.artist, selectedTrack.title, selectedTrack.url };
@@ -1101,6 +1108,7 @@ namespace MusicBird
 
         private void updateLibrary()
         {
+            if((Application.Current as App).IsTrial) return;
             using(var myStore = IsolatedStorageFile.GetUserStoreForApplication())
             {
 

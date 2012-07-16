@@ -141,13 +141,13 @@ namespace AudioPlaybackAgent1
                 case PlayState.TrackReady:
                     if(isTrial()){
                         System.Diagnostics.Debug.WriteLine("AudioPlayer.cs:OnPlayStateChanged ___ Trial mode detected.");
-                        if(isPlaybackLimitExceeded())
+                        /*if(isPlaybackLimitExceeded())
                         {
                             player.Pause();
                             System.Diagnostics.Debug.WriteLine("AudioPlayer.cs:OnPlayStateChanged ___ Playback limit exceeded. Pausing.");
                             setFlag("LimitExceeded");
                             return;
-                        }
+                        }*/
                     }
                     System.Diagnostics.Debug.WriteLine("AudioPlayer.cs:OnPlayStateChanged ___ Track loaded, playing.");
                     player.Play();
@@ -333,7 +333,7 @@ namespace AudioPlaybackAgent1
 
         public static bool isPlaybackLimitExceeded()
         {
-            DateTime now = new DateTime();
+            /*DateTime now = new DateTime();
             now = DateTime.Now;
             DateTime date = now.Date;
 
@@ -367,7 +367,8 @@ namespace AudioPlaybackAgent1
                     Helper.Preferences.write("playback-number", playbackNumber);
                     return false;
                 }
-            }
+            }*/
+            return false;
        }
 
     }
