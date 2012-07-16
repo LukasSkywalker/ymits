@@ -1336,7 +1336,7 @@ namespace MusicBird
                         }
 
                         StreamResourceInfo sri = null;
-                        Uri imageUri = new Uri("Images/MB_173_dark.png", UriKind.Relative);
+                        Uri imageUri = new Uri("Images/MusicBird_GREEN_173.png", UriKind.Relative);
                         sri = Application.GetResourceStream(imageUri);
 
                         WriteableBitmap wb = new WriteableBitmap(173, 173);
