@@ -15,7 +15,6 @@ namespace MusicBird
 {
     public partial class App : Application
     {
-
         /// <summary>
         /// Provides easy access to the root frame of the Phone Application.
         /// </summary>

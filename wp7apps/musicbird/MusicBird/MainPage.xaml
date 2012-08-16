@@ -44,7 +44,7 @@
                 <!--Double line list with text wrapping-->
                 <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
                     
-                    <Grid x:Name="ContentPanel" Margin="0,-6,0,7" HorizontalAlignment="Stretch" Height="533">
+                    <Grid x:Name="ContentPanel" Margin="0,-6,0,7" HorizontalAlignment="Stretch" Height="533" Tap="image1_Tap">
                         <TextBlock Height="32" HorizontalAlignment="Left" Margin="12,213,0,0" x:Name="txtState" Text="Paused" VerticalAlignment="Top" Width="438" />
                         <TextBlock Height="65" HorizontalAlignment="Left" Margin="11,0,0,460" x:Name="txtArtist" Text="" VerticalAlignment="Bottom" Width="438" FontSize="24" TextWrapping="Wrap" />
                         <TextBlock Height="95" HorizontalAlignment="Left" Margin="12,78,0,0" x:Name="txtTitle" Text="" VerticalAlignment="Top" Width="438" FontSize="32" TextWrapping="Wrap" />
@@ -52,6 +52,21 @@
                         <TextBlock Height="30" CacheMode="BitmapCache" HorizontalAlignment="Left" Margin="46,185,0,0" Name="textPosition" Text="00:00:00" VerticalAlignment="Top" />
                         <TextBlock Height="30" CacheMode="BitmapCache" HorizontalAlignment="Left" Margin="316,186,0,0" Name="textRemaining" Text="-00:00:00" VerticalAlignment="Top" />
                         <Image Height="300" HorizontalAlignment="Center" Margin="77,257,79,0" Name="albumartImage" Stretch="Uniform" VerticalAlignment="Top" Width="300"/>
+                        <Border x:Name="shuffleButton" BorderBrush="White" Width="48" Height="48" Margin="389,261,19,224" CornerRadius="24" BorderThickness="3" Tap="shuffle_tap" Opacity="0.5">
+                            <Border.Background>
+                                <ImageBrush ImageSource="Images/media-shuffle-light.png"/>
+                            </Border.Background>
+                        </Border>
+                        <Border x:Name="repeatButton" BorderBrush="White" Width="48" Height="48" Margin="389,320,19,165" CornerRadius="24" BorderThickness="3" Tap="repeat_tap" Opacity="0.5">
+                            <Border.Background>
+                                <ImageBrush ImageSource="Images/media-repeat-light.png"/>
+                            </Border.Background>
+                        </Border>
+                        <Border BorderBrush="White" Width="48" Height="48" Margin="388,474,20,11" CornerRadius="24" BorderThickness="3" >
+                            <Border.Background>
+                                <ImageBrush ImageSource="Images/share.png"/>
+                            </Border.Background>
+                        </Border>
                     </Grid>
                     
                     <!--<Button Height="48" HorizontalAlignment="Left" Margin="383,284,0,0" Name="shuffleButton" VerticalAlignment="Top" Width="48" Click="toggleShuffle" Opacity="0.4">
@@ -90,6 +105,7 @@
                                             <toolkit:MenuItem Header="play" Tag="play" Click="trackItem_Hold" />
                                             <toolkit:MenuItem Header="add to playlist" Tag="add" Click="trackItem_Hold" />
                                             <toolkit:MenuItem Header="download" Tag="download" Click="trackItem_Hold" />
+                                            <toolkit:MenuItem Header="share" Tag="share" Click="trackItem_Hold" />
                                         </toolkit:ContextMenu>
                                     </toolkit:ContextMenuService.ContextMenu>
                                     <Button.Content>

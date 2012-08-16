@@ -853,6 +853,9 @@ namespace MusicBird
                         saveTrack(current.Artist + " - " + current.Title, current.Source.ToString());
                     }
                     break;
+                case "share":
+                    shareTrack(current.Artist, current.Title, current.Source);
+                    break;
                 default:
                     break;
 
@@ -1158,26 +1161,63 @@ namespace MusicBird
             if(msg != null && msg != "")
             {
                 switch(msg) {
-                    case "-1072873852":
-                        message = "Invalid or corrupted file. Please try another.";
+                    case "-1072873844": //C00D3E8C
+                        // The Media format is recognized but is invalid.
+                    case "-1072873852": //C00D3E84
+                        // The media stream cannot process any more samples because there are no more samples in the stream.
+                        message = "Invalid or corrupt file. Please try another.";
                         break;
-                    case "-1072889830":
+                    case "-1072875819": //C00D36D5
+                        // The specified object or value does not exist.
+                        message = "Unknown error. Please try again.";
+                        break;
+                    case "-1072877850": //C00D2EE6
+                        // The server is currently unable to handle the request due to a temporary overloading or maintenance of the server.
+                        message = "Server unavailable. Please try again.";
+                        break;
+                    case "-1072877851": //C00D2EE5
+                        // The proxy did not receive a timely response while attempting to contact the media server.
+                        message = "Proxy timeout. Please try again.";
+                        break;
+                    case "-1072887838": //C00D07E2
+                        // ASF_E_INVALIDHEADER
+                        message = "Invalid header received. Please try again.";
+                        break;
+                    case "-1072889830": //C00D001A
+                        // The system cannot find the file specified.
                         message = "The file could not be found. Please try another.";
                         break;
-                    case "-2147012696":
-                        message = "No available network connection";
+                    case "-2147012696": //20072FA8  --> UNKNOWN
+                        // error message not available
+                        message = "No available network connection.";
                         break;
-                    case "-2147012889":
-                        message = "Can’t find the server (is the phone in flight mode?)";
+                    case "-2147012865": //80072EFF
+                        // error message not available
+                        message = "Internet connection reset. Please try again.";
                         break;
-                    case "-2147024638":
+                    case "-2147012867": //80072EFD
+                        // ERROR_INTERNET_CANNOT_CONNECT
+                        message = "A connection with the server could not be established.";
+                        break;
+                    case "-2147012889": //80072EE7
+                        // error message not available
+                        message = "Can’t resolve hostname (is the phone in flight mode?)";
+                        break;
+                    case "-2147024638": //80070102
+                        // error message not available
                         message = "Connection timeout. Please check if you have a working internet connection.";
                         break;
-                    case "-2147024891":
+                    case "-2147024891": //80070005
+                        // General access denied error.
                         message = "Access denied error. Please check if you are allowed to access this file.";
                         break;
-                    case "-2147467259":
-                        message = "Generic error. The error has been reported to the developer. Sorry for the inconvenience.";
+                    case "-2147024894": //80070002
+                        // The system cannot find the file specified.
+                        message = "File not found. Please try again.";
+                        break;
+                    case "-2147467259": //80004005
+                        // error message not available
+                        message = "Action failed. The error has been reported to the developer. Sorry for the inconvenience.";
                         break;
                 }
                 MessageBox.Show(message, "Player Error", MessageBoxButton.OK);
@@ -1188,7 +1228,7 @@ namespace MusicBird
 
             if(checkFlag("NotFound"))
             {
-                MessageBox.Show("The file was not found. Please try another file");
+                MessageBox.Show("The file was not found. Please try another file.");
                 BackgroundAudioPlayer.Instance.Stop();
                 positionIndicator.IsIndeterminate = false;
             }
@@ -1943,7 +1983,17 @@ namespace MusicBird
                 uploadProgress.IsIndeterminate = true;*/
             }
             //uploadCounter.Text = counter.ToString() + " running uploads";
-        } 
+        }
+
+        private void shareTrack( string artist, string title, Uri source ) {
+            var shareLinkTask = new ShareLinkTask();
+            shareLinkTask.Title = artist+" - "+title;
+            shareLinkTask.LinkUri = source;
+            shareLinkTask.Message = "I'm listening to '" + artist + " - " + title + "' on MusicBird, " +
+                "the free music app for Windows Phone 7.";
+            shareLinkTask.Show();
+        }
+
         #endregion
 
         private void log( Exception ex ) {
@@ -1951,6 +2001,47 @@ namespace MusicBird
             System.Diagnostics.Debug.WriteLine("Inner Exception : " + ex.InnerException);
             System.Diagnostics.Debug.WriteLine("Stacktrace      : " + ex.InnerException);
             mtiks.Instance.AddException(ex);
+        }
+
+        private void image1_Tap( object sender, System.Windows.Input.GestureEventArgs e )
+        {
+            if(BackgroundAudioPlayer.Instance.Track == null) return;
+            AudioTrack currentTrack = BackgroundAudioPlayer.Instance.Track;
+            if(currentTrack.Source.ToString().IndexOf("http") == 0)
+            {
+                shareTrack(currentTrack.Artist, currentTrack.Title, currentTrack.Source);
+            }
+            else {
+                MessageBox.Show("You can only share online tracks, not those which are in your library.");
+            }
+        }
+
+        private void shuffle_tap( object sender, System.Windows.Input.GestureEventArgs e )
+        {
+            if(Helper.Preferences.readBool("shuffle"))
+            {
+                Helper.Preferences.write("shuffle", false);
+                shuffleButton.Opacity = 0.5;
+            }
+            else
+            {
+                Helper.Preferences.write("shuffle", true);
+                shuffleButton.Opacity = 1;
+            }
+        }
+
+        private void repeat_tap( object sender, System.Windows.Input.GestureEventArgs e )
+        {
+            if(Helper.Preferences.readBool("repeat"))
+            {
+                Helper.Preferences.write("repeat", false);
+                repeatButton.Opacity = 0.5;
+            }
+            else
+            {
+                Helper.Preferences.write("repeat", true);
+                repeatButton.Opacity = 1;
+            }
         }
     }
 

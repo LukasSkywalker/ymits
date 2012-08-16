@@ -136,7 +136,7 @@ namespace AudioPlaybackAgent1
             switch (playState)
             {
                 case PlayState.TrackEnded:
-                    playAtPosition(currentTrackNumber + 1, player);
+                    playAtPosition(getNextTrack(), player);
                     break;
                 case PlayState.TrackReady:
                     if(isTrial()){
@@ -217,7 +217,7 @@ namespace AudioPlaybackAgent1
                     }
                     break;
                 case UserAction.SkipNext:
-                    playAtPosition(currentTrackNumber + 1, player);
+                    playAtPosition(getNextTrack(), player);
                     break;
                 case UserAction.SkipPrevious:
                     if(player.Position.TotalSeconds < 5) playAtPosition(currentTrackNumber, player);
@@ -226,6 +226,25 @@ namespace AudioPlaybackAgent1
             }
 
             NotifyComplete();
+        }
+
+        private int getNextTrack() {
+            if(Helper.Preferences.readBool("repeat"))
+            {
+                System.Diagnostics.Debug.WriteLine("AudioPlayer.cs:getNextTrack__________ Playing in repeat mode at " + currentTrackNumber);
+                return currentTrackNumber;
+            }
+            else if(Helper.Preferences.readBool("shuffle"))
+            {
+                Random random = new Random(DateTime.Now.Millisecond);
+                int next = random.Next(readPlaylist().Count - 1);
+                System.Diagnostics.Debug.WriteLine("AudioPlayer.cs:getNextTrack__________ Playing in shuffle mode at "+next);
+                return next;
+            }
+            else
+            {
+                return currentTrackNumber + 1;
+            }
         }
 
         protected override void OnError(BackgroundAudioPlayer player, AudioTrack track, Exception error, bool isFatal)
