@@ -1,0 +1,38 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Package xmlns="http://schemas.microsoft.com/appx/2010/manifest">
+  <Identity Name="b4e5ff58-c107-4613-aae5-3aaded7906de" Publisher="CN=Lukas" Version="1.0.0.0" />
+  <Properties>
+    <DisplayName>MusicBird</DisplayName>
+    <PublisherDisplayName>Lukas Diener</PublisherDisplayName>
+    <Logo>Assets\StoreLogo_50x50.png</Logo>
+  </Properties>
+  <Prerequisites>
+    <OSMinVersion>6.2.1</OSMinVersion>
+    <OSMaxVersionTested>6.2.1</OSMaxVersionTested>
+  </Prerequisites>
+  <Resources>
+    <Resource Language="x-generate" />
+  </Resources>
+  <Applications>
+    <Application Id="App" Executable="$targetnametoken$.exe" EntryPoint="MusicBird.App">
+      <VisualElements DisplayName="MusicBird" Logo="Assets\Logo_150x150.png" SmallLogo="Assets\SmallLogo_30x30.png" Description="MusicBird" ForegroundText="light" BackgroundColor="#8cbe29">
+        <LockScreen Notification="badge" BadgeLogo="Assets\SmallerLogo_24x24.png" />
+        <DefaultTile ShowName="allLogos" />
+        <SplashScreen Image="Assets\SplashScreen_620x300.png" BackgroundColor="#8cbe29" />
+      </VisualElements>
+      <Extensions>
+        <Extension Category="windows.backgroundTasks" StartPage="MainPage">
+          <BackgroundTasks>
+            <Task Type="audio" />
+            <Task Type="controlChannel" />
+          </BackgroundTasks>
+        </Extension>
+        <Extension Category="windows.search" />
+      </Extensions>
+    </Application>
+  </Applications>
+  <Capabilities>
+    <Capability Name="musicLibrary" />
+    <Capability Name="internetClient" />
+  </Capabilities>
+</Package>

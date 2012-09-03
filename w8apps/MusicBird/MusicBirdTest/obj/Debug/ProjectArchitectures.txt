@@ -1,0 +1,2 @@
+e:\documents\visual studio 2012\Projects\MusicBird\MusicBird\MusicBird.csproj;neutral
+e:\documents\visual studio 2012\Projects\MusicBird\MusicBirdTest\MusicBirdTest.csproj;neutral

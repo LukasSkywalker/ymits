@@ -1,0 +1,63 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Machine>LUDI-LAPTOP</Machine>
+    <WindowsUser>Lukas</WindowsUser>
+    <SolutionConfiguration>Debug|AnyCPU</SolutionConfiguration>
+    <PackageArchitecture>neutral</PackageArchitecture>
+  </PropertyGroup>
+  <ItemGroup>
+    <AppXManifest Include="e:\documents\visual studio 2012\Projects\MusicBird\MusicBird\bin\Debug\AppxManifest.xml">
+      <PackagePath>AppxManifest.xml</PackagePath>
+      <ReRegisterAppIfChanged>true</ReRegisterAppIfChanged>
+    </AppXManifest>
+  </ItemGroup>
+  <ItemGroup>
+    <AppxPackagedFile Include="e:\documents\visual studio 2012\Projects\MusicBird\MusicBird\bin\Debug\MusicBird.exe">
+      <PackagePath>MusicBird.exe</PackagePath>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="e:\documents\visual studio 2012\Projects\MusicBird\MusicBird\bin\Debug\MusicBird.pdb">
+      <PackagePath>MusicBird.pdb</PackagePath>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="e:\documents\visual studio 2012\Projects\MusicBird\MusicBird\Assets\Logo_150x150.png">
+      <PackagePath>Assets\Logo_150x150.png</PackagePath>
+      <ReRegisterAppIfChanged>true</ReRegisterAppIfChanged>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="e:\documents\visual studio 2012\Projects\MusicBird\MusicBird\Assets\SmallerLogo_24x24.png">
+      <PackagePath>Assets\SmallerLogo_24x24.png</PackagePath>
+      <ReRegisterAppIfChanged>true</ReRegisterAppIfChanged>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="e:\documents\visual studio 2012\Projects\MusicBird\MusicBird\Assets\SmallLogo_30x30.png">
+      <PackagePath>Assets\SmallLogo_30x30.png</PackagePath>
+      <ReRegisterAppIfChanged>true</ReRegisterAppIfChanged>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="e:\documents\visual studio 2012\Projects\MusicBird\MusicBird\Assets\SplashScreen_620x300.png">
+      <PackagePath>Assets\SplashScreen_620x300.png</PackagePath>
+      <ReRegisterAppIfChanged>true</ReRegisterAppIfChanged>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="e:\documents\visual studio 2012\Projects\MusicBird\MusicBird\Assets\StoreLogo.png">
+      <PackagePath>Assets\StoreLogo.png</PackagePath>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="e:\documents\visual studio 2012\Projects\MusicBird\MusicBird\Assets\StoreLogo_50x50.png">
+      <PackagePath>Assets\StoreLogo_50x50.png</PackagePath>
+      <ReRegisterAppIfChanged>true</ReRegisterAppIfChanged>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="e:\documents\visual studio 2012\Projects\MusicBird\MusicBird\bin\Debug\App.xaml">
+      <PackagePath>App.xaml</PackagePath>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="e:\documents\visual studio 2012\Projects\MusicBird\MusicBird\bin\Debug\StartPage.xaml">
+      <PackagePath>StartPage.xaml</PackagePath>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="e:\documents\visual studio 2012\Projects\MusicBird\MusicBird\bin\Debug\SearchResultsPage.xaml">
+      <PackagePath>SearchResultsPage.xaml</PackagePath>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="e:\documents\visual studio 2012\Projects\MusicBird\MusicBird\bin\Debug\Common\StandardStyles.xaml">
+      <PackagePath>Common\StandardStyles.xaml</PackagePath>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="e:\documents\visual studio 2012\Projects\MusicBird\MusicBird\bin\Debug\resources.pri">
+      <PackagePath>resources.pri</PackagePath>
+    </AppxPackagedFile>
+  </ItemGroup>
+  <ItemGroup>
+  </ItemGroup>
+</Project>
