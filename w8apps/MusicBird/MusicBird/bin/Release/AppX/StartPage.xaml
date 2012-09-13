@@ -37,14 +37,14 @@
             <TextBlock x:Name="pageTitle" Grid.Column="1" Text="{StaticResource AppName}" Style="{StaticResource PageHeaderTextStyle}"/>
         </Grid>
         <Grid Grid.Row="1">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="Auto"/>
-                <ColumnDefinition Width="Auto"/>
-                <ColumnDefinition Width="*"/>
-            </Grid.ColumnDefinitions>
-            <TextBox x:ConnectionId='1'  Width="400" Grid.Column="1" x:Name="searchTextBox"                         Height="38" FontSize="19"/>
-            <Button x:ConnectionId='2' Content="Search" Grid.Column="2" x:Name="searchGoButton" Margin="12,0,0,0"                        x:Uid="searchGoButton" Width="100"/>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+            <TextBox x:ConnectionId='1'  Width="400" Grid.Row="1" x:Name="searchTextBox"                         Height="38" FontSize="19"/>
+            <Button x:ConnectionId='2' Content="Search" Grid.Row="2" x:Name="searchGoButton"                        x:Uid="searchGoButton" HorizontalAlignment="Center"/>
         </Grid>
         
         <VisualStateManager.VisualStateGroups>

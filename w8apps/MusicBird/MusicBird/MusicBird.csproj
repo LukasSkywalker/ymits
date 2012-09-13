@@ -113,7 +113,9 @@
     <Compile Include="Common\BytesMegabytesConverter.cs" />
     <Compile Include="Common\LayoutAwarePage.cs" />
     <Compile Include="Common\NBSpaceConverter.cs" />
+    <Compile Include="Common\PlayAccessibilityConverter.cs" />
     <Compile Include="Common\RichTextColumns.cs" />
+    <Compile Include="Common\StopWatch.cs" />
     <Compile Include="Common\SuspensionManager.cs" />
     <Compile Include="Common\Distance.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

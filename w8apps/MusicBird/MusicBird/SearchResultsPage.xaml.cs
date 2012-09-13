@@ -6,6 +6,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
@@ -15,6 +16,7 @@ using Windows.ApplicationModel.Search;
 using Windows.Foundation;
 using Windows.Media;
 using Windows.Networking.BackgroundTransfer;
+using Windows.Networking.Connectivity;
 using Windows.Storage;
 using Windows.UI.Core;
 using Windows.UI.Popups;
@@ -36,13 +38,15 @@ namespace MusicBird
     {
         private HttpClient searchClient;
         private HttpClient suggestionClient;
-        private List<TrackListItem> trackList;
+        private List<TrackListItem> resultsList;
         private DispatcherTimer _timer;
         private List<DownloadOperation> activeDownloads;
         private CancellationTokenSource cts;
         private ulong totalSize;
         private SearchPane searchPane;
         private List<TrackListItem> unFilteredList;
+
+        private const int BACKUP_SERVICE_LIMIT = 200;   // Default: 5
 
         public SearchResultsPage()
         {
@@ -58,7 +62,7 @@ namespace MusicBird
             totalSize = 0;
 
             cts = new CancellationTokenSource();
-            trackList = new List<TrackListItem>();
+            resultsList = new List<TrackListItem>();
             
             searchClient = new HttpClient();
             searchClient.MaxResponseContentBufferSize = 256000;
@@ -132,10 +136,6 @@ namespace MusicBird
                 {
                     // Previous suggestion request was canceled.
                 }
-                catch (FormatException)
-                {
-                    //MainPage.Current.NotifyUser("Suggestions could not be retrieved, please verify that the URL points to a valid service (for example http://contoso.com?q={searchTerms})", NotifyType.ErrorMessage);
-                }
                 catch (Exception exc)
                 {
                     System.Diagnostics.Debug.WriteLine("Err:"+exc.Message);
@@ -195,12 +195,53 @@ namespace MusicBird
             }
             else
             {
-                Task<List<TrackListItem>> trackList = getResults(queryText);
                 this.DefaultViewModel["QueryText"] = '\u201c' + queryText + '\u201d';
-                List<TrackListItem> resultList = await trackList;
+
+                ConnectionProfile InternetConnectionProfile = NetworkInformation.GetInternetConnectionProfile();
+                if (InternetConnectionProfile == null)
+                {
+                    var msgd = new MessageDialog("No internet connection. Please connect to the internet and try again");
+                    await msgd.ShowAsync();
+                    this.Frame.Navigate(typeof(StartPage));
+                    return;
+                }
+                StopWatch sw = new StopWatch(true);
+
+                List<TrackListItem> resultList = await getResults(queryText);             
+                
+                Debug.WriteLine(sw.Stop("getResults"));
+
+                if (resultList.Count < BACKUP_SERVICE_LIMIT) {
+                    // NEVER EVER DO THIS EVER. EVER.
+                    
+                    /*System.Diagnostics.Debug.WriteLine("Less than "+BACKUP_SERVICE_LIMIT+" results, starting backup service...");
+                    
+                    sw.Restart();
+                    
+                    List<TrackListItem> secondaryResultsList = await getResultsBackup(queryText);
+                    
+                    Debug.WriteLine(sw.Stop("getResultsBackup"));
+
+                    for (int i = 0; i < secondaryResultsList.Count; i++)
+                    {
+                        resultList.Insert(0, secondaryResultsList[i]);
+                    }
+
+                    Debug.WriteLine("Merged results: " + resultList.Count);
+                     */
+                }
                 unFilteredList = resultList;
+                resultsList = resultList;
                 this.DefaultViewModel["Results"] = resultList;
                 VisualStateManager.GoToState(this, "ResultsFound", true);
+
+                /*Parallel.ForEach(
+                    resultList,
+                    new ParallelOptions { MaxDegreeOfParallelism = 5 },
+                    result => {
+                        GetSizeAsync(result.url);
+                    }
+                );*/
 
                 // TODO: Application-specific searching logic.  The search process is responsible for
                 //       creating a list of user-selectable result categories:
@@ -304,7 +345,11 @@ namespace MusicBird
         {
             cleanUp();
 
+            searchProgress.IsIndeterminate = true;
+            searchProgress.Visibility = Visibility.Visible;
+
             string responseText = "";
+            List<TrackListItem> trackList = new List<TrackListItem>();
 
             try
             {
@@ -323,7 +368,6 @@ namespace MusicBird
                     // Match the regular expression pattern against a text string.
                     Match m = pattern.Match(s);
                     Match n = pattern2.Match(s);
-                    int matchCount = 0;
 
                     while (m.Success)
                     {
@@ -348,14 +392,11 @@ namespace MusicBird
                                 }
                             }
                             trackList.Insert(insertPos, item);
-                            matchCount++;
                         }
                         m = m.NextMatch();
                         n = n.NextMatch();
                     }
-
-                    System.Diagnostics.Debug.WriteLine("mp3skull: Results found: " + matchCount);
-
+                    System.Diagnostics.Debug.WriteLine("mp3skull: Results found: " + trackList.Count);
                 }
                 finally
                 {
@@ -364,7 +405,8 @@ namespace MusicBird
             }
             catch (HttpRequestException hre)
             {
-                Debug.WriteLine(hre.ToString());
+                var messageDialog = new MessageDialog("Network error: "+hre.Message+" Please check your connection and try again.");
+                messageDialog.ShowAsync();
             }
             catch (Exception ex)
             {
@@ -376,6 +418,117 @@ namespace MusicBird
             }
             return trackList;
         }
+
+        private async void GetSizeAsync(string url)
+        {
+            /* GET SIZE */
+            Debug.WriteLine("Starting Size Request for "+url);
+            HttpClient httpClient = new HttpClient();
+            HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Head, new Uri(url));
+            long size = 0;
+            try
+            {
+                HttpResponseMessage sizeMsg = await httpClient.SendAsync(request);
+                if (sizeMsg.IsSuccessStatusCode)
+                {
+                    size = (long)sizeMsg.Content.Headers.ContentLength;
+                }
+            }
+            catch (HttpRequestException e) {
+                
+            }
+            OnGetSizeCompleted(new KeyValuePair<string, long>(url, size));
+        }
+        
+        public async void OnGetSizeCompleted(KeyValuePair<string, long> val) {
+            Debug.WriteLine("KEY="+val.Key.ToString()+" VAL="+val.Value);
+            List<TrackListItem> tl = (List<TrackListItem>)this.DefaultViewModel["Results"];
+            for (int i = 0; i < tl.Count; i++) {
+                if (tl[i].url.Equals(val.Key)) {
+                    //await Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () => { tl[i].size = val.Value; });
+                    break;
+                }
+            }
+        }
+
+
+        //private async Task<List<TrackListItem>> getResultsBackup(string searchterm) {
+            /* THIS IS DEAD CODE */
+            
+            /*string responseText = "";
+            List<TrackListItem> trackList = new List<TrackListItem>();
+
+            try
+            {
+                string address = "http://prostopleer.com/search?q=" + searchterm.Trim().Replace(" ", "+");
+                searchClient.CancelPendingRequests();
+                HttpResponseMessage response = await searchClient.GetAsync(address);
+                response.EnsureSuccessStatusCode();
+                responseText = await response.Content.ReadAsStringAsync();
+
+                Regex pattern = new Regex("", RegexOptions.IgnoreCase);
+                
+                try
+                {
+                    String s = responseText;
+
+                    // Match the regular expression pattern against a text string.
+                    Match m = pattern.Match(s);
+
+                    while (m.Success)
+                    {
+                        string artist = WebUtility.HtmlDecode(Uri.UnescapeDataString(m.Groups[5].ToString())).Replace("_", " ");
+                        string title = WebUtility.HtmlDecode(Uri.UnescapeDataString(m.Groups[6].ToString())).Replace("_", " ");
+                        string hash = m.Groups[4].ToString();
+                        string path = m.Groups[3].ToString();
+
+                        String[] paths = path.Split('/');
+
+                        string url = "http://vpleer.ru/download/0/" + paths[2] + "/" + paths[3] + "/" + paths[4] + "/" + artist + " - " + title + ".mp3";
+
+                        if (url.IndexOf("4shared") == -1)
+                        {
+                            int match1 = getDistance(searchterm, artist + " " + title);
+                            int match2 = getDistance(searchterm, artist + " " + title);
+                            int match = Math.Min(match1, match2);
+                            TrackListItem item = new TrackListItem(artist, title, url, match);
+                            int insertPos = 0;
+                            for (int i = 0; i < trackList.Count; i++)
+                            {
+                                if (trackList[i].match < match)
+                                {
+                                    insertPos = i;
+                                    break;
+                                }
+                            }
+                            trackList.Insert(insertPos, item);
+                        }
+                        m = m.NextMatch();
+                    }
+
+                    System.Diagnostics.Debug.WriteLine("vpleer: Results found: " + trackList.Count);
+                }
+                finally
+                {
+                    // SEARCH CONTRACT 2.2 Populate your page with results from your app's data
+                }
+            }
+            catch (HttpRequestException hre)
+            {
+                var messageDialog = new MessageDialog("Network error: " + hre.Message + " Please check your connection and try again.");
+                messageDialog.ShowAsync();
+            }
+            catch (Exception ex)
+            {
+                // For debugging
+                Debug.WriteLine(ex.ToString());
+            }
+            finally
+            {
+                //toggleSearchIndicator();
+            }
+            return trackList;*/
+        //}
 
         private int getDistance(string searchterm, string p)
         {
@@ -394,7 +547,7 @@ namespace MusicBird
 
         private TrackListItem getTrackAt(int index)
         {
-            TrackListItem track = trackList[index];
+            TrackListItem track = resultsList[index];
             return track;
         }
 
@@ -466,7 +619,7 @@ namespace MusicBird
         {
             this.DefaultViewModel["Results"] = null;
             resultsListView.Items.Clear();
-            trackList.Clear();
+            resultsList.Clear();
         }
 
         private void toggleSearchIndicator()
@@ -698,7 +851,8 @@ namespace MusicBird
             }
             catch (Exception ex)
             {
-                Debug.WriteLine("Download Error"+ ex);
+                var messageDialog = new MessageDialog("Download error: " + ex.Message + " Please try again.");
+                messageDialog.ShowAsync();
             }
         }
 
@@ -710,7 +864,7 @@ namespace MusicBird
             if (download.Progress.TotalBytesToReceive > 0)
             {
                 percent = download.Progress.BytesReceived * 100 / download.Progress.TotalBytesToReceive;
-                downloadStatusTextBlock.Text = "Downloading: "+percent+"%";
+                //TODO downloadStatusTextBlock.Text = "Downloading: "+percent+"%";
                 totalSize += download.Progress.TotalBytesToReceive;
             }
 
@@ -805,7 +959,7 @@ namespace MusicBird
                 // the loop. 
                 await Task.WhenAll(tasks);
 
-                downloadStatusTextBlock.Text = totalSize.ToString();
+                //TODO downloadStatusTextBlock.Text = totalSize.ToString();
             }
         }
         #endregion
@@ -929,6 +1083,59 @@ namespace MusicBird
         public String Description
         {
             get { return String.Format("{0} ({1})", _name, _count); }
+        }
+    }
+
+    public class ActionQueue {
+        private const int QUEUE_SIZE = 3;
+        List<Task> actions = new List<Task>();
+        List<Task> runningActions = new List<Task>();
+        List<Task> completedActions = new List<Task>();
+        int actionCount = 0;
+
+        public ActionQueue() {
+            actions.Clear();
+            runningActions.Clear();
+            completedActions.Clear();
+        }
+
+        public void Add(Task item)
+        {
+            actions.Add(item);
+        }
+
+        public void RunNext() {
+            if (actions.Count > 0)
+            {
+                Debug.WriteLine("Starting next action");
+                Task action = actions[0];
+                if (actions.Count > QUEUE_SIZE)
+                {
+                    action.ContinueWith((t) => actions[QUEUE_SIZE]);
+                }
+                action.Start();
+                actions.RemoveAt(0);
+                runningActions.Add(action);
+                Debug.Assert(actionCount == actions.Count + runningActions.Count + completedActions.Count);
+            }
+        }
+
+        public void Start() {
+            actionCount = actions.Count;
+            int max = Math.Min(QUEUE_SIZE, actionCount);
+            Debug.WriteLine("Starting " + max + " actions");
+            for (int i = 0; i < max; i++) {
+                RunNext();
+            }
+        }
+
+        public void OnCompleted(Task action)
+        {
+            Debug.WriteLine("Action Completed");
+            completedActions.Add(action);
+            runningActions.Remove(action);
+            Debug.Assert(actionCount == actions.Count + runningActions.Count + completedActions.Count);
+            RunNext();
         }
     }
 }

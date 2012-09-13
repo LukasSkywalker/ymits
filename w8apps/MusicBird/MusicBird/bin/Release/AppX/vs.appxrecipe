@@ -16,17 +16,17 @@
     <AppXManifest Include="e:\documents\visual studio 2012\Projects\MusicBird\MusicBird\bin\Release\AppxManifest.xml">
       <PackagePath>AppxManifest.xml</PackagePath>
       <ReRegisterAppIfChanged>true</ReRegisterAppIfChanged>
-      <Modified>2012-09-03T15:24:13.346</Modified>
+      <Modified>2012-09-03T18:45:58.265</Modified>
     </AppXManifest>
   </ItemGroup>
   <ItemGroup>
     <AppxPackagedFile Include="e:\documents\visual studio 2012\Projects\MusicBird\MusicBird\bin\Release\MusicBird.exe">
       <PackagePath>MusicBird.exe</PackagePath>
-      <Modified>2012-09-03T15:35:38.834</Modified>
+      <Modified>2012-09-03T18:45:57.936</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="e:\documents\visual studio 2012\Projects\MusicBird\MusicBird\bin\Release\MusicBird.pdb">
       <PackagePath>MusicBird.pdb</PackagePath>
-      <Modified>2012-09-03T15:35:38.785</Modified>
+      <Modified>2012-09-03T18:45:57.888</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="e:\documents\visual studio 2012\Projects\MusicBird\MusicBird\Assets\Logo_150x150.png">
       <PackagePath>Assets\Logo_150x150.png</PackagePath>
@@ -63,19 +63,19 @@
     </AppxPackagedFile>
     <AppxPackagedFile Include="e:\documents\visual studio 2012\Projects\MusicBird\MusicBird\bin\Release\StartPage.xaml">
       <PackagePath>StartPage.xaml</PackagePath>
-      <Modified>2012-09-03T15:23:01.437</Modified>
+      <Modified>2012-09-03T17:59:02.894</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="e:\documents\visual studio 2012\Projects\MusicBird\MusicBird\bin\Release\SearchResultsPage.xaml">
       <PackagePath>SearchResultsPage.xaml</PackagePath>
-      <Modified>2012-09-03T15:34:24.770</Modified>
+      <Modified>2012-09-03T18:45:54.230</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="e:\documents\visual studio 2012\Projects\MusicBird\MusicBird\bin\Release\Common\StandardStyles.xaml">
       <PackagePath>Common\StandardStyles.xaml</PackagePath>
-      <Modified>2012-09-03T15:35:25.394</Modified>
+      <Modified>2012-09-03T15:41:17.592</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="e:\documents\visual studio 2012\Projects\MusicBird\MusicBird\bin\Release\resources.pri">
       <PackagePath>resources.pri</PackagePath>
-      <Modified>2012-09-03T05:27:58.059</Modified>
+      <Modified>2012-09-03T18:03:49.170</Modified>
     </AppxPackagedFile>
   </ItemGroup>
   <ItemGroup>

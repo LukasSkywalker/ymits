@@ -15,6 +15,7 @@
         <CollectionViewSource x:Name="resultsViewSource" Source="{Binding Results}"/>
         <CollectionViewSource x:Name="filtersViewSource" Source="{Binding Filters}"/>
         <common:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
+        <common:PlayAccessibilityConverter x:Key="PlayAccessibilityConverter"/>
         <!-- TODO: Update the following string to be the name of your app -->
         <x:String x:Key="AppName">MusicBird</x:String>
     </Page.Resources>
@@ -22,8 +23,9 @@
     <!--
         This grid acts as a root panel for the page that defines three rows:
         * Row 0 contains the back button and page title
-        * Row 1 contains the rest of the page layout
-        * Row 2 contains the player
+        * Row 1 contains the progress meter
+        * Row 2 contains the rest of the page layout
+        * Row 3 contains the player
     
         _____________________________________
         |<- MusicBird                       |
@@ -38,11 +40,28 @@
     <Grid Style="{StaticResource LayoutRootStyle}">
         <Grid.RowDefinitions>
             <RowDefinition Height="140"/>
+            <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
-        <Grid x:Name="resultsPanel" Grid.Row="1" Margin="12,12,12,12">
+        <!-- Back button, page title and subtitles-->
+        <Grid Grid.Row="0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <Button x:ConnectionId='10' x:Name="backButton"                IsEnabled="{Binding Frame.CanGoBack, ElementName=pageRoot}" Style="{StaticResource BackButtonStyle}"/>
+            <TextBlock x:Name="pageTitle" Grid.Column="1" Text="{StaticResource AppName}" IsHitTestVisible="false" Style="{StaticResource PageHeaderTextStyle}"  />
+            <TextBlock x:Name="resultText" Grid.Column="2" Text="Results for&#x00a0;" IsHitTestVisible="false" Style="{StaticResource PageSubheaderTextStyle}"/>
+            <TextBlock x:Name="queryText" Grid.Column="3" Text="{Binding QueryText}" IsHitTestVisible="false" Style="{StaticResource PageSubheaderTextStyle}"/>
+        </Grid>
+
+        <ProgressBar x:Name="searchProgress" Grid.Row="1" IsIndeterminate="True" Visibility="Collapsed"/>
+
+        <Grid x:Name="resultsPanel" Grid.Row="2" Margin="12,12,12,12">
         <!--
             The body of the page in most view states uses an items controls to create multiple radio buttons
             for filtering above a horizontal scrolling grid of search results
@@ -69,7 +88,7 @@
                         </ItemsControl.ItemsPanel>
                         <ItemsControl.ItemTemplate>
                             <DataTemplate>
-                                <RadioButton x:ConnectionId='10'
+                                <RadioButton x:ConnectionId='9'
                                 GroupName="Filters"
                                 IsChecked="{Binding Active, Mode=TwoWay}"
                                                         
@@ -82,7 +101,7 @@
                 </StackPanel>
 
                 <StackPanel Orientation="Horizontal" Visibility="Collapsed" x:Name="snappedFiltersPanel">
-                    <ComboBox x:ConnectionId='9'
+                    <ComboBox x:ConnectionId='8'
                     x:Name="snappedFilters"
                     ItemsSource="{Binding Source={StaticResource filtersViewSource}}"
                     Visibility="{Binding ShowFilters, Converter={StaticResource BooleanToVisibilityConverter}}"
@@ -119,16 +138,18 @@
                                     <ColumnDefinition Width="*" />
                                     <ColumnDefinition Width="Auto" />
                                 </Grid.ColumnDefinitions>
-                                <Button x:ConnectionId='7' Grid.Column="0" Margin="0,0,20,10" Style="{StaticResource PlayButtonStyle}"                          Tag=" " VerticalAlignment="Center"/>
+                                <Button x:ConnectionId='6' Grid.Column="0" Margin="0,0,20,10" Style="{StaticResource PlayButtonStyle}"                          Tag=" "
+                                        VerticalAlignment="Center" AutomationProperties.Name="{Binding title, Converter={StaticResource PlayAccessibilityConverter}}"/>
                                 <!--<StackPanel Orientation="Horizontal" Height="80" Margin="20,0,0,0">-->
 
-                                <StackPanel x:ConnectionId='8' Grid.Column="1" Width="900"                       HorizontalAlignment="Stretch"                                >
+                                <StackPanel x:ConnectionId='7' Grid.Column="1" Width="900"                       HorizontalAlignment="Stretch"                                >
                                     <TextBlock Text="{Binding artist}"
                                Foreground="#FFC8AB14" FontSize="28" />
                                     <TextBlock Text="{Binding title}"
                                TextWrapping="Wrap" FontSize="24" />
                                 </StackPanel>
                                 <!--<Button Grid.Column="2" Style="{StaticResource DownloadButtonStyle}" Click="downloadButton_Click" Tag=" " HorizontalAlignment="Right"/>-->
+                                <!--<TextBlock Text="{Binding size}" Foreground="#FFC8AB14" FontSize="20"/>-->
                             </Grid>
                         </DataTemplate>
                     </ListView.ItemTemplate>
@@ -148,7 +169,7 @@
         
         -->
 
-        <Grid x:Name="playerPanel" Grid.Row="2" Margin="12,0,12,12">
+        <Grid x:Name="playerPanel" Grid.Row="3" Margin="12,0,12,12">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
@@ -156,16 +177,16 @@
             </Grid.RowDefinitions>
             <Border BorderThickness="0,2,0,0" BorderBrush="Gainsboro" Margin="0,0,0,10" Grid.Row="0"/>
             <StackPanel Orientation="Horizontal" Grid.Row="1">
-                <Button x:ConnectionId='3' x:Name="btnPlay"                       
+                <Button x:ConnectionId='2' x:Name="btnPlay"                       AutomationProperties.Name="Play Button" 
         	Style="{StaticResource PlayButtonStyle}" Margin="0,0,0,-1"/>
-                <Button x:ConnectionId='4' x:Name="btnStop"                      
+                <Button x:ConnectionId='3' x:Name="btnStop"                       AutomationProperties.Name="Stop Button"
             Style="{StaticResource StopButtonStyle}"/>
                 <!--<Button x:Name="btnReverse" Click="btnReverse_Click" Content="Rewind"/>
                 <Button x:Name="btnForward" Click="btnForward_Click" Content="Forward"/>
                 <Button x:Name="btnMute" Click="btnMute_Click" Content="Mute" />-->
-                <Slider x:ConnectionId='5' x:Name="volumeSlider" Width="45" Orientation="Vertical"                                    Maximum="10" StepFrequency="1"/>
-                <TextBlock x:Name="downloadStatusTextBlock" Width="100"/>
-                <MediaElement x:ConnectionId='6' x:Name="playerElement" Width="100" AudioCategory="BackgroundCapableMedia"
+                <Slider x:ConnectionId='4' x:Name="volumeSlider" Width="45" Orientation="Vertical"                                    Maximum="10" StepFrequency="1" AutomationProperties.Name="Volume Slider"/>
+                <!--<TextBlock x:Name="downloadStatusTextBlock" Width="100"/>-->
+                <MediaElement x:ConnectionId='5' x:Name="playerElement" Width="100" AudioCategory="BackgroundCapableMedia"
                                                                                                                        
                                                                                                          
                                                                                           />
@@ -187,23 +208,9 @@
                     <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
                 <TextBlock x:Name="currentTimeTextBlock" Grid.Column="0" HorizontalAlignment="Left"  TextWrapping="Wrap" Text="00:00" VerticalAlignment="Center" Margin="0,5,10,0"/>
-                <Slider x:ConnectionId='2' x:Name="progressSlider" Grid.Column="1"                                    HorizontalAlignment="Stretch" VerticalAlignment="Center" Margin="0,0,0,-20"/>
+                <Slider x:ConnectionId='1' x:Name="progressSlider" Grid.Column="1"                                    HorizontalAlignment="Stretch" VerticalAlignment="Center" Margin="0,0,0,-20" AutomationProperties.Name="Progress Slider"/>
                 <TextBlock x:Name="totalTimeTextBlock" Grid.Column="2" HorizontalAlignment="Right" TextWrapping="Wrap" Text="00:00" VerticalAlignment="Center" Margin="10,5,0,0"/>
             </Grid>
-        </Grid>
-
-        <!-- Back button, page title and subtitles-->
-        <Grid>
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="Auto" />
-                <ColumnDefinition Width="Auto" />
-                <ColumnDefinition Width="Auto" />
-                <ColumnDefinition Width="*" />
-            </Grid.ColumnDefinitions>
-            <Button x:ConnectionId='1' x:Name="backButton"                IsEnabled="{Binding Frame.CanGoBack, ElementName=pageRoot}" Style="{StaticResource BackButtonStyle}"/>
-            <TextBlock x:Name="pageTitle" Grid.Column="1" Text="{StaticResource AppName}" IsHitTestVisible="false" Style="{StaticResource PageHeaderTextStyle}"  />
-            <TextBlock x:Name="resultText" Grid.Column="2" Text="Results for&#x00a0;" IsHitTestVisible="false" Style="{StaticResource PageSubheaderTextStyle}"/>
-            <TextBlock x:Name="queryText" Grid.Column="3" Text="{Binding QueryText}" IsHitTestVisible="false" Style="{StaticResource PageSubheaderTextStyle}"/>
         </Grid>
 
         <TextBlock
@@ -275,7 +282,16 @@
             </VisualStateGroup>
 
             <VisualStateGroup x:Name = "ResultStates">
-                <VisualState x:Name="ResultsFound" />
+                <VisualState x:Name="ResultsFound">
+                    <Storyboard>
+                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="searchProgress" Storyboard.TargetProperty="Visibility">
+                            <DiscreteObjectKeyFrame KeyTime="0" Value="Collapsed"/>
+                        </ObjectAnimationUsingKeyFrames>
+                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="searchProgress" Storyboard.TargetProperty="IsIndeterminate">
+                            <DiscreteObjectKeyFrame KeyTime="0" Value="False"/>
+                        </ObjectAnimationUsingKeyFrames>
+                    </Storyboard>
+                </VisualState>
                 <!-- When there are no results, the results panel is replaced with an informational TextBlock -->
                 <VisualState x:Name="NoResultsFound">
                     <Storyboard>
@@ -284,7 +300,13 @@
                         </ObjectAnimationUsingKeyFrames>
                         <ObjectAnimationUsingKeyFrames Storyboard.TargetName="noResultsTextBlock" Storyboard.TargetProperty="Visibility">
                             <DiscreteObjectKeyFrame KeyTime="0" Value="Visible"/>
-                        </ObjectAnimationUsingKeyFrames>						
+                        </ObjectAnimationUsingKeyFrames>
+                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="searchProgress" Storyboard.TargetProperty="Visibility">
+                            <DiscreteObjectKeyFrame KeyTime="0" Value="Collapsed"/>
+                        </ObjectAnimationUsingKeyFrames>
+                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="searchProgress" Storyboard.TargetProperty="IsIndeterminate">
+                            <DiscreteObjectKeyFrame KeyTime="0" Value="False"/>
+                        </ObjectAnimationUsingKeyFrames>
                     </Storyboard>
                 </VisualState>
             </VisualStateGroup>

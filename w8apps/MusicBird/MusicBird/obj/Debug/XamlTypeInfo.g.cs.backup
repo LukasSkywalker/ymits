@@ -118,7 +118,9 @@ namespace MusicBird.MusicBird_XamlTypeInfo
 
         private object Activate_2_BooleanToVisibilityConverter() { return new global::MusicBird.Common.BooleanToVisibilityConverter(); }
 
-        private object Activate_3_SearchResultsPage() { return new global::MusicBird.SearchResultsPage(); }
+        private object Activate_3_PlayAccessibilityConverter() { return new global::MusicBird.Common.PlayAccessibilityConverter(); }
+
+        private object Activate_4_SearchResultsPage() { return new global::MusicBird.SearchResultsPage(); }
 
 
         private global::Windows.UI.Xaml.Markup.IXamlType CreateXamlType(string typeName)
@@ -166,9 +168,15 @@ namespace MusicBird.MusicBird_XamlTypeInfo
                 xamlType = userType;
                 break;
 
+            case "MusicBird.Common.PlayAccessibilityConverter":
+                userType = new global::MusicBird.MusicBird_XamlTypeInfo.XamlUserType(this, typeName, typeof(global::MusicBird.Common.PlayAccessibilityConverter), GetXamlTypeByName("Object"));
+                userType.Activator = Activate_3_PlayAccessibilityConverter;
+                xamlType = userType;
+                break;
+
             case "MusicBird.SearchResultsPage":
                 userType = new global::MusicBird.MusicBird_XamlTypeInfo.XamlUserType(this, typeName, typeof(global::MusicBird.SearchResultsPage), GetXamlTypeByName("MusicBird.Common.LayoutAwarePage"));
-                userType.Activator = Activate_3_SearchResultsPage;
+                userType.Activator = Activate_4_SearchResultsPage;
                 userType.AddMemberName("ElementRect");
                 xamlType = userType;
                 break;
