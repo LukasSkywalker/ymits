@@ -1,1 +1,0 @@
-e:\documents\visual studio 2012\Projects\Calculator\Calculator\Calculator.csproj;neutral

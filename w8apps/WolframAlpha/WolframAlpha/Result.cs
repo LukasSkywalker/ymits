@@ -4,6 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Serialization;
+using Windows.UI.Xaml.Media;
+using Windows.UI.Xaml.Media.Imaging;
 
 namespace WolframAlpha
 {
@@ -36,15 +38,22 @@ namespace WolframAlpha
         [XmlAttribute("parsetimedout")]
         public bool ParseTimedOut { get; set; }
 
-        [XmlElement("pod", typeof(Pod))]
+        [XmlElement("pod")]
         public Pod[] Pods { get; set; }
 
-        //  [XmlElement("assumption", typeof(Assumption))]
-        //  public Assumption[] Assumptions { get; set; }
+        [XmlArray("assumptions")]
+        [XmlArrayItem("assumption")]
+        public Assumption[] Assumptions { get; set; }
 
-        //[XmlArray("sources")]
-        //[XmlElement("source", typeof(Source))]
-        //public Source[] Sources { get; set; }
+        [XmlElement("warnings")]
+        public Warning[] Warnings { get; set; }
+
+        [XmlArray("sources")]
+        [XmlArrayItem("source")]
+        public Source[] Sources { get; set; }
+
+        [XmlElement("generalization")]
+        public Generalization Generalization { get; set; }
     }
 
     public class Pod {
@@ -63,17 +72,16 @@ namespace WolframAlpha
         [XmlAttribute("numsubpods")]
         public int NumSubPods { get; set; }
 
-        [XmlElement("subpod", typeof(SubPod))]
+        [XmlElement("subpod")]
         public SubPod[] SubPods { get; set; }
 
-        /*
-         * [XmlArray("states")]
-         * [XmlElement("states", typeof(State))]
-         * public State[] State { get; set; }
-        */
-        /*[XmlArray("infos")]
-        [XmlElement("info", typeof(Info))]
-        public Info[] Infos { get; set; }*/
+        [XmlArray("states")]
+        [XmlArrayItem("state")]
+        public State[] States { get; set; }
+        
+        [XmlArray("infos")]
+        [XmlArrayItem("info")]
+        public Info[] Infos { get; set; }
     }
 
     public class SubPod {
@@ -86,16 +94,41 @@ namespace WolframAlpha
         [XmlElement("img")]
         public Image Image { get; set; }
 
+        [XmlArray("states")]
+        [XmlArrayItem("state")]
+        public State[] States { get; set; }
+
     }
 
     public class Info {
-        [XmlElement("link", typeof(Link))]
-        public Link Link{get; set;}
+        [XmlAttribute("text")]
+        public String Text { get; set; }
+
+        [XmlElement("img")]
+        public Image[] Image { get; set; }
+
+        [XmlElement("link")]
+        public Link[] Link { get; set; }
+
+        [XmlArray("units")]
+        [XmlArrayItem("unit")]
+        public Unit[] Units { get; set; }
     }
 
     public class Link{
         [XmlAttribute("url")]
         public string Url { get; set; }
+
+        [XmlAttribute("text")]
+        public string Text { get; set; }
+    }
+
+    public class Unit {
+        [XmlAttribute("short")]
+        public string Short { get; set; }
+
+        [XmlAttribute("long")]
+        public string Long { get; set; }
     }
 
     public class State
@@ -134,85 +167,102 @@ namespace WolframAlpha
     }
 
 
-    /*
-     * 
-     * class Assumption
+    public class Assumption
     {
-        public AssumptionType Type { get; set; }
-        public String Desc { get; set; }
-        public String Current { get; set; }
-        public String Word { get; set; }
-        public String Template { get; set; }
-        public List<AssumptionValue> AssumptionValues { get; set; }
+        [XmlAttribute("type")]
+        public String Type { get; set; }
+
+        [XmlElement("value")]
+        public Value[] Values { get; set; }
     }
-     * 
-     * class AssumptionValue
-    {
-        public string Name { get; set; }
-        public String Desc { get; set; }
+
+    public class Value {
+        [XmlAttribute("name")]
+        public String Name { get; set; }
+        
+        [XmlAttribute("desc")]
+        public String Description { get; set; }
+        
+        [XmlAttribute("input")]
         public String Input { get; set; }
     }
 
-    class Warning
-    {
-        public WarningType Type { get; set; }
+    public class Warning {
+        [XmlElement("spellcheck")]
+        public Spellcheck[] Spellcheck { get; set; }
 
-        public enum WarningType
-        {
-            Spellcheck,
-            Delimiters,
-            Translation,
-            Reinterpret
-        }
+        [XmlElement("delimiters")]
+        public Delimiters[] Delimiters { get; set; }
+
+        [XmlElement("translation")]
+        public Translation[] Translation { get; set; }
+
+        [XmlElement("reinterpret")]
+        public Reinterpret[] Reinterpret { get; set; }
     }
 
+    public class Spellcheck {
+        [XmlAttribute("word")]
+        public String Word { get; set; }
+
+        [XmlAttribute("suggestion")]
+        public String Suggestion { get; set; }
+
+        [XmlAttribute("text")]
+        public String Text { get; set; }
+    }
+
+    public class Delimiters
+    {
+        [XmlAttribute("text")]
+        public String Text { get; set; }
+    }
+
+    public class Translation
+    {
+        [XmlAttribute("phrase")]
+        public String Phrase { get; set; }
+
+        [XmlAttribute("trans")]
+        public String Trans { get; set; }
+
+        [XmlAttribute("lang")]
+        public String Lang { get; set; }
+
+        [XmlAttribute("text")]
+        public String Text { get; set; }
+    }
+
+    public class Reinterpret
+    {
+        [XmlAttribute("text")]
+        public String Text { get; set; }
+
+        [XmlAttribute("new")]
+        public String New { get; set; }
+
+        //TODO
+        //[XmlElement("alternative")]
+        //public Alternative[] Alternatives { get; set; }
+    }
+
+    public class Generalization{
+        [XmlAttribute("topic")]
+        public String Topic { get; set; }
+
+        [XmlAttribute("desc")]
+        public String Desc { get; set; }
+
+        [XmlAttribute("url")]
+        public String Url { get; set; }
+    }
+     
+     /*
     class Generalization
     {
         public String Topic { get; set; }
         public String Desc { get; set; }
         public String URL { get; set; }
     }
-    
-    class State
-    {
-        public string Name { get; set; }
-        public String Input { get; set; }
-    }
-
-    class Info
-    {
-        public String Text { get; set; }
-        public Image Image { get; set; }
-        public List<String> Links { get; set; }
-    }
-
-    enum AssumptionType
-    {
-        Clash,
-        Unit,
-        AngleUnit,
-        Function,
-        MultiClash,
-        SubCategory,
-        Attribute,
-        TimeAMOrPM,
-        DateOrder,
-        ListOrTimes,
-        ListOrNumber,
-        CoordinateSystem,
-        I,
-        NumberBase,
-        MixedFraction,
-        MortalityYearDOB,
-        DNAOrString,
-        TideStation,
-        FormulaSelect,
-        FormulaSolve,
-        FormulaVariable,
-        FormulaVariableInclude,
-        FormulaVariableOption
-
-    }
-
     */
 }

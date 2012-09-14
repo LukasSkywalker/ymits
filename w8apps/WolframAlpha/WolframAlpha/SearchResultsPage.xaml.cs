@@ -17,6 +17,7 @@ using Windows.UI.Xaml.Controls.Primitives;
 using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
+using Windows.UI.Xaml.Media.Imaging;
 using Windows.UI.Xaml.Navigation;
 
 // The Search Contract item template is documented at http://go.microsoft.com/fwlink/?LinkId=234240
@@ -47,9 +48,30 @@ namespace WolframAlpha
         {
             var queryText = navigationParameter as String;
 
+            this.DefaultViewModel["QueryText"] = '\u201c' + queryText + '\u201d';
+            
             Task<String> sourceTask = GetResultAsync(queryText);
             String source = await sourceTask;
-            QueryResult res = ParseResult(source);
+            QueryResult result = ParseResult(source);
+
+            List<PodItem> ls = new List<PodItem>();
+            
+            foreach (Pod pod in result.Pods)
+            {
+                if (pod.Error) continue;
+                String Title = pod.Title;
+                foreach (SubPod SubPod in pod.SubPods)
+                {
+                    String Description = SubPod.Plaintext;
+                    ImageSource ImageSrc = new BitmapImage(new Uri(SubPod.Image.Src));
+                    PodItem li = new PodItem(Title, Description, Description, ImageSrc);
+                    ls.Add(li);
+                }
+            }
+
+            this.DefaultViewModel["Results"] = ls;
+
+            VisualStateManager.GoToState(this, "ResultsFound", true);
 
             // TODO: Application-specific searching logic.  The search process is responsible for
             //       creating a list of user-selectable result categories:
@@ -84,20 +106,32 @@ namespace WolframAlpha
         }
 
         private QueryResult ParseResult(String src) {
-            XmlSerializer des = new XmlSerializer(typeof(QueryResult));
-            var reader = new StringReader(src);
-            var result = (QueryResult)des.Deserialize(reader);
+            try
+            {
+                XmlSerializer des = new XmlSerializer(typeof(QueryResult));
+                var reader = new StringReader(src);
+                var result = (QueryResult)des.Deserialize(reader);
 
-            System.Diagnostics.Debug.WriteLine("Success:"+result.Success);
-            
-            foreach (Pod pod in result.Pods) {
-                System.Diagnostics.Debug.WriteLine(pod.Title);
-                //System.Diagnostics.Debug.WriteLine(pod.Infos[0].Link.Url);
-                foreach (SubPod subpod in pod.SubPods) {
-                    System.Diagnostics.Debug.WriteLine(subpod.Image.Src);
-                }
+                System.Diagnostics.Debug.WriteLine("Success:" + result.Success);
+                return result;
             }
-            return result;
+            catch (Exception ex) {
+                DumpException(ex);
+                return new QueryResult();
+            }
+        }
+
+        private void DumpException(Exception ex)
+        {
+            WriteExceptionInfo(ex);
+            if (null != ex.InnerException)
+            {
+                WriteExceptionInfo(ex.InnerException);
+            }
+        }
+
+        private void WriteExceptionInfo(Exception ex) {
+            System.Diagnostics.Debug.WriteLine(ex.Message+" "+ex.HResult);
         }
 
         /// <summary>
