@@ -26,6 +26,9 @@ namespace WolframAlpha
         public const string AppName = "MegaCalculator";
         public const string AppId = "R2R8RY-3X62YX7W3A";
         public const string ServiceURL = "http://api.wolframalpha.com/v2/query?appid={0}&input={1}";
+        public const string ServiceURLState = "http://api.wolframalpha.com/v2/query?input={1}&appid={0}&podstate={3}@{2}&includepodid={4}";
+        public static  QueryResult QueryResult;
+        public static String QueryText;
 
         /// <summary>
         /// Initializes the singleton application object.  This is the first line of authored code

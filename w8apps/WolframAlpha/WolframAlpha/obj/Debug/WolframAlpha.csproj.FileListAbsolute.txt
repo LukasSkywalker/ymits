@@ -24,14 +24,6 @@ e:\documents\visual studio 2012\Projects\WolframAlpha\WolframAlpha\obj\Debug\Pro
 e:\documents\visual studio 2012\Projects\WolframAlpha\WolframAlpha\obj\Debug\SearchResultsPage.g.i.cs
 e:\documents\visual studio 2012\Projects\WolframAlpha\WolframAlpha\obj\Debug\SearchResultsPage.g.cs
 e:\documents\visual studio 2012\Projects\WolframAlpha\WolframAlpha\obj\Debug\SearchResultsPage.xaml
-e:\documents\visual studio 2012\Projects\WolframAlpha\WolframAlpha\obj\Debug\priconfig.xml.intermediate
-e:\documents\visual studio 2012\Projects\WolframAlpha\WolframAlpha\obj\Debug\layout.resfiles.intermediate
-e:\documents\visual studio 2012\Projects\WolframAlpha\WolframAlpha\obj\Debug\resources.resfiles.intermediate
-e:\documents\visual studio 2012\Projects\WolframAlpha\WolframAlpha\obj\Debug\pri.resfiles.intermediate
-e:\documents\visual studio 2012\Projects\WolframAlpha\WolframAlpha\bin\Debug\WriteableBitmapEx.WinRT.dll
-e:\documents\visual studio 2012\Projects\WolframAlpha\WolframAlpha\bin\Debug\WriteableBitmapEx.WinRT.pdb
-e:\documents\visual studio 2012\Projects\WolframAlpha\WolframAlpha\bin\Debug\WriteableBitmapEx.WinRT.xml
-e:\documents\visual studio 2012\Projects\WolframAlpha\WolframAlpha\bin\Debug\WriteableBitmapEx.WinRT.pri
-e:\documents\visual studio 2012\Projects\WolframAlpha\WolframAlpha\obj\Debug\WolframAlpha.csprojResolveAssemblyReference.cache
-e:\documents\visual studio 2012\Projects\WolframAlpha\WolframAlpha\obj\Debug\WolframAlpha.csproj.GenerateResource.Cache
-e:\documents\visual studio 2012\Projects\WolframAlpha\WolframAlpha\obj\Debug\WriteableBitmapEx.WinRT.pri.xml
+e:\documents\visual studio 2012\Projects\WolframAlpha\WolframAlpha\obj\Debug\ItemDetailPage.g.i.cs
+e:\documents\visual studio 2012\Projects\WolframAlpha\WolframAlpha\obj\Debug\ItemDetailPage.g.cs
+e:\documents\visual studio 2012\Projects\WolframAlpha\WolframAlpha\obj\Debug\ItemDetailPage.xaml

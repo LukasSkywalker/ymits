@@ -424,7 +424,8 @@ namespace WolframAlpha.Common
                 var eventHandler = MapChanged;
                 if (eventHandler != null)
                 {
-                    eventHandler(this, new ObservableDictionaryChangedEventArgs(change, key));
+                    try { eventHandler(this, new ObservableDictionaryChangedEventArgs(change, key)); }
+                    catch (ArgumentException ex) { Helper.DumpException(ex); }
                 }
             }
 
@@ -465,7 +466,12 @@ namespace WolframAlpha.Common
             {
                 get
                 {
-                    return this._dictionary[key];
+                    try { return this._dictionary[key]; }
+                    catch (Exception e) {
+                        System.Diagnostics.Debug.WriteLine("Key: "+key);
+                        Helper.DumpException(e);
+                        return this._dictionary[key];
+                    }
                 }
                 set
                 {

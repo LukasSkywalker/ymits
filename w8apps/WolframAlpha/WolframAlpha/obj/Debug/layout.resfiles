@@ -4,6 +4,7 @@ Assets\SplashScreen.png
 Assets\StoreLogo.png
 App.xaml
 Common\StandardStyles.xaml
+ItemDetailPage.xaml
 MainPage.xaml
 SearchResultsPage.xaml
 Common\ReadMe.txt

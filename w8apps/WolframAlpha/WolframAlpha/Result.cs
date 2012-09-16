@@ -48,12 +48,60 @@ namespace WolframAlpha
         [XmlElement("warnings")]
         public Warning[] Warnings { get; set; }
 
+        [XmlElement("error")]
+        public Error[] Errors { get; set; }
+
         [XmlArray("sources")]
         [XmlArrayItem("source")]
         public Source[] Sources { get; set; }
 
         [XmlElement("generalization")]
         public Generalization Generalization { get; set; }
+
+        public Pod getPodAt(int Index){
+            return Pods[Index];
+        }
+
+        public Pod getPodByTitle(String Title) {
+            for (int i = 0; i < Pods.Length; i++)
+            {
+                if (Pods[i].Title.Equals(Title))
+                    return Pods[i];
+            }
+            return null;
+        }
+
+        public int getIndex(Pod Pod) {
+            for (int i = 0; i < Pods.Length; i++) {
+                if (Pods[i].Equals(Pod))
+                    return i;
+            }
+            return -1;
+        }
+
+        public int getIndex(SubPod SubPod)
+        {
+            int counter = -1;
+            for (int i = 0; i < Pods.Length; i++)
+            {
+                for (int j = 0; j < Pods[i].SubPods.Length; j++)
+                {
+                    counter++;
+                    if (Pods[i].SubPods[j].Equals(SubPod))
+                        return i;
+                }
+            }
+            return -1;
+        }
+
+        public int getIndexByPodTitle(String Title){
+            for (int i = 0; i < Pods.Length; i++)
+            {
+                if (Pods[i].Title.Equals(Title))
+                    return i;
+            }
+            return -1;
+        }
     }
 
     public class Pod {
@@ -72,6 +120,9 @@ namespace WolframAlpha
         [XmlAttribute("numsubpods")]
         public int NumSubPods { get; set; }
 
+        [XmlAttribute("primary")]
+        public bool Primary { get; set; }
+
         [XmlElement("subpod")]
         public SubPod[] SubPods { get; set; }
 
@@ -86,18 +137,17 @@ namespace WolframAlpha
 
     public class SubPod {
         [XmlAttribute("title")]
-        public string Title { get; set; }
+        public String Title { get; set; }
 
         [XmlElement("plaintext")]
-        public string Plaintext { get; set; }
+        public String Plaintext { get; set; }
 
         [XmlElement("img")]
-        public Image Image { get; set; }
+        public Image Image { get { return Image; } set { ImageSource = value.Src; } }
 
-        [XmlArray("states")]
-        [XmlArrayItem("state")]
+        public String ImageSource { get; set; }
+
         public State[] States { get; set; }
-
     }
 
     public class Info {
@@ -105,10 +155,10 @@ namespace WolframAlpha
         public String Text { get; set; }
 
         [XmlElement("img")]
-        public Image[] Image { get; set; }
+        public Image[] Images { get; set; }
 
         [XmlElement("link")]
-        public Link[] Link { get; set; }
+        public Link[] Links { get; set; }
 
         [XmlArray("units")]
         [XmlArrayItem("unit")]
@@ -136,7 +186,7 @@ namespace WolframAlpha
         [XmlAttribute("name")]
         public string Name { get; set; }
 
-        [XmlElement("input")]
+        [XmlAttribute("input")]
         public string Input { get; set; }
     }
 
@@ -256,13 +306,12 @@ namespace WolframAlpha
         [XmlAttribute("url")]
         public String Url { get; set; }
     }
-     
-     /*
-    class Generalization
-    {
-        public String Topic { get; set; }
-        public String Desc { get; set; }
-        public String URL { get; set; }
+
+    public class Error {
+        [XmlElement("code")]
+        public String Code { get; set; }
+
+        [XmlElement("msg")]
+        public String Message { get; set; }
     }
-    */
 }

@@ -19,15 +19,6 @@
     <AppxPackagedFile Include="e:\documents\visual studio 2012\Projects\WolframAlpha\WolframAlpha\bin\Debug\WolframAlpha.pdb">
       <PackagePath>WolframAlpha.pdb</PackagePath>
     </AppxPackagedFile>
-    <AppxPackagedFile Include="e:\documents\visual studio 2012\Projects\WolframAlpha\WritableBitmapEx\WriteableBitmapEx.WinRT.dll">
-      <PackagePath>WriteableBitmapEx.WinRT.dll</PackagePath>
-    </AppxPackagedFile>
-    <AppxPackagedFile Include="e:\documents\visual studio 2012\Projects\WolframAlpha\WritableBitmapEx\WriteableBitmapEx.WinRT.pdb">
-      <PackagePath>WriteableBitmapEx.WinRT.pdb</PackagePath>
-    </AppxPackagedFile>
-    <AppxPackagedFile Include="e:\documents\visual studio 2012\Projects\WolframAlpha\WritableBitmapEx\WriteableBitmapEx.WinRT.xml">
-      <PackagePath>WriteableBitmapEx.WinRT.xml</PackagePath>
-    </AppxPackagedFile>
     <AppxPackagedFile Include="e:\documents\visual studio 2012\Projects\WolframAlpha\WolframAlpha\Assets\Logo.png">
       <PackagePath>Assets\Logo.png</PackagePath>
       <ReRegisterAppIfChanged>true</ReRegisterAppIfChanged>
@@ -49,6 +40,9 @@
     </AppxPackagedFile>
     <AppxPackagedFile Include="e:\documents\visual studio 2012\Projects\WolframAlpha\WolframAlpha\bin\Debug\App.xaml">
       <PackagePath>App.xaml</PackagePath>
+    </AppxPackagedFile>
+    <AppxPackagedFile Include="e:\documents\visual studio 2012\Projects\WolframAlpha\WolframAlpha\bin\Debug\ItemDetailPage.xaml">
+      <PackagePath>ItemDetailPage.xaml</PackagePath>
     </AppxPackagedFile>
     <AppxPackagedFile Include="e:\documents\visual studio 2012\Projects\WolframAlpha\WolframAlpha\bin\Debug\SearchResultsPage.xaml">
       <PackagePath>SearchResultsPage.xaml</PackagePath>

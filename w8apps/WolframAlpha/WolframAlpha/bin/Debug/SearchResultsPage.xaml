@@ -15,7 +15,7 @@
         <CollectionViewSource x:Name="resultsViewSource" Source="{Binding Results}"/>
         <CollectionViewSource x:Name="filtersViewSource" Source="{Binding Filters}"/>
         <common:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
-        <!-- TODO: Update the following string to be the name of your app -->
+        <common:SubPodFlatConverter x:Key="SubPodFlatConverter"/>
         <x:String x:Key="AppName">Wolfram|Alpha</x:String>
     </Page.Resources>
 
@@ -31,7 +31,7 @@
         </Grid.RowDefinitions>
 
         <!-- Horizontal scrolling grid used in most view states -->
-        <GridView
+        <GridView x:ConnectionId='1'
             x:Name="itemGridView"
             AutomationProperties.AutomationId="ItemGridView"
             AutomationProperties.Name="Grouped Items"
@@ -41,7 +41,8 @@
             ItemTemplate="{StaticResource Standard250x250ItemTemplate}"
             SelectionMode="None"
             IsSwipeEnabled="false"
-            IsItemClickEnabled="True">
+            IsItemClickEnabled="True"
+                                          >
 
             <GridView.ItemsPanel>
                 <ItemsPanelTemplate>
@@ -53,8 +54,9 @@
                     <GroupStyle.HeaderTemplate>
                         <DataTemplate>
                             <Grid Margin="1,0,0,6">
-                                <Button
+                                <Button x:ConnectionId='5'
                                     AutomationProperties.Name="Group Title"
+                                                        
                                     Style="{StaticResource TextPrimaryButtonStyle}" >
                                     <StackPanel Orientation="Horizontal">
                                         <TextBlock Text="{Binding Title}" Margin="3,-7,10,10" Style="{StaticResource GroupHeaderTextStyle}" />
@@ -74,7 +76,7 @@
         </GridView>
 
         <!-- Vertical scrolling list only used when snapped -->
-        <ListView
+        <ListView x:ConnectionId='2'
             x:Name="itemListView"
             AutomationProperties.AutomationId="ItemListView"
             AutomationProperties.Name="Grouped Items"
@@ -86,16 +88,17 @@
             ItemTemplate="{StaticResource Standard80ItemTemplate}"
             SelectionMode="None"
             IsSwipeEnabled="false"
-            IsItemClickEnabled="True">
-            <!--="ItemView_ItemClick">-->
+            IsItemClickEnabled="True"
+                                          >
 
             <ListView.GroupStyle>
                 <GroupStyle>
                     <GroupStyle.HeaderTemplate>
                         <DataTemplate>
                             <Grid Margin="7,7,0,0">
-                                <Button
+                                <Button x:ConnectionId='4'
                                     AutomationProperties.Name="Group Title"
+                                                        
                                     Style="{StaticResource TextPrimaryButtonStyle}">
                                     <StackPanel Orientation="Horizontal">
                                         <TextBlock Text="{Binding Title}" Margin="3,-7,10,10" Style="{StaticResource GroupHeaderTextStyle}" />
@@ -115,7 +118,7 @@
                 <ColumnDefinition Width="Auto"/>
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
-            <Button x:ConnectionId='1' x:Name="backButton"                IsEnabled="{Binding Frame.CanGoBack, ElementName=pageRoot}" Style="{StaticResource BackButtonStyle}"/>
+            <Button x:ConnectionId='3' x:Name="backButton"                IsEnabled="{Binding Frame.CanGoBack, ElementName=pageRoot}" Style="{StaticResource BackButtonStyle}"/>
             <TextBlock x:Name="pageTitle" Text="{StaticResource AppName}" Grid.Column="1" IsHitTestVisible="false" Style="{StaticResource PageHeaderTextStyle}"/>
         </Grid>
 

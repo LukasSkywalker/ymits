@@ -114,11 +114,15 @@ namespace WolframAlpha.WolframAlpha_XamlTypeInfo
 
         private object Activate_0_LayoutAwarePage() { return new global::WolframAlpha.Common.LayoutAwarePage(); }
 
-        private object Activate_1_BooleanToVisibilityConverter() { return new global::WolframAlpha.Common.BooleanToVisibilityConverter(); }
+        private object Activate_1_ItemDetailPage() { return new global::WolframAlpha.ItemDetailPage(); }
 
-        private object Activate_2_SearchResultsPage() { return new global::WolframAlpha.SearchResultsPage(); }
+        private object Activate_2_BooleanToVisibilityConverter() { return new global::WolframAlpha.Common.BooleanToVisibilityConverter(); }
 
-        private object Activate_3_MainPage() { return new global::WolframAlpha.MainPage(); }
+        private object Activate_3_SubPodFlatConverter() { return new global::WolframAlpha.Common.SubPodFlatConverter(); }
+
+        private object Activate_4_SearchResultsPage() { return new global::WolframAlpha.SearchResultsPage(); }
+
+        private object Activate_5_MainPage() { return new global::WolframAlpha.MainPage(); }
 
 
         private global::Windows.UI.Xaml.Markup.IXamlType CreateXamlType(string typeName)
@@ -146,21 +150,33 @@ namespace WolframAlpha.WolframAlpha_XamlTypeInfo
                 xamlType = userType;
                 break;
 
+            case "WolframAlpha.ItemDetailPage":
+                userType = new global::WolframAlpha.WolframAlpha_XamlTypeInfo.XamlUserType(this, typeName, typeof(global::WolframAlpha.ItemDetailPage), GetXamlTypeByName("WolframAlpha.Common.LayoutAwarePage"));
+                userType.Activator = Activate_1_ItemDetailPage;
+                xamlType = userType;
+                break;
+
             case "WolframAlpha.Common.BooleanToVisibilityConverter":
                 userType = new global::WolframAlpha.WolframAlpha_XamlTypeInfo.XamlUserType(this, typeName, typeof(global::WolframAlpha.Common.BooleanToVisibilityConverter), GetXamlTypeByName("Object"));
-                userType.Activator = Activate_1_BooleanToVisibilityConverter;
+                userType.Activator = Activate_2_BooleanToVisibilityConverter;
+                xamlType = userType;
+                break;
+
+            case "WolframAlpha.Common.SubPodFlatConverter":
+                userType = new global::WolframAlpha.WolframAlpha_XamlTypeInfo.XamlUserType(this, typeName, typeof(global::WolframAlpha.Common.SubPodFlatConverter), GetXamlTypeByName("Object"));
+                userType.Activator = Activate_3_SubPodFlatConverter;
                 xamlType = userType;
                 break;
 
             case "WolframAlpha.SearchResultsPage":
                 userType = new global::WolframAlpha.WolframAlpha_XamlTypeInfo.XamlUserType(this, typeName, typeof(global::WolframAlpha.SearchResultsPage), GetXamlTypeByName("WolframAlpha.Common.LayoutAwarePage"));
-                userType.Activator = Activate_2_SearchResultsPage;
+                userType.Activator = Activate_4_SearchResultsPage;
                 xamlType = userType;
                 break;
 
             case "WolframAlpha.MainPage":
                 userType = new global::WolframAlpha.WolframAlpha_XamlTypeInfo.XamlUserType(this, typeName, typeof(global::WolframAlpha.MainPage), GetXamlTypeByName("Windows.UI.Xaml.Controls.Page"));
-                userType.Activator = Activate_3_MainPage;
+                userType.Activator = Activate_5_MainPage;
                 xamlType = userType;
                 break;
 

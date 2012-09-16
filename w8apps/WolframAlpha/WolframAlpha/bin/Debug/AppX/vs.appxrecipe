@@ -16,29 +16,17 @@
     <AppXManifest Include="e:\documents\visual studio 2012\Projects\WolframAlpha\WolframAlpha\bin\Debug\AppxManifest.xml">
       <PackagePath>AppxManifest.xml</PackagePath>
       <ReRegisterAppIfChanged>true</ReRegisterAppIfChanged>
-      <Modified>2012-09-14T18:38:40.006</Modified>
+      <Modified>2012-09-16T06:46:19.064</Modified>
     </AppXManifest>
   </ItemGroup>
   <ItemGroup>
     <AppxPackagedFile Include="e:\documents\visual studio 2012\Projects\WolframAlpha\WolframAlpha\bin\Debug\WolframAlpha.exe">
       <PackagePath>WolframAlpha.exe</PackagePath>
-      <Modified>2012-09-14T20:08:40.800</Modified>
+      <Modified>2012-09-16T09:18:12.966</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="e:\documents\visual studio 2012\Projects\WolframAlpha\WolframAlpha\bin\Debug\WolframAlpha.pdb">
       <PackagePath>WolframAlpha.pdb</PackagePath>
-      <Modified>2012-09-14T20:08:40.749</Modified>
-    </AppxPackagedFile>
-    <AppxPackagedFile Include="e:\documents\visual studio 2012\Projects\WolframAlpha\WritableBitmapEx\WriteableBitmapEx.WinRT.dll">
-      <PackagePath>WriteableBitmapEx.WinRT.dll</PackagePath>
-      <Modified>2012-09-14T17:43:20.555</Modified>
-    </AppxPackagedFile>
-    <AppxPackagedFile Include="e:\documents\visual studio 2012\Projects\WolframAlpha\WritableBitmapEx\WriteableBitmapEx.WinRT.pdb">
-      <PackagePath>WriteableBitmapEx.WinRT.pdb</PackagePath>
-      <Modified>2012-09-14T17:43:20.597</Modified>
-    </AppxPackagedFile>
-    <AppxPackagedFile Include="e:\documents\visual studio 2012\Projects\WolframAlpha\WritableBitmapEx\WriteableBitmapEx.WinRT.xml">
-      <PackagePath>WriteableBitmapEx.WinRT.xml</PackagePath>
-      <Modified>2012-09-14T17:43:20.707</Modified>
+      <Modified>2012-09-16T09:18:12.897</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="e:\documents\visual studio 2012\Projects\WolframAlpha\WolframAlpha\Assets\Logo.png">
       <PackagePath>Assets\Logo.png</PackagePath>
@@ -68,13 +56,17 @@
       <PackagePath>App.xaml</PackagePath>
       <Modified>2012-09-13T12:41:07.431</Modified>
     </AppxPackagedFile>
+    <AppxPackagedFile Include="e:\documents\visual studio 2012\Projects\WolframAlpha\WolframAlpha\bin\Debug\ItemDetailPage.xaml">
+      <PackagePath>ItemDetailPage.xaml</PackagePath>
+      <Modified>2012-09-16T08:42:45.677</Modified>
+    </AppxPackagedFile>
     <AppxPackagedFile Include="e:\documents\visual studio 2012\Projects\WolframAlpha\WolframAlpha\bin\Debug\SearchResultsPage.xaml">
       <PackagePath>SearchResultsPage.xaml</PackagePath>
-      <Modified>2012-09-14T13:55:35.565</Modified>
+      <Modified>2012-09-16T07:02:41.830</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="e:\documents\visual studio 2012\Projects\WolframAlpha\WolframAlpha\bin\Debug\Common\StandardStyles.xaml">
       <PackagePath>Common\StandardStyles.xaml</PackagePath>
-      <Modified>2012-09-14T15:28:54.399</Modified>
+      <Modified>2012-09-16T07:35:16.284</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="e:\documents\visual studio 2012\Projects\WolframAlpha\WolframAlpha\bin\Debug\MainPage.xaml">
       <PackagePath>MainPage.xaml</PackagePath>
@@ -82,7 +74,7 @@
     </AppxPackagedFile>
     <AppxPackagedFile Include="e:\documents\visual studio 2012\Projects\WolframAlpha\WolframAlpha\bin\Debug\resources.pri">
       <PackagePath>resources.pri</PackagePath>
-      <Modified>2012-09-14T18:38:39.375</Modified>
+      <Modified>2012-09-16T06:46:18.940</Modified>
     </AppxPackagedFile>
   </ItemGroup>
   <ItemGroup>

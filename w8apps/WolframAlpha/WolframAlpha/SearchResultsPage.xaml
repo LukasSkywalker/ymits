@@ -15,7 +15,7 @@
         <CollectionViewSource x:Name="resultsViewSource" Source="{Binding Results}"/>
         <CollectionViewSource x:Name="filtersViewSource" Source="{Binding Filters}"/>
         <common:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
-        <!-- TODO: Update the following string to be the name of your app -->
+        <common:SubPodFlatConverter x:Key="SubPodFlatConverter"/>
         <x:String x:Key="AppName">Wolfram|Alpha</x:String>
     </Page.Resources>
 
@@ -41,7 +41,8 @@
             ItemTemplate="{StaticResource Standard250x250ItemTemplate}"
             SelectionMode="None"
             IsSwipeEnabled="false"
-            IsItemClickEnabled="True">
+            IsItemClickEnabled="True"
+            ItemClick="ItemView_ItemClick">
 
             <GridView.ItemsPanel>
                 <ItemsPanelTemplate>
@@ -55,6 +56,7 @@
                             <Grid Margin="1,0,0,6">
                                 <Button
                                     AutomationProperties.Name="Group Title"
+                                    Click="Header_Click"
                                     Style="{StaticResource TextPrimaryButtonStyle}" >
                                     <StackPanel Orientation="Horizontal">
                                         <TextBlock Text="{Binding Title}" Margin="3,-7,10,10" Style="{StaticResource GroupHeaderTextStyle}" />
@@ -86,8 +88,8 @@
             ItemTemplate="{StaticResource Standard80ItemTemplate}"
             SelectionMode="None"
             IsSwipeEnabled="false"
-            IsItemClickEnabled="True">
-            <!--="ItemView_ItemClick">-->
+            IsItemClickEnabled="True"
+            ItemClick="ItemView_ItemClick">
 
             <ListView.GroupStyle>
                 <GroupStyle>
@@ -96,6 +98,7 @@
                             <Grid Margin="7,7,0,0">
                                 <Button
                                     AutomationProperties.Name="Group Title"
+                                    Click="Header_Click"
                                     Style="{StaticResource TextPrimaryButtonStyle}">
                                     <StackPanel Orientation="Horizontal">
                                         <TextBlock Text="{Binding Title}" Margin="3,-7,10,10" Style="{StaticResource GroupHeaderTextStyle}" />

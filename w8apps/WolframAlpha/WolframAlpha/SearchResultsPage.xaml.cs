@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
@@ -50,89 +51,31 @@ namespace WolframAlpha
 
             this.DefaultViewModel["QueryText"] = '\u201c' + queryText + '\u201d';
             
-            Task<String> sourceTask = GetResultAsync(queryText);
+            string address = String.Format(App.ServiceURL, App.AppId, WebUtility.UrlEncode(queryText));
+
+            Task<String> sourceTask = Helper.GetResultAsync(address);
             String source = await sourceTask;
-            QueryResult result = ParseResult(source);
+            QueryResult result = Helper.ParseResult(source);
+            App.QueryResult = result;
+            App.QueryText = queryText;
 
-            List<PodItem> ls = new List<PodItem>();
-            
-            foreach (Pod pod in result.Pods)
-            {
-                if (pod.Error) continue;
-                String Title = pod.Title;
-                foreach (SubPod SubPod in pod.SubPods)
-                {
-                    String Description = SubPod.Plaintext;
-                    ImageSource ImageSrc = new BitmapImage(new Uri(SubPod.Image.Src));
-                    PodItem li = new PodItem(Title, Description, Description, ImageSrc);
-                    ls.Add(li);
-                }
-            }
+            List<SubPod> sp = (List<SubPod>)new Common.SubPodFlatConverter().Convert(App.QueryResult, null, null, null);
 
-            this.DefaultViewModel["Results"] = ls;
+            this.DefaultViewModel["Results"] = sp;
+            //this.DefaultViewModel["Results"] = App.QueryResult;
 
             VisualStateManager.GoToState(this, "ResultsFound", true);
-
-            // TODO: Application-specific searching logic.  The search process is responsible for
-            //       creating a list of user-selectable result categories:
-            //
-            //       filterList.Add(new Filter("<filter name>", <result count>));
-            //
-            //       Only the first filter, typically "All", should pass true as a third argument in
-            //       order to start in an active state.  Results for the active filter are provided
-            //       in Filter_SelectionChanged below.
 
             var filterList = new List<Filter>();
             filterList.Add(new Filter("All", 0, true));
 
             // Communicate results through the view model
-            this.DefaultViewModel["QueryText"] = '\u201c' + queryText + '\u201d';
+            //this.DefaultViewModel["QueryText"] = '\u201c' + queryText + '\u201d';
             this.DefaultViewModel["Filters"] = filterList;
             this.DefaultViewModel["ShowFilters"] = filterList.Count > 1;
         }
 
-        private async Task<String> GetResultAsync(String queryText)
-        {
-            String result = "";
-
-            string address = String.Format(App.ServiceURL, App.AppId, queryText);
-            HttpClient searchClient = new HttpClient();
-            searchClient.CancelPendingRequests();
-            HttpResponseMessage response = await searchClient.GetAsync(address);
-            response.EnsureSuccessStatusCode();
-            result = await response.Content.ReadAsStringAsync();
-
-            return result;
-        }
-
-        private QueryResult ParseResult(String src) {
-            try
-            {
-                XmlSerializer des = new XmlSerializer(typeof(QueryResult));
-                var reader = new StringReader(src);
-                var result = (QueryResult)des.Deserialize(reader);
-
-                System.Diagnostics.Debug.WriteLine("Success:" + result.Success);
-                return result;
-            }
-            catch (Exception ex) {
-                DumpException(ex);
-                return new QueryResult();
-            }
-        }
-
-        private void DumpException(Exception ex)
-        {
-            WriteExceptionInfo(ex);
-            if (null != ex.InnerException)
-            {
-                WriteExceptionInfo(ex.InnerException);
-            }
-        }
-
-        private void WriteExceptionInfo(Exception ex) {
-            System.Diagnostics.Debug.WriteLine(ex.Message+" "+ex.HResult);
-        }
+        
 
         /// <summary>
         /// Invoked when a filter is selected using the ComboBox in snapped view state.
@@ -227,6 +170,19 @@ namespace WolframAlpha
             {
                 get { return String.Format("{0} ({1})", _name, _count); }
             }
+        }
+
+        private void ItemView_ItemClick(object sender, ItemClickEventArgs e)
+        {
+            SubPod Item = (SubPod)e.ClickedItem;
+            int Index = App.QueryResult.getIndex(Item);
+            this.Frame.Navigate(typeof(ItemDetailPage), Index);
+        }
+
+        private void Header_Click(object sender, RoutedEventArgs e)
+        {
+            /*PodItem Pod = (sender as FrameworkElement).DataContext as PodItem;
+            System.Diagnostics.Debug.WriteLine(Pod.Title);*/
         }
     }
 }
