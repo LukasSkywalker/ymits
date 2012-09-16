@@ -42,10 +42,12 @@ namespace WolframAlpha
 
             pageTitle.Text = App.QueryResult.getPodAt(0).SubPods[0].Plaintext;
 
-            List<SubPod> sp = (List<SubPod>)new Common.SubPodFlatConverter().Convert(App.QueryResult, null, null, null);
+            //List<SubPod> sp = (List<SubPod>)new Common.SubPodFlatConverter().Convert(App.QueryResult, null, null, null);
+            //this.DefaultViewModel["Results"] = sp;
 
-            this.DefaultViewModel["Results"] = sp;
-            itemListView.SelectedIndex = index;
+            this.DefaultViewModel["Results"] = App.QueryResult;
+
+            //itemListView.SelectedIndex = index;
         }
 
         #region Page state management
@@ -253,6 +255,14 @@ namespace WolframAlpha
             SubPod.States = Pod.States;
             int oldIndex = App.QueryResult.getIndexByPodTitle(SubPod.Title);
             ((List<SubPod>)this.DefaultViewModel["Results"])[oldIndex] = SubPod;
+        }
+
+        private void ItemSource_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            ListBox lb = ((ListBox)sender);
+            if (lb.SelectedItem == null)
+                return;
+            String Url = (string)lb.SelectedValue;
         }
     }
 }

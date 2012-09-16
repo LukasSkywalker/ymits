@@ -11,11 +11,9 @@
     mc:Ignorable="d">
 
     <Page.Resources>
-
-        <!-- Collection of items displayed by this page -->
-        <CollectionViewSource
-            x:Name="itemsViewSource"
-            Source="{Binding Results}"/><!--TODO was Items -->
+        <CollectionViewSource x:Name="sourcesViewSource" Source="{Binding Results.Sources}"/>
+        <CollectionViewSource x:Name="itemsViewSource" Source="{Binding Results.Pods}"/><!--TODO was Items -->
+        <common:LengthToVisibilityConverter x:Key="LengthToVisibilityConverter"/>
     </Page.Resources>
 
     <!--
@@ -39,7 +37,7 @@
                 <ColumnDefinition Width="Auto"/>
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
-            <Button x:ConnectionId='3'
+            <Button x:ConnectionId='4'
                 x:Name="backButton"
                               
                 IsEnabled="{Binding DefaultViewModel.CanGoBack, ElementName=pageRoot}"
@@ -48,53 +46,68 @@
             <!-- TODO was Binding Group.Title-->
         </Grid>
 
+        <!-- // Pod List // -->
+        <Grid Grid.Row="1" Grid.Column="0" Margin="120,0,0,20" DataContext="{Binding Source={StaticResource itemsViewSource}}">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+        
+        
         <!-- Vertical scrolling item list -->
-        <ListView x:ConnectionId='1'
+        <ListView x:ConnectionId='2'
             x:Name="itemListView"
             AutomationProperties.AutomationId="ItemsListView"
             AutomationProperties.Name="Items"
             TabIndex="1"
-            Grid.Row="1"
+            Grid.Row="0"
             Margin="-10,-10,0,0"
-            Padding="120,0,0,60"
-            ItemsSource="{Binding Source={StaticResource itemsViewSource}}"
+            ItemsSource="{Binding}"
             IsSwipeEnabled="False"
                                                             
             ItemTemplate="{StaticResource Standard130ItemTemplate}"/>
-        
+            <ListBox x:ConnectionId='3' x:Name="SourcesListBox" ItemsSource="{Binding Source={StaticResource sourcesViewSource}}" SelectedIndex="-1"
+                 Grid.Row="1" DisplayMemberPath="Text" SelectedValuePath="Url"                                               >
+            </ListBox>
+        </Grid>
 
-        <!-- Details for selected item -->
-        <ScrollViewer
+        <!-- // Details/SubPod list // -->
+        <Grid Grid.Row="1" Grid.Column="1" Margin="0,0,20,20" DataContext="{Binding SelectedItem, ElementName=itemListView}">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+            <ScrollViewer
             x:Name="itemDetail"
             AutomationProperties.AutomationId="ItemDetailScrollViewer"
-            Grid.Column="1"
-            Grid.RowSpan="2"
+            Grid.Row="0"
             Padding="70,0,120,0"
-            DataContext="{Binding SelectedItem, ElementName=itemListView}"
             Style="{StaticResource VerticalScrollViewerStyle}">
 
-            <Grid x:Name="itemDetailGrid" Margin="0,60,0,50">
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="*"/>
-                    <RowDefinition Height="Auto"/>
-                </Grid.RowDefinitions>
-
-                <TextBlock Grid.Row="0" x:Name="itemTitle" Margin="0,-10,0,50" Text="{Binding Title}" Style="{StaticResource SubheaderTextStyle}"/>
-                <Image Grid.Row="1" Margin="0,0,20,50" Source="{Binding ImageSource}" Stretch="None" AutomationProperties.Name="{Binding Title}"/>
-                <TextBlock Grid.Row="2" Margin="0,20,0,0" Text="{Binding Plaintext}" Style="{StaticResource BodyTextStyle}"/>
-                <ListBox x:ConnectionId='2' x:Name="StatesListBox" ItemsSource="{Binding States}" Grid.Row="3" DisplayMemberPath="Name" SelectedValuePath="Input"                                               >
-                    <!--<ListBox.ItemTemplate>
+                <ListView x:Name="SubPodsListView"
+                      ItemsSource="{Binding SubPods}">
+                    <ListView.ItemTemplate>
                         <DataTemplate>
-                            <TextBlock Text="{Binding Name}"/>
+                            <Grid x:Name="itemDetailGrid" Margin="0,60,0,50">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="*"/>
+                                    <RowDefinition Height="Auto"/>
+                                </Grid.RowDefinitions>
+
+                                <TextBlock Grid.Row="0" x:Name="itemTitle" Margin="0,-10,0,50" Text="{Binding SelectedItem.Title, ElementName=itemListView}" Style="{StaticResource SubheaderTextStyle}"/>
+                                <Image Grid.Row="1" Margin="0,0,20,50" Source="{Binding ImageSource}" Stretch="None" AutomationProperties.Name="{Binding Title}"/>
+                                <TextBlock Grid.Row="2" Margin="0,20,0,0" Text="{Binding Plaintext}" Style="{StaticResource BodyTextStyle}"/>
+                            </Grid>
                         </DataTemplate>
-                    </ListBox.ItemTemplate>-->
-                </ListBox>
-
-            </Grid>
-        </ScrollViewer>
-
+                    </ListView.ItemTemplate>
+                </ListView>
+            </ScrollViewer>
+            <ListBox x:ConnectionId='1' x:Name="StatesListBox" ItemsSource="{Binding States}" Grid.Row="1"
+                 DisplayMemberPath="Name" SelectedValuePath="Input"                                               >
+            </ListBox>
+        </Grid>
         <VisualStateManager.VisualStateGroups>
 
             <!-- Visual states reflect the application's view state -->

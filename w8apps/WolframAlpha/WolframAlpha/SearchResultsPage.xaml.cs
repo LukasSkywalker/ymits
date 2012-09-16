@@ -59,10 +59,10 @@ namespace WolframAlpha
             App.QueryResult = result;
             App.QueryText = queryText;
 
-            List<SubPod> sp = (List<SubPod>)new Common.SubPodFlatConverter().Convert(App.QueryResult, null, null, null);
+            //List<SubPod> sp = (List<SubPod>)new Common.SubPodFlatConverter().Convert(App.QueryResult, null, null, null);
+            //this.DefaultViewModel["Results"] = sp;
 
-            this.DefaultViewModel["Results"] = sp;
-            //this.DefaultViewModel["Results"] = App.QueryResult;
+            this.DefaultViewModel["Results"] = App.QueryResult;
 
             VisualStateManager.GoToState(this, "ResultsFound", true);
 
@@ -174,7 +174,7 @@ namespace WolframAlpha
 
         private void ItemView_ItemClick(object sender, ItemClickEventArgs e)
         {
-            SubPod Item = (SubPod)e.ClickedItem;
+            Pod Item = (Pod)e.ClickedItem;
             int Index = App.QueryResult.getIndex(Item);
             this.Frame.Navigate(typeof(ItemDetailPage), Index);
         }

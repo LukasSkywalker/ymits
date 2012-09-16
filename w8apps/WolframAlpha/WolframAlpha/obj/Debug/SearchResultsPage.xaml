@@ -12,10 +12,9 @@
     d:ExtensionType="Search">
 
     <Page.Resources>
-        <CollectionViewSource x:Name="resultsViewSource" Source="{Binding Results}"/>
+        <CollectionViewSource x:Name="resultsViewSource" Source="{Binding Results.Pods}"/>
         <CollectionViewSource x:Name="filtersViewSource" Source="{Binding Filters}"/>
         <common:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
-        <common:SubPodFlatConverter x:Key="SubPodFlatConverter"/>
         <x:String x:Key="AppName">Wolfram|Alpha</x:String>
     </Page.Resources>
 

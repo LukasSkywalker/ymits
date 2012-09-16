@@ -114,11 +114,11 @@ namespace WolframAlpha.WolframAlpha_XamlTypeInfo
 
         private object Activate_0_LayoutAwarePage() { return new global::WolframAlpha.Common.LayoutAwarePage(); }
 
-        private object Activate_1_ItemDetailPage() { return new global::WolframAlpha.ItemDetailPage(); }
+        private object Activate_1_LengthToVisibilityConverter() { return new global::WolframAlpha.Common.LengthToVisibilityConverter(); }
 
-        private object Activate_2_BooleanToVisibilityConverter() { return new global::WolframAlpha.Common.BooleanToVisibilityConverter(); }
+        private object Activate_2_ItemDetailPage() { return new global::WolframAlpha.ItemDetailPage(); }
 
-        private object Activate_3_SubPodFlatConverter() { return new global::WolframAlpha.Common.SubPodFlatConverter(); }
+        private object Activate_3_BooleanToVisibilityConverter() { return new global::WolframAlpha.Common.BooleanToVisibilityConverter(); }
 
         private object Activate_4_SearchResultsPage() { return new global::WolframAlpha.SearchResultsPage(); }
 
@@ -150,21 +150,21 @@ namespace WolframAlpha.WolframAlpha_XamlTypeInfo
                 xamlType = userType;
                 break;
 
+            case "WolframAlpha.Common.LengthToVisibilityConverter":
+                userType = new global::WolframAlpha.WolframAlpha_XamlTypeInfo.XamlUserType(this, typeName, typeof(global::WolframAlpha.Common.LengthToVisibilityConverter), GetXamlTypeByName("Object"));
+                userType.Activator = Activate_1_LengthToVisibilityConverter;
+                xamlType = userType;
+                break;
+
             case "WolframAlpha.ItemDetailPage":
                 userType = new global::WolframAlpha.WolframAlpha_XamlTypeInfo.XamlUserType(this, typeName, typeof(global::WolframAlpha.ItemDetailPage), GetXamlTypeByName("WolframAlpha.Common.LayoutAwarePage"));
-                userType.Activator = Activate_1_ItemDetailPage;
+                userType.Activator = Activate_2_ItemDetailPage;
                 xamlType = userType;
                 break;
 
             case "WolframAlpha.Common.BooleanToVisibilityConverter":
                 userType = new global::WolframAlpha.WolframAlpha_XamlTypeInfo.XamlUserType(this, typeName, typeof(global::WolframAlpha.Common.BooleanToVisibilityConverter), GetXamlTypeByName("Object"));
-                userType.Activator = Activate_2_BooleanToVisibilityConverter;
-                xamlType = userType;
-                break;
-
-            case "WolframAlpha.Common.SubPodFlatConverter":
-                userType = new global::WolframAlpha.WolframAlpha_XamlTypeInfo.XamlUserType(this, typeName, typeof(global::WolframAlpha.Common.SubPodFlatConverter), GetXamlTypeByName("Object"));
-                userType.Activator = Activate_3_SubPodFlatConverter;
+                userType.Activator = Activate_3_BooleanToVisibilityConverter;
                 xamlType = userType;
                 break;
 

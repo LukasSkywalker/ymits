@@ -1645,7 +1645,7 @@
     <DataTemplate x:Key="Standard250x250ItemTemplate">
         <Grid HorizontalAlignment="Left" Width="250" Height="250">
             <Border Background="{StaticResource ListViewItemPlaceholderBackgroundThemeBrush}">
-                <Image Source="{Binding ImageSource}" Stretch="None" AutomationProperties.Name="{Binding Title}"/>
+                <Image Source="{Binding SubPods[0].ImageSource}" Stretch="None" AutomationProperties.Name="{Binding Title}"/>
             </Border>
             <StackPanel VerticalAlignment="Bottom" Background="{StaticResource ListViewItemOverlayBackgroundThemeBrush}">
                 <TextBlock Text="{Binding Title}" Foreground="{StaticResource ListViewItemOverlayForegroundThemeBrush}" Style="{StaticResource TitleTextStyle}" Height="30" Margin="15,0,15,0"/>
@@ -1680,12 +1680,12 @@
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
             <Border Background="{StaticResource ListViewItemPlaceholderBackgroundThemeBrush}" Width="110" Height="110">
-                <Image Source="{Binding ImageSource}" Stretch="None" AutomationProperties.Name="{Binding Title}"/>
+                <Image Source="{Binding SubPods[0].ImageSource}" Stretch="None" AutomationProperties.Name="{Binding Title}"/>
             </Border>
             <StackPanel Grid.Column="1" VerticalAlignment="Top" Margin="10,0,0,0">
                 <TextBlock Text="{Binding Title}" Style="{StaticResource TitleTextStyle}" TextWrapping="NoWrap"/>
-                <TextBlock Text="{Binding Plaintext}" Style="{StaticResource CaptionTextStyle}" TextWrapping="NoWrap"/>
-                <TextBlock Text="{Binding Plaintext}" Style="{StaticResource BodyTextStyle}" MaxHeight="60"/>
+                <!--<TextBlock Text="{Binding Plaintext}" Style="{StaticResource CaptionTextStyle}" TextWrapping="NoWrap"/>
+                <TextBlock Text="{Binding Plaintext}" Style="{StaticResource BodyTextStyle}" MaxHeight="60"/>-->
             </StackPanel>
         </Grid>
     </DataTemplate>

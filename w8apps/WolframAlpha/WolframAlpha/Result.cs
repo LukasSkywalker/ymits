@@ -71,6 +71,15 @@ namespace WolframAlpha
             return null;
         }
 
+        public Pod getPodById(String Id){
+            for (int i = 0; i < Pods.Length; i++)
+            {
+                if (Pods[i].Id.Equals(Id))
+                    return Pods[i];
+            }
+            return null;
+        }
+
         public int getIndex(Pod Pod) {
             for (int i = 0; i < Pods.Length; i++) {
                 if (Pods[i].Equals(Pod))
