@@ -45,11 +45,23 @@ namespace WolframAlpha
         public void AddToHistory(String value)
         {
             List<HistoryItem> HistoryList = Deserialize((String)RoamingSettings.Values["History"]);
+ 
+            int index = -1;
+            //remove if exists
+            do
+            {
+                index = HistoryList.FindIndex(x => x.Text.ToLower().Equals(value.ToLower()));
+                if (index > -1)
+                {
+                    HistoryList.RemoveAt(index);
+                }
+            } while (index > -1);
 
+            // create new
             HistoryItem Item = new HistoryItem();
             Item.Text = value;
             Item.DateTime = DateTime.Now;
-            HistoryList.Insert(0,Item);
+            HistoryList.Insert(0, Item);
 
             string result = Serialize(HistoryList);
 

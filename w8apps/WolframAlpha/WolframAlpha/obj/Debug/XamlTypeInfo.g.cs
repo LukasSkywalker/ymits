@@ -124,7 +124,9 @@ namespace WolframAlpha.WolframAlpha_XamlTypeInfo
 
         private object Activate_5_DebugConverter() { return new global::WolframAlpha.Common.DebugConverter(); }
 
-        private object Activate_6_MainPage() { return new global::WolframAlpha.MainPage(); }
+        private object Activate_6_DateTimeConverter() { return new global::WolframAlpha.Common.DateTimeConverter(); }
+
+        private object Activate_7_MainPage() { return new global::WolframAlpha.MainPage(); }
 
 
         private global::Windows.UI.Xaml.Markup.IXamlType CreateXamlType(string typeName)
@@ -182,9 +184,15 @@ namespace WolframAlpha.WolframAlpha_XamlTypeInfo
                 xamlType = userType;
                 break;
 
+            case "WolframAlpha.Common.DateTimeConverter":
+                userType = new global::WolframAlpha.WolframAlpha_XamlTypeInfo.XamlUserType(this, typeName, typeof(global::WolframAlpha.Common.DateTimeConverter), GetXamlTypeByName("Object"));
+                userType.Activator = Activate_6_DateTimeConverter;
+                xamlType = userType;
+                break;
+
             case "WolframAlpha.MainPage":
                 userType = new global::WolframAlpha.WolframAlpha_XamlTypeInfo.XamlUserType(this, typeName, typeof(global::WolframAlpha.MainPage), GetXamlTypeByName("Windows.UI.Xaml.Controls.Page"));
-                userType.Activator = Activate_6_MainPage;
+                userType.Activator = Activate_7_MainPage;
                 xamlType = userType;
                 break;
 

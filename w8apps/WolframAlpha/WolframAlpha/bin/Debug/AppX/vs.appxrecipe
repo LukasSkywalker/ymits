@@ -16,17 +16,17 @@
     <AppXManifest Include="e:\documents\visual studio 2012\Projects\WolframAlpha\WolframAlpha\bin\Debug\AppxManifest.xml">
       <PackagePath>AppxManifest.xml</PackagePath>
       <ReRegisterAppIfChanged>true</ReRegisterAppIfChanged>
-      <Modified>2012-09-17T17:03:36.613</Modified>
+      <Modified>2012-09-17T19:37:25.517</Modified>
     </AppXManifest>
   </ItemGroup>
   <ItemGroup>
     <AppxPackagedFile Include="e:\documents\visual studio 2012\Projects\WolframAlpha\WolframAlpha\bin\Debug\WolframAlpha.exe">
       <PackagePath>WolframAlpha.exe</PackagePath>
-      <Modified>2012-09-17T19:28:55.417</Modified>
+      <Modified>2012-09-17T21:47:59.027</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="e:\documents\visual studio 2012\Projects\WolframAlpha\WolframAlpha\bin\Debug\WolframAlpha.pdb">
       <PackagePath>WolframAlpha.pdb</PackagePath>
-      <Modified>2012-09-17T19:28:55.361</Modified>
+      <Modified>2012-09-17T21:47:58.976</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="e:\documents\visual studio 2012\Projects\WolframAlpha\WolframAlpha\Assets\Logo.png">
       <PackagePath>Assets\Logo.png</PackagePath>
@@ -58,7 +58,7 @@
     </AppxPackagedFile>
     <AppxPackagedFile Include="e:\documents\visual studio 2012\Projects\WolframAlpha\WolframAlpha\bin\Debug\ItemDetailPage.xaml">
       <PackagePath>ItemDetailPage.xaml</PackagePath>
-      <Modified>2012-09-17T11:01:49.901</Modified>
+      <Modified>2012-09-17T20:50:19.192</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="e:\documents\visual studio 2012\Projects\WolframAlpha\WolframAlpha\bin\Debug\SearchResultsPage.xaml">
       <PackagePath>SearchResultsPage.xaml</PackagePath>
@@ -66,11 +66,11 @@
     </AppxPackagedFile>
     <AppxPackagedFile Include="e:\documents\visual studio 2012\Projects\WolframAlpha\WolframAlpha\bin\Debug\Common\StandardStyles.xaml">
       <PackagePath>Common\StandardStyles.xaml</PackagePath>
-      <Modified>2012-09-16T13:00:32.854</Modified>
+      <Modified>2012-09-17T20:01:53.494</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="e:\documents\visual studio 2012\Projects\WolframAlpha\WolframAlpha\bin\Debug\MainPage.xaml">
       <PackagePath>MainPage.xaml</PackagePath>
-      <Modified>2012-09-17T19:28:51.766</Modified>
+      <Modified>2012-09-17T20:19:14.232</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="e:\documents\visual studio 2012\Projects\WolframAlpha\WolframAlpha\bin\Debug\resources.pri">
       <PackagePath>resources.pri</PackagePath>

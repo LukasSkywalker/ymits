@@ -11,6 +11,7 @@
     
     <Page.Resources>
         <common:DebugConverter x:Key="DebugConverter"/>
+        <common:DateTimeConverter x:Key="DateTimeConverter"/>
     </Page.Resources>
 
     <Grid Background="{StaticResource ApplicationPageBackgroundThemeBrush}">
@@ -37,7 +38,7 @@
                             <ColumnDefinition Width="*"/>
                         </Grid.ColumnDefinitions>
                         <TextBlock Text="{Binding Text}" Grid.Column="0" HorizontalAlignment="Left"/>
-                        <TextBlock Text="{Binding DateTime}" Grid.Column="1" HorizontalAlignment="Right"/>
+                        <TextBlock Text="{Binding DateTime,Converter={StaticResource DateTimeConverter}}" Grid.Column="1" HorizontalAlignment="Right"/>
                         
                     </Grid>
                 </DataTemplate>
@@ -45,10 +46,26 @@
         </ListBox>
         <Button x:ConnectionId='2' Content="Clear" Grid.Column="0" HorizontalAlignment="Center" VerticalAlignment="Bottom" Margin="0,0,0,12"                     />
         <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Center">
-            <TextBox x:ConnectionId='3' x:Name="searchTextBox" Margin="0,0,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Center" Width="268"                     />
-            <Button x:ConnectionId='4' Content="Search" Margin="0,0,0,0" VerticalAlignment="Center"                       />
+            <TextBox x:ConnectionId='3' x:Name="searchTextBox" Margin="0,0,0,0" TabIndex="0" TextWrapping="Wrap" Text="" VerticalAlignment="Center" Width="268"                     />
+            <Button x:ConnectionId='4' Content="Search" Margin="0,0,0,0" TabIndex="1" VerticalAlignment="Center"                       />
         </StackPanel>
-        <ListBox x:Name="ButtonBox" Grid.Column="2" Width="200" Margin="12,12,12,12"></ListBox>
+        <Grid x:Name="ButtonBox" Grid.Column="2" Width="200" Margin="12,12,12,12">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+            <TextBlock Grid.Column="0" Grid.ColumnSpan="5" Grid.Row="0" Text="General" FontSize="20"/>
+            <TextBlock Grid.Column="0" Grid.ColumnSpan="5" Grid.Row="1" Text="Calculus/Analysis" FontSize="20"/>
+            <TextBlock Grid.Column="0" Grid.ColumnSpan="5" Grid.Row="2" Text="Algebra" FontSize="20"/>
+        </Grid>
     </Grid>
 </Page>
 

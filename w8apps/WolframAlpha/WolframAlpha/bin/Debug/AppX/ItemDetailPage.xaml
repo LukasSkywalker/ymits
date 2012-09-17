@@ -49,7 +49,7 @@
         </Grid>
 
         <!-- // RIGHT COLUMN  - Pod list and Sources listbox // -->
-        <Grid Grid.Row="1" Grid.Column="0" Margin="120,0,0,20" DataContext="{Binding Source={StaticResource itemsViewSource}}">
+        <Grid Grid.Row="1" Grid.Column="0" x:Name="itemsListGrid"  Margin="120,0,0,20" DataContext="{Binding Source={StaticResource itemsViewSource}}">
             <Grid.RowDefinitions>
                 <RowDefinition Height="*"/>
                 <RowDefinition Height="Auto"/>
@@ -78,41 +78,42 @@
 
         
 		<!-- // Details/SubPod list // -->
-        <Grid Grid.Row="1" Grid.Column="1" Margin="0,0,20,20" DataContext="{Binding SelectedItem, ElementName=itemListView}">
+        <Grid Grid.Row="1" Grid.Column="1" Margin="0,0,20,20" x:Name="itemDetailGrid"
+              DataContext="{Binding SelectedItem, ElementName=itemListView}">
             <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
                 <RowDefinition Height="*"/>
                 <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
+            <TextBlock Grid.Row="0" Margin="50,0,20,0" Text="{Binding SelectedItem.Title, ElementName=itemListView}"
+                       x:Name="itemTitle" Style="{StaticResource SubheaderTextStyle}"/>
             <ScrollViewer
             x:Name="itemDetail"
             AutomationProperties.AutomationId="ItemDetailScrollViewer"
-            Grid.Row="0"
+            Grid.Row="1"
             Padding="70,0,120,0"
             Style="{StaticResource VerticalScrollViewerStyle}">
-
-                <ListView x:Name="SubPodsListView"
+                <StackPanel x:Name="itemDetailTitlePanel" Grid.Row="1" Grid.Column="1">
+                    <ListView x:Name="SubPodsListView" Grid.Row="0"
                       ItemsSource="{Binding SubPods}">
-                    <ListView.ItemTemplate>
-                        <DataTemplate>
-                            <Grid x:Name="itemDetailGrid" Margin="0,60,0,50">
-                                <Grid.RowDefinitions>
-                                    <RowDefinition Height="Auto"/>
-                                    <RowDefinition Height="Auto"/>
-                                    <RowDefinition Height="*"/>
-                                    <RowDefinition Height="Auto"/>
-                                </Grid.RowDefinitions>
-
-                                <TextBlock Grid.Row="0" x:Name="itemTitle" Margin="0,-10,0,50" Text="{Binding SelectedItem.Title, ElementName=itemListView}" Style="{StaticResource SubheaderTextStyle}"/>
-                                <Image Grid.Row="1" Margin="0,0,20,50" Source="{Binding ImageSource}" Stretch="None" AutomationProperties.Name="{Binding Title}"/>
-                                <TextBlock Grid.Row="2" Margin="0,20,0,0" Text="{Binding Plaintext}" Style="{StaticResource BodyTextStyle}"/>
-                            </Grid>
-                        </DataTemplate>
-                    </ListView.ItemTemplate>
-                </ListView>
+                        <ListView.ItemTemplate>
+                            <DataTemplate>
+                                <Grid x:Name="itemDetailGrid" Margin="0,60,0,50">
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto"/>
+                                        <RowDefinition Height="Auto"/>
+                                    </Grid.RowDefinitions>
+                                    <Image Grid.Row="0" Margin="0,0,20,50" Source="{Binding ImageSource}" Stretch="None" AutomationProperties.Name="{Binding Title}"/>
+                                    <TextBlock Grid.Row="1" Margin="0,20,0,0" Text="{Binding Plaintext}" Style="{StaticResource BodyTextStyle}"/>
+                                </Grid>
+                            </DataTemplate>
+                        </ListView.ItemTemplate>
+                    </ListView>
+                </StackPanel>
             </ScrollViewer>
 			
 			<!-- States and Infos list boxes -->
-            <Grid Grid.Row="1">
+            <Grid Grid.Row="2">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="*"/>
@@ -228,7 +229,10 @@
                             <DiscreteObjectKeyFrame KeyTime="0" Value="{StaticResource Standard80ItemTemplate}"/>
                         </ObjectAnimationUsingKeyFrames>
                         <ObjectAnimationUsingKeyFrames Storyboard.TargetName="itemListView" Storyboard.TargetProperty="Padding">
-                            <DiscreteObjectKeyFrame KeyTime="0" Value="20,0,0,0"/>
+                            <DiscreteObjectKeyFrame KeyTime="0" Value="10,0,0,0"/>
+                        </ObjectAnimationUsingKeyFrames>
+                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="itemsListGrid" Storyboard.TargetProperty="Margin">
+                            <DiscreteObjectKeyFrame KeyTime="0" Value="15,0,0,0"/>
                         </ObjectAnimationUsingKeyFrames>
                     </Storyboard>
                 </VisualState>
@@ -284,9 +288,9 @@
                         <ObjectAnimationUsingKeyFrames Storyboard.TargetName="itemTitle" Storyboard.TargetProperty="Margin">
                             <DiscreteObjectKeyFrame KeyTime="0" Value="0"/>
                         </ObjectAnimationUsingKeyFrames>
-                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="itemSubtitle" Storyboard.TargetProperty="Style">
+                        <!--<ObjectAnimationUsingKeyFrames Storyboard.TargetName="itemSubtitle" Storyboard.TargetProperty="Style">
                             <DiscreteObjectKeyFrame KeyTime="0" Value="{StaticResource CaptionTextStyle}"/>
-                        </ObjectAnimationUsingKeyFrames>
+                        </ObjectAnimationUsingKeyFrames>-->
                     </Storyboard>
                 </VisualState>
             </VisualStateGroup>
