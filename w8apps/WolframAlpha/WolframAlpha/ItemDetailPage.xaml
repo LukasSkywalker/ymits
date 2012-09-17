@@ -11,9 +11,11 @@
     mc:Ignorable="d">
 
     <Page.Resources>
+        <CollectionViewSource x:Name="resultsViewSource" Source="{Binding Results}"/>
         <CollectionViewSource x:Name="sourcesViewSource" Source="{Binding Results.Sources}"/>
         <CollectionViewSource x:Name="itemsViewSource" Source="{Binding Results.Pods}"/><!--TODO was Items -->
-        <common:LengthToVisibilityConverter x:Key="LengthToVisibilityConverter"/>
+        <common:NullToVisibilityConverter x:Key="NullToVisibilityConverter"/>
+        <x:String x:Key="AppName">Wolfram|Alpha</x:String>
     </Page.Resources>
 
     <!--
@@ -42,11 +44,11 @@
                 Click="GoBack"
                 IsEnabled="{Binding DefaultViewModel.CanGoBack, ElementName=pageRoot}"
                 Style="{StaticResource BackButtonStyle}"/>
-            <TextBlock x:Name="pageTitle" Grid.Column="1" Style="{StaticResource PageHeaderTextStyle}"/>
+            <TextBlock x:Name="pageTitle" Text="{StaticResource AppName}"  Grid.Column="1" Style="{StaticResource PageHeaderTextStyle}"/>
             <!-- TODO was Binding Group.Title-->
         </Grid>
 
-        <!-- // Pod List // -->
+        <!-- // RIGHT COLUMN  - Pod list and Sources listbox // -->
         <Grid Grid.Row="1" Grid.Column="0" Margin="120,0,0,20" DataContext="{Binding Source={StaticResource itemsViewSource}}">
             <Grid.RowDefinitions>
                 <RowDefinition Height="*"/>
@@ -66,12 +68,16 @@
             IsSwipeEnabled="False"
             SelectionChanged="ItemListView_SelectionChanged"
             ItemTemplate="{StaticResource Standard130ItemTemplate}"/>
-            <ListBox x:Name="SourcesListBox" ItemsSource="{Binding Source={StaticResource sourcesViewSource}}" SelectedIndex="-1"
-                 Grid.Row="1" DisplayMemberPath="Text" SelectedValuePath="Url" SelectionChanged="ItemSource_SelectionChanged">
-            </ListBox>
+            <!--<Button x:Name="SourcesButton" Grid.Row="1" Content="Sources" DataContext="{Binding Source={StaticResource sourcesViewSource}}"
+                    Visibility="{Binding Text, Converter={StaticResource NullToVisibilityConverter}}" Click="SourcesButton_Click"/>-->
+            <!-- TODO<ListBox x:Name="SourcesListBox" DataContext="{Binding Source={StaticResource resultsViewSource}}"
+                     ItemsSource="{Binding Sources}"
+                 Grid.Row="1" DisplayMemberPath="Text" SelectedValuePath="URL" SelectionChanged="ItemSource_SelectionChanged"
+                     Visibility="{Binding Source={StaticResource sourcesViewSource}, Converter={StaticResource NullToVisibilityConverter}}"/>-->
         </Grid>
 
-        <!-- // Details/SubPod list // -->
+        
+		<!-- // Details/SubPod list // -->
         <Grid Grid.Row="1" Grid.Column="1" Margin="0,0,20,20" DataContext="{Binding SelectedItem, ElementName=itemListView}">
             <Grid.RowDefinitions>
                 <RowDefinition Height="*"/>
@@ -104,9 +110,23 @@
                     </ListView.ItemTemplate>
                 </ListView>
             </ScrollViewer>
-            <ListBox x:Name="StatesListBox" ItemsSource="{Binding States}" Grid.Row="1"
-                 DisplayMemberPath="Name" SelectedValuePath="Input" SelectionChanged="ItemDetail_SelectionChanged">
-            </ListBox>
+			
+			<!-- States and Infos list boxes -->
+            <Grid Grid.Row="1">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <ListBox x:Name="StatesListBox" ItemsSource="{Binding States}" Grid.Column="0" VerticalAlignment="Bottom"
+                 DisplayMemberPath="Name" SelectedValuePath="Input" SelectionChanged="ItemStates_SelectionChanged"
+                         Visibility="{Binding States, Converter={StaticResource NullToVisibilityConverter}}">
+                </ListBox>
+                <ListBox x:Name="InfosListBox" ItemsSource="{Binding Infos}" Grid.Column="1"
+                 DisplayMemberPath="Text" SelectionChanged="ItemInfos_SelectionChanged" VerticalAlignment="Bottom"
+                         Visibility="{Binding Infos, Converter={StaticResource NullToVisibilityConverter}}">
+                </ListBox>
+            </Grid>
+            
         </Grid>
         <VisualStateManager.VisualStateGroups>
 

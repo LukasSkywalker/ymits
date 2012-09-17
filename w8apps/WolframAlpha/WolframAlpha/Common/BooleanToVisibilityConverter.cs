@@ -29,18 +29,4 @@ namespace WolframAlpha.Common
             return value is Visibility && (Visibility)value == Visibility.Visible;
         }
     }
-
-    public sealed class LengthToVisibilityConverter : IValueConverter
-    {
-        public object Convert(object value, Type targetType, object parameter, string language)
-        {
-            int length = (int)value;
-            return (length > 0) ? Visibility.Visible : Visibility.Collapsed;
-        }
-
-        public object ConvertBack(object value, Type targetType, object parameter, string language)
-        {
-            throw new NotImplementedException();
-        }
-    }
 }

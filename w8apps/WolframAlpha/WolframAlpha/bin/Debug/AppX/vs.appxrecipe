@@ -16,17 +16,17 @@
     <AppXManifest Include="e:\documents\visual studio 2012\Projects\WolframAlpha\WolframAlpha\bin\Debug\AppxManifest.xml">
       <PackagePath>AppxManifest.xml</PackagePath>
       <ReRegisterAppIfChanged>true</ReRegisterAppIfChanged>
-      <Modified>2012-09-16T06:46:19.064</Modified>
+      <Modified>2012-09-17T17:03:36.613</Modified>
     </AppXManifest>
   </ItemGroup>
   <ItemGroup>
     <AppxPackagedFile Include="e:\documents\visual studio 2012\Projects\WolframAlpha\WolframAlpha\bin\Debug\WolframAlpha.exe">
       <PackagePath>WolframAlpha.exe</PackagePath>
-      <Modified>2012-09-16T14:46:15.405</Modified>
+      <Modified>2012-09-17T19:28:55.417</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="e:\documents\visual studio 2012\Projects\WolframAlpha\WolframAlpha\bin\Debug\WolframAlpha.pdb">
       <PackagePath>WolframAlpha.pdb</PackagePath>
-      <Modified>2012-09-16T14:46:15.353</Modified>
+      <Modified>2012-09-17T19:28:55.361</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="e:\documents\visual studio 2012\Projects\WolframAlpha\WolframAlpha\Assets\Logo.png">
       <PackagePath>Assets\Logo.png</PackagePath>
@@ -58,7 +58,7 @@
     </AppxPackagedFile>
     <AppxPackagedFile Include="e:\documents\visual studio 2012\Projects\WolframAlpha\WolframAlpha\bin\Debug\ItemDetailPage.xaml">
       <PackagePath>ItemDetailPage.xaml</PackagePath>
-      <Modified>2012-09-16T14:46:05.766</Modified>
+      <Modified>2012-09-17T11:01:49.901</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="e:\documents\visual studio 2012\Projects\WolframAlpha\WolframAlpha\bin\Debug\SearchResultsPage.xaml">
       <PackagePath>SearchResultsPage.xaml</PackagePath>
@@ -70,7 +70,7 @@
     </AppxPackagedFile>
     <AppxPackagedFile Include="e:\documents\visual studio 2012\Projects\WolframAlpha\WolframAlpha\bin\Debug\MainPage.xaml">
       <PackagePath>MainPage.xaml</PackagePath>
-      <Modified>2012-09-13T19:27:50.256</Modified>
+      <Modified>2012-09-17T19:28:51.766</Modified>
     </AppxPackagedFile>
     <AppxPackagedFile Include="e:\documents\visual studio 2012\Projects\WolframAlpha\WolframAlpha\bin\Debug\resources.pri">
       <PackagePath>resources.pri</PackagePath>

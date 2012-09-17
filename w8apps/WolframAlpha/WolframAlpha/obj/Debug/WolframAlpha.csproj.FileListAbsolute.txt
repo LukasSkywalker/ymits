@@ -27,3 +27,7 @@ e:\documents\visual studio 2012\Projects\WolframAlpha\WolframAlpha\obj\Debug\Sea
 e:\documents\visual studio 2012\Projects\WolframAlpha\WolframAlpha\obj\Debug\ItemDetailPage.g.i.cs
 e:\documents\visual studio 2012\Projects\WolframAlpha\WolframAlpha\obj\Debug\ItemDetailPage.g.cs
 e:\documents\visual studio 2012\Projects\WolframAlpha\WolframAlpha\obj\Debug\ItemDetailPage.xaml
+e:\documents\visual studio 2012\Projects\WolframAlpha\WolframAlpha\obj\Debug\priconfig.xml.intermediate
+e:\documents\visual studio 2012\Projects\WolframAlpha\WolframAlpha\obj\Debug\layout.resfiles.intermediate
+e:\documents\visual studio 2012\Projects\WolframAlpha\WolframAlpha\obj\Debug\resources.resfiles.intermediate
+e:\documents\visual studio 2012\Projects\WolframAlpha\WolframAlpha\obj\Debug\pri.resfiles.intermediate

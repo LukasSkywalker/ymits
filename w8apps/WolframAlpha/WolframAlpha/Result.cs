@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -10,7 +11,8 @@ using Windows.UI.Xaml.Media.Imaging;
 namespace WolframAlpha
 {
     [XmlRoot("queryresult")]
-    public class QueryResult {
+    public class QueryResult
+    {
         [XmlAttribute("success")]
         public bool Success { get; set; }
 
@@ -111,9 +113,21 @@ namespace WolframAlpha
             }
             return -1;
         }
+
+        public Pod getPodBySubPod(SubPod SearchSubPod) {
+            for (int i = 0; i < Pods.Length; i++) {
+                Pod Pod = Pods[i];
+                for (int j = 0; j < Pod.SubPods.Length; j++) {
+                    if(SearchSubPod.Equals(Pod.SubPods[j]))
+                        return Pod;
+                }
+            }
+            return null;
+        }
     }
 
-    public class Pod {
+    public class Pod
+    {
         [XmlAttribute("title")]
         public string Title { get; set; }
 

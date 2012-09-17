@@ -6,6 +6,8 @@ using System.Net;
 using System.Threading.Tasks;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
+using Windows.System;
+using Windows.UI.Popups;
 using Windows.UI.ViewManagement;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
@@ -34,20 +36,47 @@ namespace WolframAlpha
             StatesMap = new Dictionary<String, Dictionary<String, int>>();
         }
 
-        protected override void OnNavigatedTo(NavigationEventArgs e)
+        protected async override void OnNavigatedTo(NavigationEventArgs e)
         {
             base.OnNavigatedTo(e);
-            int index = ((int)e.Parameter);
-            //this.DefaultViewModel["Results"] = App.QueryResult;
-
-            pageTitle.Text = App.QueryResult.getPodAt(0).SubPods[0].Plaintext;
-
-            //List<SubPod> sp = (List<SubPod>)new Common.SubPodFlatConverter().Convert(App.QueryResult, null, null, null);
-            //this.DefaultViewModel["Results"] = sp;
 
             this.DefaultViewModel["Results"] = App.QueryResult;
 
-            //itemListView.SelectedIndex = index;
+            /*int index = ((int)e.Parameter);
+            itemListView.SelectedIndex = index;
+            itemListView.ScrollIntoView(itemListView.Items[index]);*/
+
+            if (App.QueryResult.Errors != null)
+            {
+                foreach(Error Error in App.QueryResult.Errors){
+                    MessageDialog md = new MessageDialog(Error.Code+" "+Error.Message, "Error");
+                    await md.ShowAsync();
+                }
+            }
+
+            if (App.QueryResult.Warnings != null)
+            {
+                foreach (Warning Warning in App.QueryResult.Warnings)
+                {
+                    MessageDialog md = new MessageDialog("Something bad happened. But we don't know what, so just go on.", "Warning");
+                    if (Warning.Spellcheck != null) {
+                        md = new MessageDialog(Warning.Spellcheck[0].Text, "Warning");
+                    }
+                    if (Warning.Delimiters != null)
+                    {
+                        md = new MessageDialog(Warning.Delimiters[0].Text, "Warning");
+                    }
+                    if (Warning.Reinterpret != null)
+                    {
+                        md = new MessageDialog(Warning.Reinterpret[0].Text + " " + Warning.Reinterpret[0].New, "Warning");
+                    }
+                    if (Warning.Translation != null)
+                    {
+                        md = new MessageDialog(Warning.Translation[0].Phrase + ": " + Warning.Translation[0].Text, "Warning");
+                    }
+                    await md.ShowAsync();
+                }
+            }
         }
 
         #region Page state management
@@ -205,20 +234,6 @@ namespace WolframAlpha
         #endregion
 
 
-        // gets invoked when user clicks on an item in the states listbox, e.g. [More Digits], [Fractual representation]
-        private void ItemDetail_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            ListBox lb = ((ListBox)sender);
-            if (lb.SelectedItem == null)
-                return;
-
-            SubPod SubPod = (sender as FrameworkElement).DataContext as SubPod;
-            String PodId = App.QueryResult.getPodByTitle(SubPod.Title).Id;
-            String StatesValue = (string)lb.SelectedValue;
-            
-            getState(StatesValue, PodId);
-        }
-
         private async void getState(String StateName, String PodId) {
             int multiplier = 1;
 
@@ -228,6 +243,7 @@ namespace WolframAlpha
                 StatesMap[PodId][StateName]++;
             }
             catch (KeyNotFoundException ex) {
+                System.Diagnostics.Debug.WriteLine("Creating Dict Key for pod "+PodId+", state"+StateName);
                 if (StatesMap.ContainsKey(PodId))
                     StatesMap[PodId][StateName] = 2;
                 else {
@@ -249,12 +265,10 @@ namespace WolframAlpha
 
             
             Pod Pod = result.Pods[0];
-            SubPod SubPod = Pod.SubPods[0];
-            System.Diagnostics.Debug.WriteLine(SubPod.Plaintext);
-            SubPod.Title = Pod.Title;
-            SubPod.States = Pod.States;
-            int oldIndex = App.QueryResult.getIndexByPodTitle(SubPod.Title);
-            ((List<SubPod>)this.DefaultViewModel["Results"])[oldIndex] = SubPod;
+            int oldIndex = App.QueryResult.getIndexByPodTitle(Pod.Title);
+            System.Diagnostics.Debug.WriteLine("Updating Pod '" + Pod.Title+"' at position "+oldIndex);
+            App.QueryResult.Pods[oldIndex] = Pod;
+            ((QueryResult)this.DefaultViewModel["Results"]).Pods[oldIndex] = Pod;
         }
 
         private void ItemSource_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -263,6 +277,82 @@ namespace WolframAlpha
             if (lb.SelectedItem == null)
                 return;
             String Url = (string)lb.SelectedValue;
+            // TODO await Launcher.LaunchUriAsync(new Uri(Url));
+        }
+
+        // gets invoked when user clicks on an item in the states listbox, e.g. [More Digits], [Fractual representation]
+        private void ItemStates_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            ListBox lb = ((ListBox)sender);
+            if (lb.SelectedItem == null)
+                return;
+
+            Pod Pod = (Pod)itemListView.SelectedItem;
+            String PodId = Pod.Id;
+            String StatesValue = (string)lb.SelectedValue;
+
+            getState(StatesValue, PodId);
+        }
+
+        private async void ItemInfos_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            ListBox lb = ((ListBox)sender);
+            if (lb.SelectedItem == null)
+                return;
+
+            Pod Pod = (Pod)itemListView.SelectedItem;
+            String PodId = Pod.Id;
+            Info Info = (Info)lb.SelectedValue;
+
+            var menu = new PopupMenu();
+
+            if (Info.Images != null) {
+                /*foreach(Image Image in Info.Images){
+                    menu.Commands.Add(new UICommand("bla", (command) =>
+                    {
+                        OutputTextBlock.Text = "'" + command.Label + "' selected";
+                    }));
+                }*/
+                //do nothing. img is only vis. rep. of text
+            }
+            if (Info.Links != null) {
+                foreach (Link Link in Info.Links)
+                {
+                    menu.Commands.Add(new UICommand(Link.Text, async (command) =>
+                    {
+                        await Launcher.LaunchUriAsync(new Uri(Link.Url));
+                    }));
+                }
+            }
+            if (Info.Units != null) {
+                foreach (Unit Unit in Info.Units)
+                {
+                    menu.Commands.Add(new UICommand(Unit.Long, (command) =>
+                    {
+                        System.Diagnostics.Debug.WriteLine(Unit.Long + " " + Unit.Short);
+                    }));
+                }
+            }
+            var chosenCommand = await menu.ShowForSelectionAsync(GetElementRect((FrameworkElement)sender, Placement.Above));
+        }
+
+        private Rect GetElementRect(FrameworkElement frameworkElement, Placement placement)
+        {
+            GeneralTransform buttonTransform = frameworkElement.TransformToVisual(null);
+            Point point = buttonTransform.TransformPoint(new Point());
+            return new Rect(point, new Size(frameworkElement.ActualWidth, frameworkElement.ActualHeight)); 
+        }
+
+        private async void SourcesButton_Click(object sender, RoutedEventArgs e)
+        {
+            var menu = new PopupMenu();
+            foreach (Source Source in App.QueryResult.Sources) {
+                menu.Commands.Add(new UICommand(Source.Text, async (command) =>
+                {
+                    await Launcher.LaunchUriAsync(new Uri(Source.URL));
+                }));
+            }
+            var chosenCommand = await menu.ShowForSelectionAsync(GetElementRect((FrameworkElement)sender, Placement.Above));
         }
     }
 }

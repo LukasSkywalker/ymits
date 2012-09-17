@@ -114,7 +114,7 @@ namespace WolframAlpha.WolframAlpha_XamlTypeInfo
 
         private object Activate_0_LayoutAwarePage() { return new global::WolframAlpha.Common.LayoutAwarePage(); }
 
-        private object Activate_1_LengthToVisibilityConverter() { return new global::WolframAlpha.Common.LengthToVisibilityConverter(); }
+        private object Activate_1_NullToVisibilityConverter() { return new global::WolframAlpha.Common.NullToVisibilityConverter(); }
 
         private object Activate_2_ItemDetailPage() { return new global::WolframAlpha.ItemDetailPage(); }
 
@@ -122,7 +122,9 @@ namespace WolframAlpha.WolframAlpha_XamlTypeInfo
 
         private object Activate_4_SearchResultsPage() { return new global::WolframAlpha.SearchResultsPage(); }
 
-        private object Activate_5_MainPage() { return new global::WolframAlpha.MainPage(); }
+        private object Activate_5_DebugConverter() { return new global::WolframAlpha.Common.DebugConverter(); }
+
+        private object Activate_6_MainPage() { return new global::WolframAlpha.MainPage(); }
 
 
         private global::Windows.UI.Xaml.Markup.IXamlType CreateXamlType(string typeName)
@@ -150,9 +152,9 @@ namespace WolframAlpha.WolframAlpha_XamlTypeInfo
                 xamlType = userType;
                 break;
 
-            case "WolframAlpha.Common.LengthToVisibilityConverter":
-                userType = new global::WolframAlpha.WolframAlpha_XamlTypeInfo.XamlUserType(this, typeName, typeof(global::WolframAlpha.Common.LengthToVisibilityConverter), GetXamlTypeByName("Object"));
-                userType.Activator = Activate_1_LengthToVisibilityConverter;
+            case "WolframAlpha.Common.NullToVisibilityConverter":
+                userType = new global::WolframAlpha.WolframAlpha_XamlTypeInfo.XamlUserType(this, typeName, typeof(global::WolframAlpha.Common.NullToVisibilityConverter), GetXamlTypeByName("Object"));
+                userType.Activator = Activate_1_NullToVisibilityConverter;
                 xamlType = userType;
                 break;
 
@@ -174,9 +176,15 @@ namespace WolframAlpha.WolframAlpha_XamlTypeInfo
                 xamlType = userType;
                 break;
 
+            case "WolframAlpha.Common.DebugConverter":
+                userType = new global::WolframAlpha.WolframAlpha_XamlTypeInfo.XamlUserType(this, typeName, typeof(global::WolframAlpha.Common.DebugConverter), GetXamlTypeByName("Object"));
+                userType.Activator = Activate_5_DebugConverter;
+                xamlType = userType;
+                break;
+
             case "WolframAlpha.MainPage":
                 userType = new global::WolframAlpha.WolframAlpha_XamlTypeInfo.XamlUserType(this, typeName, typeof(global::WolframAlpha.MainPage), GetXamlTypeByName("Windows.UI.Xaml.Controls.Page"));
-                userType.Activator = Activate_5_MainPage;
+                userType.Activator = Activate_6_MainPage;
                 xamlType = userType;
                 break;
 
