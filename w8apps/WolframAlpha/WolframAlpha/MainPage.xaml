@@ -76,18 +76,26 @@
                 <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
             <StackPanel x:Name="Row1" Orientation="Horizontal" HorizontalAlignment="Center" Grid.Column="0" Grid.Row="0">
-                <Button Content="asdf" Grid.Row="0" HorizontalAlignment="Center"/>
-                <Button Content="asdf2" Grid.Row="0" HorizontalAlignment="Center"/>
+                <Button Content="&#x03C0;" Grid.Row="0" HorizontalAlignment="Center" Tag="pi" Click="InsertCharacter"/>
+                <Button Content="&#x2211;" Grid.Row="0" HorizontalAlignment="Center" Tag="sum from x=0 to 10" Click="InsertCharacter"/>
+                <Button Content="&#x221E;" Grid.Row="0" HorizontalAlignment="Center" Tag="infinity" Click="InsertCharacter"/>
+                <Button Content="&#x2192;" Grid.Row="0" HorizontalAlignment="Center" Tag="->" Click="InsertCharacter"/>
+                <Button Content="&#x221A;" Grid.Row="0" HorizontalAlignment="Center" Tag="sqrt" Click="InsertCharacter"/>
             </StackPanel>
             <StackPanel x:Name="Row2" Orientation="Horizontal" HorizontalAlignment="Center" Grid.Column="0" Grid.Row="1">
-                <Button Content="asdf" Grid.Row="0" HorizontalAlignment="Center"/>
-                <Button Content="asdf2" Grid.Row="0" HorizontalAlignment="Center"/>
+                <Button Content="{}{" Grid.Row="0" HorizontalAlignment="Center" Tag="{}{" Click="InsertCharacter"/>
+                <Button Content="{}}" Grid.Row="0" HorizontalAlignment="Center" Tag="{}}" Click="InsertCharacter"/>
+                <Button Content="(" Grid.Row="0" HorizontalAlignment="Center" Tag="(" Click="InsertCharacter"/>
+                <Button Content=")" Grid.Row="0" HorizontalAlignment="Center" Tag=")" Click="InsertCharacter"/>
+                <Button Content="&#x2202;" Grid.Row="0" HorizontalAlignment="Center" Tag="d" Click="InsertCharacter"/>
+                <Button Content="&#x222B;" Grid.Row="0" HorizontalAlignment="Center" Tag="integrate from x=0 to infinity" Click="InsertCharacter"/>
             </StackPanel>
             <StackPanel x:Name="Row3" Orientation="Horizontal" HorizontalAlignment="Center" Grid.Column="0" Grid.Row="2">
-                <Button Content="asdf" Grid.Row="0" HorizontalAlignment="Center"/>
-                <Button Content="asdf2" Grid.Row="0" HorizontalAlignment="Center"/>
+                <Button Content="&#x2200;" Grid.Row="0" HorizontalAlignment="Center" Tag="for every" Click="InsertCharacter"/>
+                <Button Content="&#x2203;" Grid.Row="0" HorizontalAlignment="Center" Tag="exists" Click="InsertCharacter"/>
+                <Button Content="&#x2227;" Grid.Row="0" HorizontalAlignment="Center" Tag="and" Click="InsertCharacter"/>
+                <Button Content="&#x2228;" Grid.Row="0" HorizontalAlignment="Center" Tag="or" Click="InsertCharacter"/>
             </StackPanel>
-            
         </Grid>
     </Grid>
 </Page>

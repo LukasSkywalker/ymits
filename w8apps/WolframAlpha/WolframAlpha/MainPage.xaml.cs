@@ -156,5 +156,14 @@ namespace WolframAlpha
             RoamingSettings.Values["History"] = null;
             HistoryListBox.ItemsSource = null;
         }
+
+        private void InsertCharacter(object sender, RoutedEventArgs e)
+        {
+            Button btn = sender as Button;
+            String value = (String)btn.Tag;
+            searchTextBox.Text += value;
+            searchTextBox.Select(searchTextBox.Text.Length, 0);
+            searchTextBox.Focus(Windows.UI.Xaml.FocusState.Keyboard);
+        }
     }
 }
