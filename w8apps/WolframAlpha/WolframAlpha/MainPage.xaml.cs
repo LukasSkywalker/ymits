@@ -29,12 +29,22 @@ namespace WolframAlpha
     /// </summary>
     public sealed partial class MainPage : Page
     {
+        private int flyoutOffset;
         public ApplicationDataContainer RoamingSettings = ApplicationData.Current.RoamingSettings;
 
         public MainPage()
         {
             this.InitializeComponent();
             ApplicationData.Current.DataChanged += new TypedEventHandler<ApplicationData, object>(DataChangeHandler);
+            Windows.UI.ViewManagement.InputPane.GetForCurrentView().Showing += (s, args) =>
+            {
+                flyoutOffset = (int)args.OccludedRect.Height;
+                AdditionalKeyboard.Margin = new Thickness(0, 0, 0, (double)flyoutOffset);
+            };
+            Windows.UI.ViewManagement.InputPane.GetForCurrentView().Hiding += (s, args) =>
+            {
+                AdditionalKeyboard.Margin = new Thickness(0, 0, 0, 0);
+            };
         }
 
         private void DataChangeHandler(ApplicationData sender, object args)
@@ -129,7 +139,7 @@ namespace WolframAlpha
         {
             String QueryText = searchTextBox.Text;
             AddToHistory(QueryText);
-            this.Frame.Navigate(typeof(SearchResultsPage), QueryText);
+            this.Frame.Navigate(typeof(ItemDetailPage), QueryText);
         }
 
         private void History_SelectionChanged(object sender, SelectionChangedEventArgs e)

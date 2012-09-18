@@ -39,12 +39,21 @@ namespace WolframAlpha
         protected async override void OnNavigatedTo(NavigationEventArgs e)
         {
             base.OnNavigatedTo(e);
+            String queryText = (String)e.Parameter;
+
+            this.DefaultViewModel["QueryText"] = '\u201c' + queryText + '\u201d';
+
+            string address = String.Format(App.ServiceURL, App.AppId, WebUtility.UrlEncode(queryText));
+
+            Task<String> sourceTask = Helper.GetResultAsync(address);
+            String source = await sourceTask;
+            QueryResult result = Helper.ParseResult(source);
+            App.QueryResult = result;
+            App.QueryText = queryText;
 
             this.DefaultViewModel["Results"] = App.QueryResult;
 
-            /*int index = ((int)e.Parameter);
-            itemListView.SelectedIndex = index;
-            itemListView.ScrollIntoView(itemListView.Items[index]);*/
+            VisualStateManager.GoToState(this, "ResultsFound", true);
 
             if (App.QueryResult.Errors != null)
             {

@@ -22,8 +22,9 @@
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
             <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
-        <ListBox x:Name="HistoryListBox" Grid.Column="0" Margin="12,12,12,64" Width="320"
+        <ListBox x:Name="HistoryListBox" Grid.Column="0" Grid.Row="0"  Margin="12,12,12,64" Width="320"
                  SelectionChanged="History_SelectionChanged" SelectedValuePath="Text">
             <ListBox.ItemContainerStyle>
                 <Style TargetType="ListBoxItem">
@@ -39,17 +40,16 @@
                         </Grid.ColumnDefinitions>
                         <TextBlock Text="{Binding Text}" Grid.Column="0" HorizontalAlignment="Left"/>
                         <TextBlock Text="{Binding DateTime,Converter={StaticResource DateTimeConverter}}" Grid.Column="1" HorizontalAlignment="Right"/>
-                        
                     </Grid>
                 </DataTemplate>
             </ListBox.ItemTemplate>
         </ListBox>
-        <Button Content="Clear" Grid.Column="0" HorizontalAlignment="Center" VerticalAlignment="Bottom" Margin="0,0,0,12" Click="ClearHistory"/>
-        <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Center">
+        <Button Content="Clear" Grid.Column="0" Grid.Row="0" HorizontalAlignment="Center" VerticalAlignment="Bottom" Margin="0,0,0,12" Click="ClearHistory"/>
+        <StackPanel Grid.Column="1" Grid.Row="0" Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Center">
             <TextBox x:Name="searchTextBox" Margin="0,0,0,0" TabIndex="0" TextWrapping="Wrap" Text="" VerticalAlignment="Center" Width="268" KeyUp="Search_KeyUp"/>
             <Button Content="Search" Margin="0,0,0,0" TabIndex="1" VerticalAlignment="Center" Click="Button_Click_1"/>
         </StackPanel>
-        <Grid x:Name="ButtonBox" Grid.Column="2" Width="200" Margin="12,12,12,12">
+        <Grid x:Name="ButtonBox" Grid.Column="2" Grid.Row="0" Width="200" Margin="12,12,12,12">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*"/>
                 <ColumnDefinition Width="*"/>
@@ -65,6 +65,29 @@
             <TextBlock Grid.Column="0" Grid.ColumnSpan="5" Grid.Row="0" Text="General" FontSize="20"/>
             <TextBlock Grid.Column="0" Grid.ColumnSpan="5" Grid.Row="1" Text="Calculus/Analysis" FontSize="20"/>
             <TextBlock Grid.Column="0" Grid.ColumnSpan="5" Grid.Row="2" Text="Algebra" FontSize="20"/>
+        </Grid>
+        <Grid x:Name="AdditionalKeyboard" Grid.Column="0" Grid.ColumnSpan="3" Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+            <StackPanel x:Name="Row1" Orientation="Horizontal" HorizontalAlignment="Center" Grid.Column="0" Grid.Row="0">
+                <Button Content="asdf" Grid.Row="0" HorizontalAlignment="Center"/>
+                <Button Content="asdf2" Grid.Row="0" HorizontalAlignment="Center"/>
+            </StackPanel>
+            <StackPanel x:Name="Row2" Orientation="Horizontal" HorizontalAlignment="Center" Grid.Column="0" Grid.Row="1">
+                <Button Content="asdf" Grid.Row="0" HorizontalAlignment="Center"/>
+                <Button Content="asdf2" Grid.Row="0" HorizontalAlignment="Center"/>
+            </StackPanel>
+            <StackPanel x:Name="Row3" Orientation="Horizontal" HorizontalAlignment="Center" Grid.Column="0" Grid.Row="2">
+                <Button Content="asdf" Grid.Row="0" HorizontalAlignment="Center"/>
+                <Button Content="asdf2" Grid.Row="0" HorizontalAlignment="Center"/>
+            </StackPanel>
+            
         </Grid>
     </Grid>
 </Page>
