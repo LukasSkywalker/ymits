@@ -6,7 +6,7 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:common="using:WolframAlpha.Common"
-    DataContext="{Binding History}"
+    xmlns:cfo="using:CharmFlyoutLibrary"
     mc:Ignorable="d">
     
     <Page.Resources>
@@ -24,6 +24,28 @@
             <RowDefinition Height="*"/>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
+        <cfo:CharmFlyout Grid.RowSpan="2"
+           x:Name="flyoutAbout"
+           Heading="About"
+           HeadingBackgroundBrush="#FF4E0000">
+            <StackPanel>
+                <TextBlock
+                   FontSize="16">Wolfram|Alpha by Lukas Diener</TextBlock>
+                <TextBlock
+                   FontSize="16">For support:</TextBlock>
+                <HyperlinkButton>http://lukasdiener.tk</HyperlinkButton>
+            </StackPanel>
+        </cfo:CharmFlyout>
+        <cfo:CharmFlyout Grid.RowSpan="2"
+           x:Name="flyoutSettings"
+           Heading="About"
+           HeadingBackgroundBrush="#FF4E0000">
+            <StackPanel>
+                <TextBlock
+                   FontSize="16">Wolfram|Alpha by Lukas Diener</TextBlock>
+                <CheckBox Content="Enable location detection" IsChecked="{Binding}" HorizontalAlignment="Left" Margin="0,0,0,0" VerticalAlignment="Top" Foreground="Black" Background="{StaticResource CheckBoxBackgroundThemeBrush}"/>
+            </StackPanel>
+        </cfo:CharmFlyout>
         <ListBox x:Name="HistoryListBox" Grid.Column="0" Grid.Row="0"  Margin="12,12,12,64" Width="320"
                  SelectionChanged="History_SelectionChanged" SelectedValuePath="Text">
             <ListBox.ItemContainerStyle>

@@ -7,10 +7,12 @@ using System.Runtime.Serialization;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Serialization;
+using Windows.Devices.Geolocation;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
 using Windows.Storage;
 using Windows.System;
+using Windows.UI.ApplicationSettings;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Primitives;
@@ -31,11 +33,18 @@ namespace WolframAlpha
     {
         private int flyoutOffset;
         public ApplicationDataContainer RoamingSettings = ApplicationData.Current.RoamingSettings;
+        public bool LocationEnabled { get; set; }
+
+        public Geocoordinate Coordinates { get; set; }
 
         public MainPage()
         {
             this.InitializeComponent();
+            this.DataContext = LocationEnabled;
+
             ApplicationData.Current.DataChanged += new TypedEventHandler<ApplicationData, object>(DataChangeHandler);
+            SettingsPane.GetForCurrentView().CommandsRequested += CommandsRequested;
+
             Windows.UI.ViewManagement.InputPane.GetForCurrentView().Showing += (s, args) =>
             {
                 flyoutOffset = (int)args.OccludedRect.Height;
@@ -45,6 +54,12 @@ namespace WolframAlpha
             {
                 AdditionalKeyboard.Margin = new Thickness(0, 0, 0, 0);
             };
+        }
+
+        private void CommandsRequested(SettingsPane sender, SettingsPaneCommandsRequestedEventArgs args)
+        {
+            args.Request.ApplicationCommands.Add(new SettingsCommand("A", "About", (p) => { flyoutAbout.IsOpen = true; }));
+            args.Request.ApplicationCommands.Add(new SettingsCommand("A", "Settings", (p) => { flyoutSettings.IsOpen = true; }));
         }
 
         private void DataChangeHandler(ApplicationData sender, object args)
@@ -117,9 +132,19 @@ namespace WolframAlpha
         /// </summary>
         /// <param name="e">Event data that describes how this page was reached.  The Parameter
         /// property is typically used to configure the page.</param>
-        protected override void OnNavigatedTo(NavigationEventArgs e)
+        protected async override void OnNavigatedTo(NavigationEventArgs e)
         {
             HistoryListBox.ItemsSource = Deserialize((String)RoamingSettings.Values["History"]);
+
+            if (LocationEnabled)
+            {
+                Coordinates = await GeoLocator.GetGeolocation();
+            }
+        }
+
+        private bool NullToFalse(object a) {
+            if (a == null) return false;
+            else return (bool)a;
         }
 
         private void Button_Click_1(object sender, RoutedEventArgs e)
@@ -137,6 +162,9 @@ namespace WolframAlpha
 
         private void startSearch()
         {
+            if (LocationEnabled) {
+            
+            }
             String QueryText = searchTextBox.Text;
             AddToHistory(QueryText);
             this.Frame.Navigate(typeof(ItemDetailPage), QueryText);

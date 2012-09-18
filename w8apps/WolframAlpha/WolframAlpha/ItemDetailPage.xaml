@@ -37,6 +37,8 @@
         <Grid x:Name="titlePanel">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto"/>
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
             <Button
@@ -44,12 +46,14 @@
                 Click="GoBack"
                 IsEnabled="{Binding DefaultViewModel.CanGoBack, ElementName=pageRoot}"
                 Style="{StaticResource BackButtonStyle}"/>
-            <TextBlock x:Name="pageTitle" Text="{StaticResource AppName}"  Grid.Column="1" Style="{StaticResource PageHeaderTextStyle}"/>
-            <!-- TODO was Binding Group.Title-->
+            <TextBlock x:Name="pageTitle" Grid.Column="1" Text="{StaticResource AppName}" IsHitTestVisible="false" Style="{StaticResource PageHeaderTextStyle}"  />
+            <TextBlock x:Name="resultText" Grid.Column="2" Text="Results for&#x00a0;" IsHitTestVisible="false" Style="{StaticResource PageSubheaderTextStyle}"/>
+            <TextBlock x:Name="queryText" Grid.Column="3" Text="{Binding DefaultViewModel.QueryText, ElementName=pageRoot}" IsHitTestVisible="false" Style="{StaticResource PageSubheaderTextStyle}"/>
         </Grid>
 
         <!-- // RIGHT COLUMN  - Pod list and Sources listbox // -->
-        <Grid Grid.Row="1" Grid.Column="0" x:Name="itemsListGrid"  Margin="120,0,0,20" DataContext="{Binding Source={StaticResource itemsViewSource}}">
+        <Grid Grid.Row="1" Grid.Column="0" x:Name="itemsListGrid"  Margin="120,0,0,20"
+              DataContext="{Binding Source={StaticResource itemsViewSource}}">
             <Grid.RowDefinitions>
                 <RowDefinition Height="*"/>
                 <RowDefinition Height="Auto"/>

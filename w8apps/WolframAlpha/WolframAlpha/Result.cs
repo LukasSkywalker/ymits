@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using System.Text;
@@ -41,7 +42,7 @@ namespace WolframAlpha
         public bool ParseTimedOut { get; set; }
 
         [XmlElement("pod")]
-        public Pod[] Pods { get; set; }
+        public ObservableCollection<Pod> Pods { get; set; }
 
         [XmlArray("assumptions")]
         [XmlArrayItem("assumption")]
@@ -65,7 +66,7 @@ namespace WolframAlpha
         }
 
         public Pod getPodByTitle(String Title) {
-            for (int i = 0; i < Pods.Length; i++)
+            for (int i = 0; i < Pods.Count; i++)
             {
                 if (Pods[i].Title.Equals(Title))
                     return Pods[i];
@@ -74,7 +75,7 @@ namespace WolframAlpha
         }
 
         public Pod getPodById(String Id){
-            for (int i = 0; i < Pods.Length; i++)
+            for (int i = 0; i < Pods.Count; i++)
             {
                 if (Pods[i].Id.Equals(Id))
                     return Pods[i];
@@ -83,7 +84,8 @@ namespace WolframAlpha
         }
 
         public int getIndex(Pod Pod) {
-            for (int i = 0; i < Pods.Length; i++) {
+            for (int i = 0; i < Pods.Count; i++)
+            {
                 if (Pods[i].Equals(Pod))
                     return i;
             }
@@ -93,7 +95,7 @@ namespace WolframAlpha
         public int getIndex(SubPod SubPod)
         {
             int counter = -1;
-            for (int i = 0; i < Pods.Length; i++)
+            for (int i = 0; i < Pods.Count; i++)
             {
                 for (int j = 0; j < Pods[i].SubPods.Length; j++)
                 {
@@ -106,7 +108,7 @@ namespace WolframAlpha
         }
 
         public int getIndexByPodTitle(String Title){
-            for (int i = 0; i < Pods.Length; i++)
+            for (int i = 0; i < Pods.Count; i++)
             {
                 if (Pods[i].Title.Equals(Title))
                     return i;
@@ -114,8 +116,19 @@ namespace WolframAlpha
             return -1;
         }
 
+        public int getIndexById(String Id)
+        {
+            for (int i = 0; i < Pods.Count; i++)
+            {
+                if (Pods[i].Id.Equals(Id))
+                    return i;
+            }
+            return -1;
+        }
+
         public Pod getPodBySubPod(SubPod SearchSubPod) {
-            for (int i = 0; i < Pods.Length; i++) {
+            for (int i = 0; i < Pods.Count; i++)
+            {
                 Pod Pod = Pods[i];
                 for (int j = 0; j < Pod.SubPods.Length; j++) {
                     if(SearchSubPod.Equals(Pod.SubPods[j]))

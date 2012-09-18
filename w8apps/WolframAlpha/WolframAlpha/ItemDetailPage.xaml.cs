@@ -29,6 +29,8 @@ namespace WolframAlpha
     public sealed partial class ItemDetailPage : WolframAlpha.Common.LayoutAwarePage
     {
         private Dictionary<String, Dictionary<String, int>> StatesMap;
+        private QueryResult QueryResult;
+        private String QueryText;
 
         public ItemDetailPage()
         {
@@ -48,24 +50,24 @@ namespace WolframAlpha
             Task<String> sourceTask = Helper.GetResultAsync(address);
             String source = await sourceTask;
             QueryResult result = Helper.ParseResult(source);
-            App.QueryResult = result;
-            App.QueryText = queryText;
+            QueryResult = result;
+            QueryText = queryText;
 
-            this.DefaultViewModel["Results"] = App.QueryResult;
+            this.DefaultViewModel["Results"] = QueryResult;
 
             VisualStateManager.GoToState(this, "ResultsFound", true);
 
-            if (App.QueryResult.Errors != null)
+            if (QueryResult.Errors != null)
             {
-                foreach(Error Error in App.QueryResult.Errors){
+                foreach(Error Error in QueryResult.Errors){
                     MessageDialog md = new MessageDialog(Error.Code+" "+Error.Message, "Error");
                     await md.ShowAsync();
                 }
             }
 
-            if (App.QueryResult.Warnings != null)
+            if (QueryResult.Warnings != null)
             {
-                foreach (Warning Warning in App.QueryResult.Warnings)
+                foreach (Warning Warning in QueryResult.Warnings)
                 {
                     MessageDialog md = new MessageDialog("Something bad happened. But we don't know what, so just go on.", "Warning");
                     if (Warning.Spellcheck != null) {
@@ -261,7 +263,7 @@ namespace WolframAlpha
                 }
             }
 
-            string address = String.Format(App.ServiceURLState, App.AppId, WebUtility.UrlEncode(App.QueryText), StateName, multiplier, PodId);
+            string address = String.Format(App.ServiceURLState, App.AppId, WebUtility.UrlEncode(QueryText), StateName, multiplier, PodId);
 
             System.Diagnostics.Debug.WriteLine(address);
 
@@ -274,10 +276,13 @@ namespace WolframAlpha
 
             
             Pod Pod = result.Pods[0];
-            int oldIndex = App.QueryResult.getIndexByPodTitle(Pod.Title);
-            System.Diagnostics.Debug.WriteLine("Updating Pod '" + Pod.Title+"' at position "+oldIndex);
-            App.QueryResult.Pods[oldIndex] = Pod;
-            ((QueryResult)this.DefaultViewModel["Results"]).Pods[oldIndex] = Pod;
+            int oldIndex = QueryResult.getIndexById(Pod.Id);
+            if (oldIndex != -1)
+            {
+                System.Diagnostics.Debug.WriteLine("Updating Pod '" + Pod.Title + " " + Pod.Id + "' at position " + oldIndex);
+                QueryResult.Pods[oldIndex] = Pod;
+                ((QueryResult)this.DefaultViewModel["Results"]).Pods[oldIndex] = Pod;
+            }
         }
 
         private void ItemSource_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -355,7 +360,7 @@ namespace WolframAlpha
         private async void SourcesButton_Click(object sender, RoutedEventArgs e)
         {
             var menu = new PopupMenu();
-            foreach (Source Source in App.QueryResult.Sources) {
+            foreach (Source Source in QueryResult.Sources) {
                 menu.Commands.Add(new UICommand(Source.Text, async (command) =>
                 {
                     await Launcher.LaunchUriAsync(new Uri(Source.URL));
