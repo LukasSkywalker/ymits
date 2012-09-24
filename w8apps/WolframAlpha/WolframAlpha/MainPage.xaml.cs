@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Serialization;
 using Windows.Devices.Geolocation;
+using Windows.Devices.Input;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
 using Windows.Storage;
@@ -19,6 +20,7 @@ using Windows.UI.Xaml.Controls.Primitives;
 using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
+using Windows.UI.Xaml.Media.Animation;
 using Windows.UI.Xaml.Navigation;
 using WolframAlpha.Common;
 
@@ -45,14 +47,34 @@ namespace WolframAlpha
             ApplicationData.Current.DataChanged += new TypedEventHandler<ApplicationData, object>(DataChangeHandler);
             SettingsPane.GetForCurrentView().CommandsRequested += CommandsRequested;
 
+            int isKeyboardPresent = new KeyboardCapabilities().KeyboardPresent;
+            int isMousePresent = new MouseCapabilities().MousePresent;
+            int isTouchPresent = new TouchCapabilities().TouchPresent;
+
+            // show additional buttons when keyboard is present
+            // hide if there is no keyboard, but show when Virtual Keyboard is shown
+            if(isKeyboardPresent == 1)
+                AdditionalKeyboard.Visibility = Visibility.Visible;
+
+            // add event handler
+            // show keyboard when Virtual Keyboard is shown
             Windows.UI.ViewManagement.InputPane.GetForCurrentView().Showing += (s, args) =>
             {
                 flyoutOffset = (int)args.OccludedRect.Height;
+                // show buttons always
                 AdditionalKeyboard.Margin = new Thickness(0, 0, 0, (double)flyoutOffset);
+                AdditionalKeyboard.Visibility = Visibility.Visible;
             };
+
+            // hide keyboard when Virtual Keys hidden AND no keyboard
+            // let them stay when Virtual Keys hidden AND keyboard present
             Windows.UI.ViewManagement.InputPane.GetForCurrentView().Hiding += (s, args) =>
             {
+                //downAnimation.Begin();
+                // hide buttons when no keyboard
                 AdditionalKeyboard.Margin = new Thickness(0, 0, 0, 0);
+                if(new KeyboardCapabilities().KeyboardPresent == 0)
+                    AdditionalKeyboard.Visibility = Visibility.Collapsed;
             };
         }
 
@@ -188,7 +210,7 @@ namespace WolframAlpha
         private void InsertCharacter(object sender, RoutedEventArgs e)
         {
             Button btn = sender as Button;
-            String value = (String)btn.Tag;
+            String value = (String)btn.Content;
             searchTextBox.Text += value;
             searchTextBox.Select(searchTextBox.Text.Length, 0);
             searchTextBox.Focus(Windows.UI.Xaml.FocusState.Keyboard);

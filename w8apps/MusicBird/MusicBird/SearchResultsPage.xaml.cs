@@ -378,8 +378,9 @@ namespace MusicBird
                         string title = name;
                         string url = g.ToString();
                         string[] data = StringHelper.getArtistAndTitle(name);
-                        if (url.IndexOf("4shared") == -1)
-                        {
+                        // 4shared lets users download again (2012-09-20)
+                        //if (url.IndexOf("4shared") == -1)
+                        //{
                             int match1 = getDistance(searchterm, data[0] + " " + data[1]);
                             int match2 = getDistance(searchterm, data[1]+" "+data[0]);
                             int match = Math.Min(match1, match2);
@@ -392,7 +393,7 @@ namespace MusicBird
                                 }
                             }
                             trackList.Insert(insertPos, item);
-                        }
+                        //}
                         m = m.NextMatch();
                         n = n.NextMatch();
                     }

@@ -258,6 +258,12 @@ namespace WolframAlpha
         [XmlAttribute("type")]
         public String Type { get; set; }
 
+        [XmlAttribute("word")]
+        public String Word { get; set; }
+
+        [XmlAttribute("template")]
+        public String Template { get; set; }
+
         [XmlElement("value")]
         public Value[] Values { get; set; }
     }

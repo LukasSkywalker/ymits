@@ -34,24 +34,35 @@
         </Grid.ColumnDefinitions>
 
         <!-- Back button and page title -->
-        <Grid x:Name="titlePanel">
+        <Grid x:Name="titlePanel" Grid.ColumnSpan="2">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="Auto"/>
-                <ColumnDefinition Width="Auto"/>
-                <ColumnDefinition Width="Auto"/>
                 <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
             </Grid.ColumnDefinitions>
-            <Button
-                x:Name="backButton"
-                Click="GoBack"
-                IsEnabled="{Binding DefaultViewModel.CanGoBack, ElementName=pageRoot}"
-                Style="{StaticResource BackButtonStyle}"/>
-            <TextBlock x:Name="pageTitle" Grid.Column="1" Text="{StaticResource AppName}" IsHitTestVisible="false" Style="{StaticResource PageHeaderTextStyle}"  />
-            <TextBlock x:Name="resultText" Grid.Column="2" Text="Results for&#x00a0;" IsHitTestVisible="false" Style="{StaticResource PageSubheaderTextStyle}"/>
-            <TextBlock x:Name="queryText" Grid.Column="3" Text="{Binding DefaultViewModel.QueryText, ElementName=pageRoot}" IsHitTestVisible="false" Style="{StaticResource PageSubheaderTextStyle}"/>
+            <ProgressBar x:Name="progressMeter" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Grid.Row="0" Grid.ColumnSpan="2"/>
+            <StackPanel Orientation="Horizontal" Grid.Row="1" Grid.Column="0">
+                <Button
+                    x:Name="backButton"
+                    Click="GoBack"
+                    IsEnabled="{Binding DefaultViewModel.CanGoBack, ElementName=pageRoot}"
+                    Style="{StaticResource BackButtonStyle}"
+                    DataContext="{Binding Source={StaticResource itemsViewSource}}"/>
+            
+                <TextBlock x:Name="pageTitle" Text="{StaticResource AppName}" IsHitTestVisible="false" Style="{StaticResource PageHeaderTextStyle}"  />
+                <TextBlock x:Name="resultText" Text="Results for&#x00a0;" IsHitTestVisible="false" Style="{StaticResource PageSubheaderTextStyle}"/>
+                <TextBlock x:Name="queryText" Text="{Binding DefaultViewModel.QueryTextQuoted, ElementName=pageRoot}" IsHitTestVisible="false" Style="{StaticResource PageSubheaderTextStyle}"/>
+                <TextBlock x:Name="spaceText" Text=",&#160;" IsHitTestVisible="false" Style="{StaticResource PageSubheaderTextStyle}"/>
+                <TextBlock x:Name="assumption" IsHitTestVisible="false" Style="{StaticResource PageSubheaderTextStyle}"/>
+                <TextBlock Text="&#160;" IsHitTestVisible="False" Style="{StaticResource PageSubheaderTextStyle}"/>
+            </StackPanel>
+            <Button Grid.Row="1"  Grid.Column="1" x:Name="otherAssumptions" Content="Other meanings" Click="ShowAssumptionsPopup" Margin="0,82,0,20"/>
         </Grid>
 
-        <!-- // RIGHT COLUMN  - Pod list and Sources listbox // -->
+        <!-- // LEFT COLUMN  - Pod list and Sources listbox // -->
         <Grid Grid.Row="1" Grid.Column="0" x:Name="itemsListGrid"  Margin="120,0,0,20"
               DataContext="{Binding Source={StaticResource itemsViewSource}}">
             <Grid.RowDefinitions>
@@ -61,17 +72,24 @@
         
         
         <!-- Vertical scrolling item list -->
-        <ListView
+            <ListView
             x:Name="itemListView"
             AutomationProperties.AutomationId="ItemsListView"
             AutomationProperties.Name="Items"
             TabIndex="1"
             Grid.Row="0"
+            SelectionMode="Single"
             Margin="-10,-10,0,0"
             ItemsSource="{Binding}"
             IsSwipeEnabled="False"
             SelectionChanged="ItemListView_SelectionChanged"
-            ItemTemplate="{StaticResource Standard130ItemTemplate}"/>
+            ItemTemplate="{StaticResource Standard130ItemTemplate}">
+                <ListView.ItemContainerStyle>
+                    <Style TargetType="ListViewItem">
+                        <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                    </Style>
+                </ListView.ItemContainerStyle>
+            </ListView>
             <!--<Button x:Name="SourcesButton" Grid.Row="1" Content="Sources" DataContext="{Binding Source={StaticResource sourcesViewSource}}"
                     Visibility="{Binding Text, Converter={StaticResource NullToVisibilityConverter}}" Click="SourcesButton_Click"/>-->
             <!-- TODO<ListBox x:Name="SourcesListBox" DataContext="{Binding Source={StaticResource resultsViewSource}}"
@@ -81,7 +99,7 @@
         </Grid>
 
         
-		<!-- // Details/SubPod list // -->
+		<!-- // RIGHT COLUMN - Details/SubPod list // -->
         <Grid Grid.Row="1" Grid.Column="1" Margin="0,0,20,20" x:Name="itemDetailGrid"
               DataContext="{Binding SelectedItem, ElementName=itemListView}">
             <Grid.RowDefinitions>
@@ -89,7 +107,7 @@
                 <RowDefinition Height="*"/>
                 <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
-            <TextBlock Grid.Row="0" Margin="50,0,20,0" Text="{Binding SelectedItem.Title, ElementName=itemListView}"
+                <TextBlock Grid.Row="0" Margin="50,0,20,0" Text="{Binding SelectedItem.Title, ElementName=itemListView}"
                        x:Name="itemTitle" Style="{StaticResource SubheaderTextStyle}"/>
             <ScrollViewer
             x:Name="itemDetail"
@@ -99,17 +117,31 @@
             Style="{StaticResource VerticalScrollViewerStyle}">
                 <StackPanel x:Name="itemDetailTitlePanel" Grid.Row="1" Grid.Column="1">
                     <ListView x:Name="SubPodsListView" Grid.Row="0"
-                      ItemsSource="{Binding SubPods}">
+                      ItemsSource="{Binding SubPods}" SelectionMode="None">
+                        <ListView.ItemContainerStyle>
+                            <Style TargetType="ListViewItem">
+                                <Setter Property="HorizontalContentAlignment" Value="Stretch"></Setter>
+                                <Setter Property="Margin" Value="0,0,0,0"></Setter>
+                            </Style>
+                        </ListView.ItemContainerStyle>
                         <ListView.ItemTemplate>
                             <DataTemplate>
-                                <Grid x:Name="itemDetailGrid" Margin="0,60,0,50">
-                                    <Grid.RowDefinitions>
-                                        <RowDefinition Height="Auto"/>
-                                        <RowDefinition Height="Auto"/>
-                                    </Grid.RowDefinitions>
-                                    <Image Grid.Row="0" Margin="0,0,20,50" Source="{Binding ImageSource}" Stretch="None" AutomationProperties.Name="{Binding Title}"/>
-                                    <TextBlock Grid.Row="1" Margin="0,20,0,0" Text="{Binding Plaintext}" Style="{StaticResource BodyTextStyle}"/>
-                                </Grid>
+                                <Border Margin="0,0,0,0" BorderBrush="White" BorderThickness="0,0,0,1">
+                                    <Grid x:Name="itemDetailGrid" Margin="0,30,0,20">
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="Auto"/>
+                                            <RowDefinition Height="Auto"/>
+                                            <RowDefinition Height="Auto"/>
+                                        </Grid.RowDefinitions>
+                                        <TextBlock Grid.Row="0" Text="{Binding Title}"/>
+                                        <Image Grid.Row="1" Margin="0,0,20,50" Source="{Binding ImageSource}" Stretch="None"
+                                               AutomationProperties.Name="{Binding Title}" />
+                                        <StackPanel Orientation="Horizontal" Grid.Row="2">
+                                            <Button Tag="{Binding ImageSource}" Style="{StaticResource SaveButtonStyle}" Margin="0,0,20,10" Click="SaveImage"/>
+                                            <Button Tag="{Binding Plaintext}" Style="{StaticResource TxtButtonStyle}" Margin="0,0,20,10" Click="CopyPlaintext"/>
+                                        </StackPanel>
+                                    </Grid>
+                                </Border>
                             </DataTemplate>
                         </ListView.ItemTemplate>
                     </ListView>
@@ -131,7 +163,6 @@
                          Visibility="{Binding Infos, Converter={StaticResource NullToVisibilityConverter}}">
                 </ListBox>
             </Grid>
-            
         </Grid>
         <VisualStateManager.VisualStateGroups>
 

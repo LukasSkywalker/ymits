@@ -24,7 +24,7 @@
             <RowDefinition Height="*"/>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
-        <cfo:CharmFlyout Grid.RowSpan="2"
+        <cfo:CharmFlyout Grid.RowSpan="2" Grid.Column="2"
            x:Name="flyoutAbout"
            Heading="About"
            HeadingBackgroundBrush="#FF4E0000">
@@ -36,7 +36,7 @@
                 <HyperlinkButton>http://lukasdiener.tk</HyperlinkButton>
             </StackPanel>
         </cfo:CharmFlyout>
-        <cfo:CharmFlyout Grid.RowSpan="2"
+        <cfo:CharmFlyout Grid.RowSpan="2" Grid.Column="2"
            x:Name="flyoutSettings"
            Heading="About"
            HeadingBackgroundBrush="#FF4E0000">
@@ -88,35 +88,75 @@
             <TextBlock Grid.Column="0" Grid.ColumnSpan="5" Grid.Row="1" Text="Calculus/Analysis" FontSize="20"/>
             <TextBlock Grid.Column="0" Grid.ColumnSpan="5" Grid.Row="2" Text="Algebra" FontSize="20"/>
         </Grid>
-        <Grid x:Name="AdditionalKeyboard" Grid.Column="0" Grid.ColumnSpan="3" Grid.Row="1">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*"/>
-            </Grid.ColumnDefinitions>
+        <Grid x:Name="AdditionalKeyboard" Grid.Column="0" Grid.ColumnSpan="3" Grid.Row="1" Visibility="Visible" Background="Black">
             <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
             <StackPanel x:Name="Row1" Orientation="Horizontal" HorizontalAlignment="Center" Grid.Column="0" Grid.Row="0">
-                <Button Content="&#x03C0;" Grid.Row="0" HorizontalAlignment="Center" Tag="pi" Click="InsertCharacter"/>
-                <Button Content="&#x2211;" Grid.Row="0" HorizontalAlignment="Center" Tag="sum from x=0 to 10" Click="InsertCharacter"/>
-                <Button Content="&#x221E;" Grid.Row="0" HorizontalAlignment="Center" Tag="infinity" Click="InsertCharacter"/>
-                <Button Content="&#x2192;" Grid.Row="0" HorizontalAlignment="Center" Tag="->" Click="InsertCharacter"/>
-                <Button Content="&#x221A;" Grid.Row="0" HorizontalAlignment="Center" Tag="sqrt" Click="InsertCharacter"/>
+                <Button Content="&#x03C0;" Tag="pi" Click="InsertCharacter" Style="{StaticResource KeyboardButtonStyle}"/>
+                <Button Content="&#x00B0;" Tag="degree" Click="InsertCharacter" Style="{StaticResource KeyboardButtonStyle}"/>
+                <Button Content="&#x221E;" Tag="infinity" Click="InsertCharacter" Style="{StaticResource KeyboardButtonStyle}"/>
+                <Button Content="&#x221A;" Tag="sqrt" Click="InsertCharacter" Style="{StaticResource KeyboardButtonStyle}"/>
+                <Button Content="&#x222B;" Tag="integrate from x=0 to 10" Click="InsertCharacter" Style="{StaticResource KeyboardButtonStyle}"/>
+                <Button Content="&#x2211;" Tag="sum from x=0 to 10" Click="InsertCharacter" Style="{StaticResource KeyboardButtonStyle}"/>
+                <Button Content="&#x2202;" Tag="d" Click="InsertCharacter" Style="{StaticResource KeyboardButtonStyle}"/>
+                <Button Content="&#x03A0;" Tag="table" Click="InsertCharacter" Style="{StaticResource KeyboardButtonStyle}"/>
+                <Button Content="&#x2200;" Tag="for every" Click="InsertCharacter" Style="{StaticResource KeyboardButtonStyle}"/>
+                <Button Content="&#x2203;" Tag="exists" Click="InsertCharacter" Style="{StaticResource KeyboardButtonStyle}"/>
+                <Button Content="&#x222A;" Tag="Union" Click="InsertCharacter" Style="{StaticResource KeyboardButtonStyle}"/>
+                <Button Content="&#x2229;" Tag="Intersection" Click="InsertCharacter" Style="{StaticResource KeyboardButtonStyle}"/>
+                <Button Content="&#x2207;" Tag="gradient" Click="InsertCharacter" Style="{StaticResource KeyboardButtonStyle}"/>
+                <Button Content="&#x0394;" Tag="delta" Click="InsertCharacter" Style="{StaticResource KeyboardButtonStyle}"/>
             </StackPanel>
             <StackPanel x:Name="Row2" Orientation="Horizontal" HorizontalAlignment="Center" Grid.Column="0" Grid.Row="1">
-                <Button Content="{}{" Grid.Row="0" HorizontalAlignment="Center" Tag="{}{" Click="InsertCharacter"/>
-                <Button Content="{}}" Grid.Row="0" HorizontalAlignment="Center" Tag="{}}" Click="InsertCharacter"/>
-                <Button Content="(" Grid.Row="0" HorizontalAlignment="Center" Tag="(" Click="InsertCharacter"/>
-                <Button Content=")" Grid.Row="0" HorizontalAlignment="Center" Tag=")" Click="InsertCharacter"/>
-                <Button Content="&#x2202;" Grid.Row="0" HorizontalAlignment="Center" Tag="d" Click="InsertCharacter"/>
-                <Button Content="&#x222B;" Grid.Row="0" HorizontalAlignment="Center" Tag="integrate from x=0 to infinity" Click="InsertCharacter"/>
+                <Button Content="&#x03B1;" Tag="alpha" Click="InsertCharacter" Style="{StaticResource KeyboardButtonStyle}"/>
+                <Button Content="&#x03B2;" Tag="beta" Click="InsertCharacter" Style="{StaticResource KeyboardButtonStyle}"/>
+                <Button Content="&#x03B3;" Tag="gamma" Click="InsertCharacter" Style="{StaticResource KeyboardButtonStyle}"/>
+                <Button Content="&#x03B4;" Tag="delta" Click="InsertCharacter" Style="{StaticResource KeyboardButtonStyle}"/>
+                <Button Content="&#x03B5;" Tag="epsilon" Click="InsertCharacter" Style="{StaticResource KeyboardButtonStyle}"/>
+                <Button Content="&#x03B6;" Tag="zeta" Click="InsertCharacter" Style="{StaticResource KeyboardButtonStyle}"/>
+                <Button Content="&#x03B7;" Tag="eta" Click="InsertCharacter" Style="{StaticResource KeyboardButtonStyle}"/>
+                <Button Content="&#x03B8;" Tag="theta" Click="InsertCharacter" Style="{StaticResource KeyboardButtonStyle}"/>
+                <Button Content="&#x03BA;" Tag="kappa" Click="InsertCharacter" Style="{StaticResource KeyboardButtonStyle}"/>
+                <Button Content="&#x03BB;" Tag="lambda" Click="InsertCharacter" Style="{StaticResource KeyboardButtonStyle}"/>
+                <Button Content="&#x03BC;" Tag="mu" Click="InsertCharacter" Style="{StaticResource KeyboardButtonStyle}"/>
+                <Button Content="&#x03BD;" Tag="nu" Click="InsertCharacter" Style="{StaticResource KeyboardButtonStyle}"/>
+                <Button Content="&#x03BE;" Tag="xi" Click="InsertCharacter" Style="{StaticResource KeyboardButtonStyle}"/>
+                <Button Content="&#x03C1;" Tag="rho" Click="InsertCharacter" Style="{StaticResource KeyboardButtonStyle}"/>
             </StackPanel>
             <StackPanel x:Name="Row3" Orientation="Horizontal" HorizontalAlignment="Center" Grid.Column="0" Grid.Row="2">
-                <Button Content="&#x2200;" Grid.Row="0" HorizontalAlignment="Center" Tag="for every" Click="InsertCharacter"/>
-                <Button Content="&#x2203;" Grid.Row="0" HorizontalAlignment="Center" Tag="exists" Click="InsertCharacter"/>
-                <Button Content="&#x2227;" Grid.Row="0" HorizontalAlignment="Center" Tag="and" Click="InsertCharacter"/>
-                <Button Content="&#x2228;" Grid.Row="0" HorizontalAlignment="Center" Tag="or" Click="InsertCharacter"/>
+                <Button Content="&#x03C3;" Tag="sigma" Click="InsertCharacter" Style="{StaticResource KeyboardButtonStyle}"/>
+                <Button Content="&#x03C4;" Tag="tau" Click="InsertCharacter" Style="{StaticResource KeyboardButtonStyle}"/>
+                <Button Content="&#x03C6;" Tag="phi" Click="InsertCharacter" Style="{StaticResource KeyboardButtonStyle}"/>
+                <Button Content="&#x03C7;" Tag="chi" Click="InsertCharacter" Style="{StaticResource KeyboardButtonStyle}"/>
+                <Button Content="&#x03C8;" Tag="psi" Click="InsertCharacter" Style="{StaticResource KeyboardButtonStyle}"/>
+                <Button Content="&#x03C9;" Tag="omega" Click="InsertCharacter" Style="{StaticResource KeyboardButtonStyle}"/>
+                <Button Content="&#x0393;" Tag="gamma" Click="InsertCharacter" Style="{StaticResource KeyboardButtonStyle}"/>
+                <Button Content="&#x0398;" Tag="theta" Click="InsertCharacter" Style="{StaticResource KeyboardButtonStyle}"/>
+                <Button Content="&#x039B;" Tag="lambda" Click="InsertCharacter" Style="{StaticResource KeyboardButtonStyle}"/>
+                <Button Content="&#x039E;" Tag="xi" Click="InsertCharacter" Style="{StaticResource KeyboardButtonStyle}"/>
+                <Button Content="&#x03A5;" Tag="upsilon" Click="InsertCharacter" Style="{StaticResource KeyboardButtonStyle}"/>
+                <Button Content="&#x03A6;" Tag="phi" Click="InsertCharacter" Style="{StaticResource KeyboardButtonStyle}"/>
+                <Button Content="&#x03A8;" Tag="psi" Click="InsertCharacter" Style="{StaticResource KeyboardButtonStyle}"/>
+            </StackPanel>
+            <StackPanel x:Name="Row4" Orientation="Horizontal" HorizontalAlignment="Center" Grid.Column="0" Grid.Row="3">
+                <Button Content="&#x03A9;" Tag="omega" Click="InsertCharacter" Style="{StaticResource KeyboardButtonStyle}"/>
+                <Button Content="omega_inv" Tag="" Click="InsertCharacter" Style="{StaticResource KeyboardButtonStyle}"/>
+                <Button Content="&#x212B;" Tag="angström" Click="InsertCharacter" Style="{StaticResource KeyboardButtonStyle}"/>
+                <Button Content="&#x0127;" Tag="h with stroke" Click="InsertCharacter" Style="{StaticResource KeyboardButtonStyle}"/>
+                <Button Content="&#x2135;" Tag="aleph" Click="InsertCharacter" Style="{StaticResource KeyboardButtonStyle}"/>
+                <Button Content="&#x21D4;" Tag="&lt;-&gt;" Click="InsertCharacter" Style="{StaticResource KeyboardButtonStyle}"/>
+                <Button Content="&#x2192;" Tag="->" Click="InsertCharacter" Style="{StaticResource KeyboardButtonStyle}"/>
+                <Button Content="&#x2295;" Tag="direct sum" Click="InsertCharacter" Style="{StaticResource KeyboardButtonStyle}"/>
+                <Button Content="&#x2609;" Tag="sun" Click="InsertCharacter" Style="{StaticResource KeyboardButtonStyle}"/>
+                <Button Content="&#x2642;" Tag="man" Click="InsertCharacter" Style="{StaticResource KeyboardButtonStyle}"/>
+                <Button Content="&#x2640;" Tag="woman" Click="InsertCharacter" Style="{StaticResource KeyboardButtonStyle}"/>
+                <Button Content="&#x271D;" Tag="latin cross" Click="InsertCharacter" Style="{StaticResource KeyboardButtonStyle}"/>
+                <Button Content="&#x2227;" Tag="and" Click="InsertCharacter" Style="{StaticResource KeyboardButtonStyle}"/>
+                <Button Content="&#x2228;" Tag="or" Click="InsertCharacter" Style="{StaticResource KeyboardButtonStyle}"/>
             </StackPanel>
         </Grid>
     </Grid>

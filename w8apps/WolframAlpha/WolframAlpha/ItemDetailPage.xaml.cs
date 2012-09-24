@@ -3,9 +3,15 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Net.Http;
 using System.Threading.Tasks;
+using Windows.ApplicationModel.DataTransfer;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
+using Windows.Storage;
+using Windows.Storage.Pickers;
+using Windows.Storage.Provider;
+using Windows.Storage.Streams;
 using Windows.System;
 using Windows.UI.Popups;
 using Windows.UI.ViewManagement;
@@ -15,6 +21,7 @@ using Windows.UI.Xaml.Controls.Primitives;
 using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
+using Windows.UI.Xaml.Media.Animation;
 using Windows.UI.Xaml.Media.Imaging;
 using Windows.UI.Xaml.Navigation;
 
@@ -31,6 +38,7 @@ namespace WolframAlpha
         private Dictionary<String, Dictionary<String, int>> StatesMap;
         private QueryResult QueryResult;
         private String QueryText;
+        private String QueryAssumption = "";
 
         public ItemDetailPage()
         {
@@ -38,29 +46,17 @@ namespace WolframAlpha
             StatesMap = new Dictionary<String, Dictionary<String, int>>();
         }
 
-        protected async override void OnNavigatedTo(NavigationEventArgs e)
-        {
-            base.OnNavigatedTo(e);
-            String queryText = (String)e.Parameter;
-
-            this.DefaultViewModel["QueryText"] = '\u201c' + queryText + '\u201d';
-
-            string address = String.Format(App.ServiceURL, App.AppId, WebUtility.UrlEncode(queryText));
-
-            Task<String> sourceTask = Helper.GetResultAsync(address);
-            String source = await sourceTask;
-            QueryResult result = Helper.ParseResult(source);
+        private async void generatePage(QueryResult result) {
             QueryResult = result;
-            QueryText = queryText;
 
             this.DefaultViewModel["Results"] = QueryResult;
-
             VisualStateManager.GoToState(this, "ResultsFound", true);
 
             if (QueryResult.Errors != null)
             {
-                foreach(Error Error in QueryResult.Errors){
-                    MessageDialog md = new MessageDialog(Error.Code+" "+Error.Message, "Error");
+                foreach (Error Error in QueryResult.Errors)
+                {
+                    MessageDialog md = new MessageDialog(Error.Code + " " + Error.Message, "Error");
                     await md.ShowAsync();
                 }
             }
@@ -70,7 +66,8 @@ namespace WolframAlpha
                 foreach (Warning Warning in QueryResult.Warnings)
                 {
                     MessageDialog md = new MessageDialog("Something bad happened. But we don't know what, so just go on.", "Warning");
-                    if (Warning.Spellcheck != null) {
+                    if (Warning.Spellcheck != null)
+                    {
                         md = new MessageDialog(Warning.Spellcheck[0].Text, "Warning");
                     }
                     if (Warning.Delimiters != null)
@@ -88,6 +85,33 @@ namespace WolframAlpha
                     await md.ShowAsync();
                 }
             }
+            if (QueryResult.Assumptions != null)
+            {
+                assumption.Text = QueryResult.Assumptions[0].Values[0].Description;
+            }
+        }
+
+        private void setUpPage(String queryText) {
+            this.DefaultViewModel["QueryText"] = queryText;
+            this.DefaultViewModel["QueryTextQuoted"] = '\u201c' + queryText + '\u201d';
+
+            QueryText = queryText;
+        }
+
+        protected async override void OnNavigatedTo(NavigationEventArgs e)
+        {
+            base.OnNavigatedTo(e);
+            String queryText = (String)e.Parameter;
+            startNetworkAction();
+            setUpPage(queryText);
+
+            string address = String.Format(App.ServiceURL, App.AppId, WebUtility.UrlEncode(queryText), QueryAssumption);
+            Task<String> sourceTask = Helper.GetResultAsync(address);
+            String source = await sourceTask;
+            QueryResult result = Helper.ParseResult(source);
+
+            generatePage(result);
+            stopNetworkAction();
         }
 
         #region Page state management
@@ -254,7 +278,7 @@ namespace WolframAlpha
                 StatesMap[PodId][StateName]++;
             }
             catch (KeyNotFoundException ex) {
-                System.Diagnostics.Debug.WriteLine("Creating Dict Key for pod "+PodId+", state"+StateName);
+                System.Diagnostics.Debug.WriteLine(ex.Message+" \\ Creating Dict Key for pod "+PodId+", state"+StateName);
                 if (StatesMap.ContainsKey(PodId))
                     StatesMap[PodId][StateName] = 2;
                 else {
@@ -263,9 +287,13 @@ namespace WolframAlpha
                 }
             }
 
-            string address = String.Format(App.ServiceURLState, App.AppId, WebUtility.UrlEncode(QueryText), StateName, multiplier, PodId);
+            startNetworkAction();
+
+            string address = String.Format(App.ServiceURLState, App.AppId, WebUtility.UrlEncode(QueryText), StateName, multiplier, PodId, QueryAssumption);
 
             System.Diagnostics.Debug.WriteLine(address);
+
+            System.Diagnostics.Debug.WriteLine("Getting state "+StateName+" with multiplier "+multiplier+" for pod ID "+PodId);
 
             Task<String> sourceTask = Helper.GetResultAsync(address);
             String source = await sourceTask;
@@ -274,7 +302,7 @@ namespace WolframAlpha
             if (!result.Success)
                 throw new Exception("Errör");
 
-            
+            // TODO NRE HERE!!!
             Pod Pod = result.Pods[0];
             int oldIndex = QueryResult.getIndexById(Pod.Id);
             if (oldIndex != -1)
@@ -283,6 +311,18 @@ namespace WolframAlpha
                 QueryResult.Pods[oldIndex] = Pod;
                 ((QueryResult)this.DefaultViewModel["Results"]).Pods[oldIndex] = Pod;
             }
+
+            stopNetworkAction();
+        }
+
+        private void startNetworkAction() {
+            progressMeter.Visibility = Visibility.Visible;
+            progressMeter.IsIndeterminate = true;
+        }
+
+        private void stopNetworkAction() {
+            progressMeter.Visibility = Visibility.Collapsed;
+            progressMeter.IsIndeterminate = false;
         }
 
         private void ItemSource_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -367,6 +407,122 @@ namespace WolframAlpha
                 }));
             }
             var chosenCommand = await menu.ShowForSelectionAsync(GetElementRect((FrameworkElement)sender, Placement.Above));
+        }
+
+        private async void SaveImage(object sender, RoutedEventArgs e)
+        {
+            Button btn = sender as Button;
+            String ImageSource = (String)btn.Tag;
+            String SelectedPodName = ((Pod)itemListView.SelectedItem).Title;
+            String Input = ((String)this.DefaultViewModel["QueryText"]);
+
+            if (EnsureUnsnapped())
+            {
+                FileSavePicker savePicker = new FileSavePicker();
+                savePicker.SuggestedStartLocation = PickerLocationId.PicturesLibrary;
+                savePicker.FileTypeChoices.Add("GIF", new List<string>() { ".gif" });
+                savePicker.SuggestedFileName = Input+"_"+SelectedPodName;
+
+                StorageFile file = await savePicker.PickSaveFileAsync();
+
+                if (file == null) return;
+
+                var client = new HttpClient();
+                HttpRequestMessage request = new
+                    HttpRequestMessage(HttpMethod.Get, new Uri(ImageSource));
+                var response = await client.
+                    SendAsync(request, HttpCompletionOption.ResponseHeadersRead);
+                Byte[] b = await response.Content.ReadAsByteArrayAsync();
+
+                using (IRandomAccessStream fileStream = await file.OpenAsync(FileAccessMode.ReadWrite))
+                {
+                    using (IOutputStream outputStream = fileStream.GetOutputStreamAt(0))
+                    {
+                        using (DataWriter dataWriter = new DataWriter(outputStream))
+                        {
+                            //TODO: Replace "Bytes" with the type you want to write.
+                            dataWriter.WriteBytes(b);
+                            await dataWriter.StoreAsync();
+                            dataWriter.DetachStream();
+                        }
+
+                        await outputStream.FlushAsync();
+                    }
+                }
+                MessageDialog md = new MessageDialog("The image was saved successfully to "+file.Path, "Image");
+                await md.ShowAsync();
+            }
+        }
+
+        private async void CopyPlaintext(object sender, RoutedEventArgs e)
+        {
+            Button btn = sender as Button;
+            String Plaintext = (String)btn.Tag;
+
+            DataPackage dataPackage = new DataPackage();
+            dataPackage.RequestedOperation = DataPackageOperation.Copy;
+            dataPackage.SetText(Plaintext);
+
+            Clipboard.SetContent(dataPackage);
+
+            MessageDialog md = new MessageDialog("The text was copied to your clipboard", "Text");
+            await md.ShowAsync();
+        }
+
+        internal bool EnsureUnsnapped()
+        {
+            // FilePicker APIs will not work if the application is in a snapped state.
+            // If an app wants to show a FilePicker while snapped, it must attempt to unsnap first
+            bool unsnapped = ((ApplicationView.Value != ApplicationViewState.Snapped) || ApplicationView.TryUnsnap());
+            if (!unsnapped)
+            {
+                System.Diagnostics.Debug.WriteLine("Cannot unsnap the sample.");
+            }
+
+            return unsnapped;
+        }
+
+        private async void ShowAssumptionsPopup(object sender, RoutedEventArgs e)
+        {
+            var menu = new PopupMenu();
+
+            if (QueryResult.Assumptions != null)
+            {
+
+                foreach (Value Value in QueryResult.Assumptions[0].Values)
+                {
+                    menu.Commands.Add(new UICommand(Value.Description, (command) =>
+                    {
+                        getAssumption(Value.Input);
+                    }));
+                }
+            }
+            var chosenCommand = await menu.ShowForSelectionAsync(GetElementRect((FrameworkElement)sender, Placement.Above));
+        }
+
+        private async void getAssumption(String AssumptionName)
+        {
+            setUpPage(QueryText);
+
+            QueryAssumption = AssumptionName;
+
+            string address = String.Format(App.ServiceURLAssumption, App.AppId, WebUtility.UrlEncode(QueryText), AssumptionName);
+
+            System.Diagnostics.Debug.WriteLine(address);
+            System.Diagnostics.Debug.WriteLine("Getting assumption " + AssumptionName);
+
+            startNetworkAction();
+
+            Task<String> sourceTask = Helper.GetResultAsync(address);
+            String source = await sourceTask;
+            QueryResult result = Helper.ParseResult(source);
+
+            if (!result.Success)
+                throw new Exception("Errör");
+
+            generatePage(result);
+
+            stopNetworkAction();
         }
     }
 }
