@@ -49,7 +49,12 @@ namespace WolframAlpha
         private async void generatePage(QueryResult result) {
             QueryResult = result;
 
-            this.DefaultViewModel["Results"] = QueryResult;
+            //this.DefaultViewModel["Results"] = QueryResult;
+
+            this.DefaultViewModel["Pods"] = result.Pods;
+            this.DefaultViewModel["Assumptions"] = result.Assumptions;
+            this.DefaultViewModel["Sources"] = result.Sources;
+
             VisualStateManager.GoToState(this, "ResultsFound", true);
 
             if (QueryResult.Errors != null)

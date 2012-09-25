@@ -162,6 +162,8 @@ namespace WolframAlpha
             {
                 Coordinates = await GeoLocator.GetGeolocation();
             }
+
+            HideHistory();
         }
 
         private bool NullToFalse(object a) {
@@ -214,6 +216,17 @@ namespace WolframAlpha
             searchTextBox.Text += value;
             searchTextBox.Select(searchTextBox.Text.Length, 0);
             searchTextBox.Focus(Windows.UI.Xaml.FocusState.Keyboard);
+        }
+
+        private void ShowHistory(object sender, RoutedEventArgs e)
+        {
+            HistoryListBox.Visibility = Visibility.Visible;
+            HistoryClearButton.Visibility = Visibility.Visible;
+        }
+
+        private void HideHistory() {
+            HistoryListBox.Visibility = Visibility.Collapsed;
+            HistoryClearButton.Visibility = Visibility.Collapsed;
         }
     }
 }

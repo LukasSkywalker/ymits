@@ -59,7 +59,8 @@
                 <TextBlock x:Name="assumption" IsHitTestVisible="false" Style="{StaticResource PageSubheaderTextStyle}"/>
                 <TextBlock Text="&#160;" IsHitTestVisible="False" Style="{StaticResource PageSubheaderTextStyle}"/>
             </StackPanel>
-            <Button Grid.Row="1"  Grid.Column="1" x:Name="otherAssumptions" Content="Other meanings" Click="ShowAssumptionsPopup" Margin="0,82,0,20"/>
+            <Button Grid.Row="1"  Grid.Column="1" x:Name="otherAssumptions" Content="Other meanings" Click="ShowAssumptionsPopup"
+			Visibility="{Binding Assumptions, Converter={StaticResource NullToVisibilityConverter}}" Margin="0,82,0,20"/>
         </Grid>
 
         <!-- // LEFT COLUMN  - Pod list and Sources listbox // -->
