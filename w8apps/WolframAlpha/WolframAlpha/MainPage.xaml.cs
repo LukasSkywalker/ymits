@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Xml.Serialization;
+using Windows.ApplicationModel.Search;
 using Windows.Devices.Geolocation;
 using Windows.Devices.Input;
 using Windows.Foundation;
@@ -25,6 +26,7 @@ namespace WolframAlpha
         private int flyoutOffset;
         private ApplicationDataContainer RoamingSettings = ApplicationData.Current.RoamingSettings;
         private bool LocationEnabled { get; set; }
+        private SearchPane searchPane;
 
         private Geocoordinate Coordinates { get; set; }
 
@@ -65,6 +67,9 @@ namespace WolframAlpha
                 if(new KeyboardCapabilities().KeyboardPresent == 0)
                     AdditionalKeyboard.Visibility = Visibility.Collapsed;
             };
+
+            searchPane = SearchPane.GetForCurrentView();
+            searchPane.SuggestionsRequested += new TypedEventHandler<SearchPane, SearchPaneSuggestionsRequestedEventArgs>(SearchtermSuggester.GetSuggestions);
         }
 
         private void Grid_KeyDown(object sender, KeyRoutedEventArgs e)

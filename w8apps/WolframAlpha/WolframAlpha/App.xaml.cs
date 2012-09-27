@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using Windows.ApplicationModel;
 using Windows.ApplicationModel.Activation;
+using Windows.ApplicationModel.Search;
 using Windows.Devices.Geolocation;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
@@ -136,11 +137,45 @@ namespace WolframAlpha
                 }
             }
 
-            frame.Navigate(typeof(ItemDetailPage), args.QueryText);
+            String searchterm = args.QueryText;
+            if (!String.IsNullOrWhiteSpace(searchterm))
+            {
+                frame.Navigate(typeof(ItemDetailPage), searchterm);
+            }
+            else
+            {
+                frame.Navigate(typeof(ItemDetailPage));
+            }
             Window.Current.Content = frame;
 
             // Ensure the current window is active
             Window.Current.Activate();
+        }
+
+        protected override void OnWindowCreated(WindowCreatedEventArgs args)
+        {
+            // At window creation time, access the SearchPane object and register SearchPane events
+            // (like QuerySubmitted, SuggestionsRequested, and ResultSuggestionChosen) so that the app
+            // can respond to the user's search queries at any time.
+
+            // Get search pane
+            SearchPane searchPane = SearchPane.GetForCurrentView();
+
+            // Register event handlers for SearchPane events
+
+            // Register QuerySubmitted event handler
+            searchPane.QuerySubmitted += new TypedEventHandler<SearchPane, SearchPaneQuerySubmittedEventArgs>(OnQuerySubmitted);
+
+            // Register a SuggestionsRequested if your app displays its own suggestions in the search pane (like from a web service)
+            // Register a ResultSuggestionChosen if your app uses result suggestions in the search pane    
+        }
+
+        // SEARCH CONTRACT Respond to a search query while your app is the main app on screen.
+        private void OnQuerySubmitted(SearchPane sender, SearchPaneQuerySubmittedEventArgs args)
+        {
+            string searchterm = args.QueryText;
+            if (!string.IsNullOrWhiteSpace(searchterm))
+                (Window.Current.Content as Frame).Navigate(typeof(ItemDetailPage), searchterm);
         }
     }
 }

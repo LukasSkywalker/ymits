@@ -5,8 +5,10 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Windows.ApplicationModel.DataTransfer;
+using Windows.ApplicationModel.Search;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
 using Windows.Storage;
@@ -14,6 +16,7 @@ using Windows.Storage.Pickers;
 using Windows.Storage.Provider;
 using Windows.Storage.Streams;
 using Windows.System;
+using Windows.UI.Input;
 using Windows.UI.Popups;
 using Windows.UI.ViewManagement;
 using Windows.UI.Xaml;
@@ -41,6 +44,7 @@ namespace WolframAlpha
         private String QueryText;
         private String QueryAssumption = "";
         private Dictionary<String,List<String>> States;
+        private SearchPane searchPane;
 
         // like podid-states, e.g. [Numeric definition:-more digits, -more digits, -less digits]
 
@@ -48,6 +52,9 @@ namespace WolframAlpha
         {
             this.InitializeComponent();
             States = new Dictionary<string,List<string>>();
+
+            searchPane = SearchPane.GetForCurrentView();
+            searchPane.SuggestionsRequested += new TypedEventHandler<SearchPane, SearchPaneSuggestionsRequestedEventArgs>(SearchtermSuggester.GetSuggestions);
 
             this.DefaultViewModel["MyCommand"] = new DelegateCommand<int>(OnExecute);
         }
@@ -113,9 +120,20 @@ namespace WolframAlpha
             QueryText = queryText;
         }
 
+        protected override void OnNavigatedFrom(NavigationEventArgs e)
+        {
+            base.OnNavigatedFrom(e);
+            searchPane.ShowOnKeyboardInput = false;
+        }
+
         protected async override void OnNavigatedTo(NavigationEventArgs e)
         {
             base.OnNavigatedTo(e);
+
+            // SEARCH CONTRACT 2.5 Enable users to type into the search box directly from your app
+            searchPane.ShowOnKeyboardInput = true;
+
+
             String queryText = (String)e.Parameter;
             startNetworkAction(true, false);
             SetQueryText(queryText);
@@ -215,14 +233,14 @@ namespace WolframAlpha
         /// <param name="sender">The GridView (or ListView when the application is Snapped)
         /// displaying the selected item.</param>
         /// <param name="e">Event data that describes how the selection was changed.</param>
-        void ItemListView_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        void ItemListView_Tapped(object sender, TappedRoutedEventArgs e)
         {
             // Invalidate the view state when logical page navigation is in effect, as a change
             // in selection may cause a corresponding change in the current logical page.  When
             // an item is selected this has the effect of changing from displaying the item list
             // to showing the selected item's details.  When the selection is cleared this has the
             // opposite effect.
-            ShowPopup();
+            if(itemListView.SelectedIndex>-1) ShowPopup();
             if (this.UsingLogicalPageNavigation()) this.InvalidateVisualState();
         }
 
@@ -461,6 +479,7 @@ namespace WolframAlpha
                 if (file == null) return;
 
                 var client = new HttpClient();
+                client.DefaultRequestHeaders.Add("User-Agent", "Mozilla/5.0 (compatible; MSIE 10.0; Windows NT 6.2; WOW64; Trident/6.0)");
                 HttpRequestMessage request = new
                     HttpRequestMessage(HttpMethod.Get, new Uri(ImageSource));
                 var response = await client.
