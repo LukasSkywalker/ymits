@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Windows.UI.Xaml;
+using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Data;
 
 namespace WolframAlpha.Common
@@ -13,40 +15,24 @@ namespace WolframAlpha.Common
         public object Convert(object value, Type targetType, object parameter, string language)
         {
             if (value == null) return Visibility.Collapsed;
-            int length = (int)value;
-            if (length > 0) return Visibility.Visible;
-            else return Visibility.Collapsed;
-        }
-
-        public object ConvertBack(object value, Type targetType, object parameter, string language)
-        {
-            throw new NotImplementedException();
-        }
-    }
-
-    public sealed class LengthToVisibilityConverter2 : IValueConverter
-    {
-        public object Convert(object value, Type targetType, object parameter, string language)
-        {
-            if (value == null) return Visibility.Collapsed;
-            int length = (int)value;
-            System.Diagnostics.Debug.WriteLine(length);
-            if (length > 0) return Visibility.Visible;
-            else return Visibility.Collapsed;
-        }
-
-        public object ConvertBack(object value, Type targetType, object parameter, string language)
-        {
-            throw new NotImplementedException();
-        }
-    }
-
-    public sealed class NullToVisibilityConverter : IValueConverter
-    {
-        public object Convert(object value, Type targetType, object parameter, string language)
-        {
-            if (value == null) return Visibility.Collapsed;
-            return Visibility.Visible;
+            try
+            {
+                int length = ((ObservableCollection<Assumption>)value).Count;
+                if (length > 0) return Visibility.Visible;
+                else return Visibility.Collapsed;
+            }catch(Exception e){
+                Helper.DumpException(e);
+                try
+                {
+                    int length = ((ObservableCollection<Source>)value).Count;
+                    if (length > 0) return Visibility.Visible;
+                    else return Visibility.Collapsed;
+                }
+                catch (Exception ex) {
+                    Helper.DumpException(ex);
+                }
+            }
+            return Visibility.Collapsed;
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, string language)

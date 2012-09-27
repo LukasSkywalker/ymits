@@ -13,6 +13,7 @@
     <Page.Resources>
         <common:NullToVisibilityConverter x:Key="NullToVisibilityConverter"/>
         <common:LengthToVisibilityConverter x:Key="LengthToVisibilityConverter"/>
+        <common:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
         <x:String x:Key="AppName">Wolfram|Alpha</x:String>
     </Page.Resources>
 
@@ -70,17 +71,19 @@
                 </ItemsPanelTemplate>
             </GridView.ItemsPanel>
         </GridView>
-        
+        <!-- {Binding SelectedItem, ElementName=itemListView} -->
         <Grid Grid.Column="1" Grid.Row="1">
             <StackPanel Orientation="Vertical" Margin="20,0,20,0">
-                <TextBlock Text="Use as" Style="{StaticResource SubheaderTextStyle}" Margin="10,0,0,5"/>
+                <TextBlock Text="Use as" Style="{StaticResource SubheaderTextStyle}" Margin="10,0,0,5" 
+                           Visibility="{Binding Assumptions, Converter={StaticResource LengthToVisibilityConverter}}"/>
                 <ListBox x:Name="AssumptionsListBox" ItemsSource="{Binding Assumptions[0].Values}" DisplayMemberPath="Description" SelectedValuePath="Input"
-                         Visibility="{Binding Assumptions, Converter={StaticResource NullToVisibilityConverter}}" Tapped="Assumption_SelectionChanged"
-                         BorderThickness="0" Padding="20,0,0,0"/>
-                <TextBlock Text="Sources" Margin="10,20,0,5"  Style="{StaticResource SubheaderTextStyle}"/>
+                         Tapped="Assumption_SelectionChanged" BorderThickness="0" Padding="20,0,0,0"
+                         Visibility="{Binding Assumptions, Converter={StaticResource LengthToVisibilityConverter}}"/>
+                <TextBlock Text="Sources" Margin="10,20,0,5"  Style="{StaticResource SubheaderTextStyle}"
+                           Visibility="{Binding Sources, Converter={StaticResource LengthToVisibilityConverter}}"/>
                 <ListBox x:Name="SourcesListBox" ItemsSource="{Binding Sources}" DisplayMemberPath="Text" SelectedValuePath="URL"
                           SelectionChanged="ItemSource_SelectionChanged" BorderThickness="0" Padding="20,0,0,0"
-                         Visibility="{Binding Sources, Converter={StaticResource NullToVisibilityConverter}}"/>
+                         Visibility="{Binding Sources, Converter={StaticResource LengthToVisibilityConverter}}"/>
             </StackPanel>
         </Grid>
 
