@@ -256,9 +256,9 @@
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="ButtonBase">
-                    <Grid x:Name="RootGrid" Width="100" Background="Transparent">
-                        <StackPanel VerticalAlignment="Top" Margin="0,12,0,11">
-                            <Grid Width="40" Height="40" Margin="0,0,0,5" HorizontalAlignment="Center">
+                    <Grid x:Name="RootGrid" Width="44" Height="44" Background="Transparent">
+                        <StackPanel VerticalAlignment="Top">
+                            <Grid Width="40" Height="40" HorizontalAlignment="Center" Margin="2,2,2,2">
                                 <TextBlock x:Name="BackgroundGlyph" Text="&#xE0A8;" FontFamily="Segoe UI Symbol" FontSize="53.333" Margin="-4,-19,0,0" Foreground="{StaticResource AppBarItemBackgroundThemeBrush}"/>
                                 <TextBlock x:Name="OutlineGlyph" Text="&#xE0A7;" FontFamily="Segoe UI Symbol" FontSize="53.333" Margin="-4,-19,0,0"/>
                                 <ContentPresenter x:Name="Content" HorizontalAlignment="Center" Margin="-1,-1,0,0" VerticalAlignment="Center"/>
@@ -688,16 +688,35 @@
 
     <!-- List-appropriate 130 pixel high item template as seen in the SplitPage -->
     <DataTemplate x:Key="Standard130ItemTemplate">
-        <Grid Height="110" Margin="6" Background="LightGray" HorizontalAlignment="Stretch">
+        <Grid Height="110" Margin="2" Background="LightGray" HorizontalAlignment="Stretch">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto"/>
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
-            <Border Background="White" Width="110" Height="110" Grid.Column="0">
+            <Border Background="White" Width="110" Height="110" Grid.Column="0" Margin="2,2,0,2">
                 <Image Source="{Binding SubPods[0].ImageSource}" Stretch="None" AutomationProperties.Name="{Binding Title}"/>
             </Border>
             <StackPanel Grid.Column="1" VerticalAlignment="Top" Margin="10,0,0,0">
                 <TextBlock Text="{Binding Title}" Style="{StaticResource TitleTextStyle}" TextWrapping="NoWrap"/>
+            </StackPanel>
+        </Grid>
+    </DataTemplate>
+    
+    <DataTemplate x:Key="SubPodItemTemplate">
+        <Grid Margin="0,10,0,0" Background="White" HorizontalAlignment="Stretch">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+            <TextBlock Grid.Row="0" Grid.ColumnSpan="2"  Text="{Binding Title}" FontWeight="Bold"/>   
+            <Image Grid.Row="1" Grid.Column="0"  Source="{Binding ImageSource}" Stretch="None" AutomationProperties.Name="{Binding Title}" />
+            <StackPanel Orientation="Vertical" Grid.Row="1" Grid.Column="1">
+                <Button Tag="{Binding ImageSource}" Style="{StaticResource SaveButtonStyle}" Click="SaveImage"/>
+                <Button Tag="{Binding Plaintext}" Style="{StaticResource TxtButtonStyle}" Click="CopyPlaintext"/>
             </StackPanel>
         </Grid>
     </DataTemplate>
@@ -707,12 +726,12 @@
         the following pages when snapped: GroupedItemsPage, GroupDetailPage, and ItemsPage
     -->
     <DataTemplate x:Key="Standard80ItemTemplate">
-        <Grid Margin="6">
+        <Grid Margin="2" Background="LightGray" HorizontalAlignment="Stretch">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto"/>
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
-            <Border Background="{StaticResource ListViewItemPlaceholderBackgroundThemeBrush}" Width="60" Height="60">
+            <Border Background="White" Width="60" Height="60" Grid.Column="0" Margin="1,1,0,1">
                 <Image Source="{Binding SubPods[0].ImageSource}" Stretch="None"/>
             </Border>
             <StackPanel Grid.Column="1" Margin="10,0,0,0">

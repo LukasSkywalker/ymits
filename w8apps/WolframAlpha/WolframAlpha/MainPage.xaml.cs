@@ -1,28 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Net.Http;
-using System.Runtime.Serialization;
-using System.Text;
-using System.Threading.Tasks;
 using System.Xml.Serialization;
 using Windows.Devices.Geolocation;
 using Windows.Devices.Input;
 using Windows.Foundation;
-using Windows.Foundation.Collections;
 using Windows.Storage;
 using Windows.System;
 using Windows.UI.ApplicationSettings;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Controls.Primitives;
-using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Input;
-using Windows.UI.Xaml.Media;
-using Windows.UI.Xaml.Media.Animation;
 using Windows.UI.Xaml.Navigation;
-using WolframAlpha.Common;
 
 // The Blank Page item template is documented at http://go.microsoft.com/fwlink/?LinkId=234238
 
@@ -34,10 +23,12 @@ namespace WolframAlpha
     public sealed partial class MainPage : Page
     {
         private int flyoutOffset;
-        public ApplicationDataContainer RoamingSettings = ApplicationData.Current.RoamingSettings;
-        public bool LocationEnabled { get; set; }
+        private ApplicationDataContainer RoamingSettings = ApplicationData.Current.RoamingSettings;
+        private bool LocationEnabled { get; set; }
 
-        public Geocoordinate Coordinates { get; set; }
+        private Geocoordinate Coordinates { get; set; }
+
+        private UrlBuilder UrlBuilder;
 
         public MainPage()
         {
@@ -78,10 +69,23 @@ namespace WolframAlpha
             };
         }
 
+        private void Grid_KeyDown(object sender, KeyRoutedEventArgs e)
+        {
+            if (searchTextBox.FocusState != FocusState.Unfocused)
+            {
+                //do nothing, stb is focused
+            }
+            else
+            {
+                System.Diagnostics.Debug.WriteLine(e.Key);
+            }
+        }
+
+
         private void CommandsRequested(SettingsPane sender, SettingsPaneCommandsRequestedEventArgs args)
         {
             args.Request.ApplicationCommands.Add(new SettingsCommand("A", "About", (p) => { flyoutAbout.IsOpen = true; }));
-            args.Request.ApplicationCommands.Add(new SettingsCommand("A", "Settings", (p) => { flyoutSettings.IsOpen = true; }));
+            args.Request.ApplicationCommands.Add(new SettingsCommand("S", "Settings", (p) => { flyoutSettings.IsOpen = true; }));
         }
 
         private void DataChangeHandler(ApplicationData sender, object args)

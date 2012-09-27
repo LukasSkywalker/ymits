@@ -14,6 +14,22 @@ namespace WolframAlpha.Common
         {
             if (value == null) return Visibility.Collapsed;
             int length = (int)value;
+            if (length > 0) return Visibility.Visible;
+            else return Visibility.Collapsed;
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, string language)
+        {
+            throw new NotImplementedException();
+        }
+    }
+
+    public sealed class LengthToVisibilityConverter2 : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, string language)
+        {
+            if (value == null) return Visibility.Collapsed;
+            int length = (int)value;
             System.Diagnostics.Debug.WriteLine(length);
             if (length > 0) return Visibility.Visible;
             else return Visibility.Collapsed;

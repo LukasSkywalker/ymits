@@ -46,17 +46,41 @@ namespace WolframAlpha
 
         [XmlArray("assumptions")]
         [XmlArrayItem("assumption")]
-        public Assumption[] Assumptions { get; set; }
+        public ObservableCollection<Assumption> Assumptions { get; set; }
+
+        public int AssumptionCount { get {
+            if (Assumptions == null) return 0;
+            else return Assumptions.Count;
+        } set { } }
 
         [XmlElement("warnings")]
-        public Warning[] Warnings { get; set; }
+        public ObservableCollection<Warning> Warnings { get; set; }
+
+        public int WarningCount { get { return Warnings.Count; } set { } }
 
         [XmlElement("error")]
-        public Error[] Errors { get; set; }
+        public ObservableCollection<Error> Errors { get; set; }
+
+        public int ErrorCount
+        {
+            get
+            {
+                if (Errors == null) return 0;
+                else return Errors.Count;
+            }
+            set { }
+        }
 
         [XmlArray("sources")]
         [XmlArrayItem("source")]
-        public Source[] Sources { get; set; }
+        public ObservableCollection<Source> Sources { get; set; }
+
+        public int SourceCount { get {
+            if (Sources == null) return 0;
+            else return Sources.Count;
+        }
+            set { }
+        }
 
         [XmlElement("generalization")]
         public Generalization Generalization { get; set; }
@@ -97,7 +121,7 @@ namespace WolframAlpha
             int counter = -1;
             for (int i = 0; i < Pods.Count; i++)
             {
-                for (int j = 0; j < Pods[i].SubPods.Length; j++)
+                for (int j = 0; j < Pods[i].SubPods.Count; j++)
                 {
                     counter++;
                     if (Pods[i].SubPods[j].Equals(SubPod))
@@ -130,7 +154,7 @@ namespace WolframAlpha
             for (int i = 0; i < Pods.Count; i++)
             {
                 Pod Pod = Pods[i];
-                for (int j = 0; j < Pod.SubPods.Length; j++) {
+                for (int j = 0; j < Pod.SubPods.Count; j++) {
                     if(SearchSubPod.Equals(Pod.SubPods[j]))
                         return Pod;
                 }
@@ -160,15 +184,35 @@ namespace WolframAlpha
         public bool Primary { get; set; }
 
         [XmlElement("subpod")]
-        public SubPod[] SubPods { get; set; }
+        public ObservableCollection<SubPod> SubPods { get; set; }
 
         [XmlArray("states")]
         [XmlArrayItem("state")]
-        public State[] States { get; set; }
+        public ObservableCollection<State> States { get; set; }
+
+        public int StateCount
+        {
+            get
+            {
+                if (States == null) return 0;
+                else return States.Count;
+            }
+            set { }
+        }
         
         [XmlArray("infos")]
         [XmlArrayItem("info")]
-        public Info[] Infos { get; set; }
+        public ObservableCollection<Info> Infos { get; set; }
+
+        public int InfoCount
+        {
+            get
+            {
+                if (Infos == null) return 0;
+                else return Infos.Count;
+            }
+            set { }
+        }
     }
 
     public class SubPod {
@@ -179,11 +223,11 @@ namespace WolframAlpha
         public String Plaintext { get; set; }
 
         [XmlElement("img")]
-        public Image Image { get { return Image; } set { ImageSource = value.Src; } }
+        public Image Image { get; set; }
 
-        public String ImageSource { get; set; }
+        public String ImageSource { get { if (Image != null)return Image.Src; else return ""; } set { } }
 
-        public State[] States { get; set; }
+        public ObservableCollection<State> States { get; set; }
     }
 
     public class Info {
@@ -191,14 +235,16 @@ namespace WolframAlpha
         public String Text { get; set; }
 
         [XmlElement("img")]
-        public Image[] Images { get; set; }
+        public Image Image { get; set; }
+
+        public String ImageSource { get { if(Image!=null)return Image.Src;else return""; } set { } }
 
         [XmlElement("link")]
-        public Link[] Links { get; set; }
+        public ObservableCollection<Link> Links { get; set; }
 
         [XmlArray("units")]
         [XmlArrayItem("unit")]
-        public Unit[] Units { get; set; }
+        public ObservableCollection<Unit> Units { get; set; }
     }
 
     public class Link{
@@ -265,7 +311,7 @@ namespace WolframAlpha
         public String Template { get; set; }
 
         [XmlElement("value")]
-        public Value[] Values { get; set; }
+        public ObservableCollection<Value> Values { get; set; }
     }
 
     public class Value {
@@ -281,16 +327,16 @@ namespace WolframAlpha
 
     public class Warning {
         [XmlElement("spellcheck")]
-        public Spellcheck[] Spellcheck { get; set; }
+        public ObservableCollection<Spellcheck> Spellcheck { get; set; }
 
         [XmlElement("delimiters")]
-        public Delimiters[] Delimiters { get; set; }
+        public ObservableCollection<Delimiters> Delimiters { get; set; }
 
         [XmlElement("translation")]
-        public Translation[] Translation { get; set; }
+        public ObservableCollection<Translation> Translation { get; set; }
 
         [XmlElement("reinterpret")]
-        public Reinterpret[] Reinterpret { get; set; }
+        public ObservableCollection<Reinterpret> Reinterpret { get; set; }
     }
 
     public class Spellcheck {

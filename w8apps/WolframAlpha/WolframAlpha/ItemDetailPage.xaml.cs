@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -24,6 +25,7 @@ using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Media.Animation;
 using Windows.UI.Xaml.Media.Imaging;
 using Windows.UI.Xaml.Navigation;
+using WolframAlpha.Common;
 
 // The Split Page item template is documented at http://go.microsoft.com/fwlink/?LinkId=234234
 
@@ -35,25 +37,34 @@ namespace WolframAlpha
     /// </summary>
     public sealed partial class ItemDetailPage : WolframAlpha.Common.LayoutAwarePage
     {
-        private Dictionary<String, Dictionary<String, int>> StatesMap;
         private QueryResult QueryResult;
         private String QueryText;
         private String QueryAssumption = "";
+        private Dictionary<String,List<String>> States;
+
+        // like podid-states, e.g. [Numeric definition:-more digits, -more digits, -less digits]
 
         public ItemDetailPage()
         {
             this.InitializeComponent();
-            StatesMap = new Dictionary<String, Dictionary<String, int>>();
+            States = new Dictionary<string,List<string>>();
+
+            this.DefaultViewModel["MyCommand"] = new DelegateCommand<int>(OnExecute);
         }
 
-        private async void generatePage(QueryResult result) {
-            QueryResult = result;
+        private void OnExecute(int obj)
+        {
+            throw new NotImplementedException();
+        }
 
-            //this.DefaultViewModel["Results"] = QueryResult;
+        private async void SetResult(QueryResult result)
+        {
+            QueryResult = result;
 
             this.DefaultViewModel["Pods"] = result.Pods;
             this.DefaultViewModel["Assumptions"] = result.Assumptions;
             this.DefaultViewModel["Sources"] = result.Sources;
+            this.DefaultViewModel["Result"] = result;
 
             VisualStateManager.GoToState(this, "ResultsFound", true);
 
@@ -90,13 +101,14 @@ namespace WolframAlpha
                     await md.ShowAsync();
                 }
             }
-            if (QueryResult.Assumptions != null)
+            if (QueryResult.Assumptions != null && QueryResult.AssumptionCount > 0)
             {
                 assumption.Text = QueryResult.Assumptions[0].Values[0].Description;
             }
         }
 
-        private void setUpPage(String queryText) {
+        private void SetQueryText(String queryText)
+        {
             this.DefaultViewModel["QueryText"] = queryText;
             this.DefaultViewModel["QueryTextQuoted"] = '\u201c' + queryText + '\u201d';
 
@@ -108,14 +120,14 @@ namespace WolframAlpha
             base.OnNavigatedTo(e);
             String queryText = (String)e.Parameter;
             startNetworkAction();
-            setUpPage(queryText);
+            SetQueryText(queryText);
 
             string address = String.Format(App.ServiceURL, App.AppId, WebUtility.UrlEncode(queryText), QueryAssumption);
             Task<String> sourceTask = Helper.GetResultAsync(address);
             String source = await sourceTask;
             QueryResult result = Helper.ParseResult(source);
 
-            generatePage(result);
+            SetResult(result);
             stopNetworkAction();
         }
 
@@ -130,7 +142,7 @@ namespace WolframAlpha
         /// </param>
         /// <param name="pageState">A dictionary of state preserved by this page during an earlier
         /// session.  This will be null the first time a page is visited.</param>
-        protected override void LoadState(Object navigationParameter, Dictionary<String, Object> pageState)
+        /*protected override void LoadState(Object navigationParameter, Dictionary<String, Object> pageState)
         {
             // TODO: Assign a bindable group to this.DefaultViewModel["Group"]
             // TODO: Assign a collection of bindable items to this.DefaultViewModel["Items"]
@@ -139,21 +151,21 @@ namespace WolframAlpha
             {
                 // When this is a new page, select the first item automatically unless logical page
                 // navigation is being used (see the logical page navigation #region below.)
-                if (!this.UsingLogicalPageNavigation() && this.itemsViewSource.View != null)
+                if (!this.UsingLogicalPageNavigation() && this.podsViewSource.View != null)
                 {
-                    this.itemsViewSource.View.MoveCurrentToFirst();
+                    this.podsViewSource.View.MoveCurrentToFirst();
                 }
             }
             else
             {
                 // Restore the previously saved state associated with this page
-                if (pageState.ContainsKey("SelectedItem") && this.itemsViewSource.View != null)
+                if (pageState.ContainsKey("SelectedItem") && this.podsViewSource.View != null)
                 {
                     // TODO: Invoke this.itemsViewSource.View.MoveCurrentTo() with the selected
                     //       item as specified by the value of pageState["SelectedItem"]
                 }
             }
-        }
+        }*/
 
         /// <summary>
         /// Preserves state associated with this page in case the application is suspended or the
@@ -161,15 +173,15 @@ namespace WolframAlpha
         /// requirements of <see cref="SuspensionManager.SessionState"/>.
         /// </summary>
         /// <param name="pageState">An empty dictionary to be populated with serializable state.</param>
-        protected override void SaveState(Dictionary<String, Object> pageState)
+        /*protected override void SaveState(Dictionary<String, Object> pageState)
         {
-            if (this.itemsViewSource.View != null)
+            if (this.podsViewSource.View != null)
             {
-                var selectedItem = this.itemsViewSource.View.CurrentItem;
+                var selectedItem = this.podsViewSource.View.CurrentItem;
                 // TODO: Derive a serializable navigation parameter and assign it to
                 //       pageState["SelectedItem"]
             }
-        }
+        }*/
 
         #endregion
 
@@ -275,30 +287,32 @@ namespace WolframAlpha
 
 
         private async void getState(String StateName, String PodId) {
-            int multiplier = 1;
 
-            try
+            if (States.ContainsKey(PodId))
+                States[PodId].Add(StateName);
+            else
             {
-                multiplier = StatesMap[PodId][StateName];
-                StatesMap[PodId][StateName]++;
-            }
-            catch (KeyNotFoundException ex) {
-                System.Diagnostics.Debug.WriteLine(ex.Message+" \\ Creating Dict Key for pod "+PodId+", state"+StateName);
-                if (StatesMap.ContainsKey(PodId))
-                    StatesMap[PodId][StateName] = 2;
-                else {
-                    StatesMap.Add(PodId, new Dictionary<string,int>(100,null));
-                    StatesMap[PodId][StateName] = 2;
-                }
+                States.Add(PodId, new List<String>());
+                States[PodId].Add(StateName);
             }
 
             startNetworkAction();
 
-            string address = String.Format(App.ServiceURLState, App.AppId, WebUtility.UrlEncode(QueryText), StateName, multiplier, PodId, QueryAssumption);
+            string stateParameter = "";
+
+            if (States.ContainsKey(PodId))
+            {
+                foreach (String s in States[PodId]) {
+                    stateParameter += "&podstate=" + s;
+                }
+                stateParameter = stateParameter.Substring(10);
+            }
+
+            string address = String.Format(App.ServiceURLState, App.AppId, WebUtility.UrlEncode(QueryText), stateParameter, PodId, QueryAssumption);
 
             System.Diagnostics.Debug.WriteLine(address);
 
-            System.Diagnostics.Debug.WriteLine("Getting state "+StateName+" with multiplier "+multiplier+" for pod ID "+PodId);
+            System.Diagnostics.Debug.WriteLine("Getting state for pod ID "+PodId);
 
             Task<String> sourceTask = Helper.GetResultAsync(address);
             String source = await sourceTask;
@@ -314,7 +328,7 @@ namespace WolframAlpha
             {
                 System.Diagnostics.Debug.WriteLine("Updating Pod '" + Pod.Title + " " + Pod.Id + "' at position " + oldIndex);
                 QueryResult.Pods[oldIndex] = Pod;
-                ((QueryResult)this.DefaultViewModel["Results"]).Pods[oldIndex] = Pod;
+                ((ObservableCollection<Pod>)this.DefaultViewModel["Pods"])[oldIndex] = Pod;
             }
 
             stopNetworkAction();
@@ -340,32 +354,28 @@ namespace WolframAlpha
         }
 
         // gets invoked when user clicks on an item in the states listbox, e.g. [More Digits], [Fractual representation]
-        private void ItemStates_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        private void ItemStates_SelectionChanged(object sender, TappedRoutedEventArgs e)
         {
-            ListBox lb = ((ListBox)sender);
-            if (lb.SelectedItem == null)
-                return;
-
+            TextBlock lb = ((TextBlock)sender);
+            
             Pod Pod = (Pod)itemListView.SelectedItem;
             String PodId = Pod.Id;
-            String StatesValue = (string)lb.SelectedValue;
+            String StatesValue = ((State)lb.Tag).Input;
 
             getState(StatesValue, PodId);
         }
 
-        private async void ItemInfos_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        private async void ItemInfos_SelectionChanged(object sender, TappedRoutedEventArgs e)
         {
-            ListBox lb = ((ListBox)sender);
-            if (lb.SelectedItem == null)
-                return;
+            TextBlock lb = ((TextBlock)sender);
 
             Pod Pod = (Pod)itemListView.SelectedItem;
             String PodId = Pod.Id;
-            Info Info = (Info)lb.SelectedValue;
+            Info Info = (Info)lb.Tag;
 
             var menu = new PopupMenu();
 
-            if (Info.Images != null) {
+            if (Info.Image != null) {
                 /*foreach(Image Image in Info.Images){
                     menu.Commands.Add(new UICommand("bla", (command) =>
                     {
@@ -489,25 +499,34 @@ namespace WolframAlpha
 
         private async void ShowAssumptionsPopup(object sender, RoutedEventArgs e)
         {
-            var menu = new PopupMenu();
-
-            if (QueryResult.Assumptions != null)
+            
+            if (QueryResult != null)
             {
-
-                foreach (Value Value in QueryResult.Assumptions[0].Values)
+                if (QueryResult.Assumptions != null)
                 {
-                    menu.Commands.Add(new UICommand(Value.Description, (command) =>
+                    var menu = new PopupMenu();
+
+                    // max. items in contextmenu is 6
+                    // http://social.msdn.microsoft.com/Forums/en-US/winappsuidesign/thread/4442fd09-5692-474f-914e-6769e3e10a12/
+                    for (int i = 0; i < QueryResult.Assumptions[0].Values.Count && i < 6; i++)
                     {
-                        getAssumption(Value.Input);
-                    }));
+                        Value Value = QueryResult.Assumptions[0].Values[i];
+                        menu.Commands.Add(new UICommand(Value.Description, (command) =>
+                        {
+                            getAssumption(Value.Input);
+                        }));
+                    }
+
+                    var chosenCommand = await menu.ShowForSelectionAsync(GetElementRect((FrameworkElement)sender, Placement.Above));
                 }
             }
-            var chosenCommand = await menu.ShowForSelectionAsync(GetElementRect((FrameworkElement)sender, Placement.Above));
         }
 
         private async void getAssumption(String AssumptionName)
         {
-            setUpPage(QueryText);
+            States = new Dictionary<string, List<string>>();
+            //reset states
+            SetQueryText(QueryText);
 
             QueryAssumption = AssumptionName;
 
@@ -525,7 +544,7 @@ namespace WolframAlpha
             if (!result.Success)
                 throw new Exception("Errör");
 
-            generatePage(result);
+            SetResult(result);
 
             stopNetworkAction();
         }
