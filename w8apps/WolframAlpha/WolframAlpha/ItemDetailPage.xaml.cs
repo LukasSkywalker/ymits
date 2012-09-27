@@ -101,10 +101,8 @@ namespace WolframAlpha
                     await md.ShowAsync();
                 }
             }
-            if (QueryResult.Assumptions != null && QueryResult.AssumptionCount > 0)
-            {
-                assumption.Text = QueryResult.Assumptions[0].Values[0].Description;
-            }
+            if (AssumptionsListBox.Items.Count > 0)
+                AssumptionsListBox.SelectedIndex = 0;
         }
 
         private void SetQueryText(String queryText)
@@ -119,7 +117,7 @@ namespace WolframAlpha
         {
             base.OnNavigatedTo(e);
             String queryText = (String)e.Parameter;
-            startNetworkAction();
+            startNetworkAction(true, false);
             SetQueryText(queryText);
 
             string address = String.Format(App.ServiceURL, App.AppId, WebUtility.UrlEncode(queryText), QueryAssumption);
@@ -128,7 +126,7 @@ namespace WolframAlpha
             QueryResult result = Helper.ParseResult(source);
 
             SetResult(result);
-            stopNetworkAction();
+            stopNetworkAction(true, false);
         }
 
         #region Page state management
@@ -224,6 +222,7 @@ namespace WolframAlpha
             // an item is selected this has the effect of changing from displaying the item list
             // to showing the selected item's details.  When the selection is cleared this has the
             // opposite effect.
+            ShowPopup();
             if (this.UsingLogicalPageNavigation()) this.InvalidateVisualState();
         }
 
@@ -296,7 +295,7 @@ namespace WolframAlpha
                 States[PodId].Add(StateName);
             }
 
-            startNetworkAction();
+            startNetworkAction(false, true);
 
             string stateParameter = "";
 
@@ -331,26 +330,45 @@ namespace WolframAlpha
                 ((ObservableCollection<Pod>)this.DefaultViewModel["Pods"])[oldIndex] = Pod;
             }
 
-            stopNetworkAction();
+            stopNetworkAction(false, true);
         }
 
-        private void startNetworkAction() {
-            progressMeter.Visibility = Visibility.Visible;
-            progressMeter.IsIndeterminate = true;
+        private void startNetworkAction(bool main, bool popup) {
+            if (main)
+            {
+                progressMeter.Visibility = Visibility.Visible;
+                progressMeter.IsIndeterminate = true;
+            }
+
+            if (popup)
+            {
+                progressMeter2.Visibility = Visibility.Visible;
+                progressMeter2.IsIndeterminate = true;
+            }
         }
 
-        private void stopNetworkAction() {
-            progressMeter.Visibility = Visibility.Collapsed;
-            progressMeter.IsIndeterminate = false;
+        private void stopNetworkAction(bool main, bool popup)
+        {
+            if (main)
+            {
+                progressMeter.Visibility = Visibility.Collapsed;
+                progressMeter.IsIndeterminate = false;
+            }
+
+            if (popup)
+            {
+                progressMeter2.Visibility = Visibility.Collapsed;
+                progressMeter2.IsIndeterminate = false;
+            }
         }
 
-        private void ItemSource_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        private async void ItemSource_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             ListBox lb = ((ListBox)sender);
             if (lb.SelectedItem == null)
                 return;
             String Url = (string)lb.SelectedValue;
-            // TODO await Launcher.LaunchUriAsync(new Uri(Url));
+            await Launcher.LaunchUriAsync(new Uri(Url));
         }
 
         // gets invoked when user clicks on an item in the states listbox, e.g. [More Digits], [Fractual representation]
@@ -497,29 +515,12 @@ namespace WolframAlpha
             return unsnapped;
         }
 
-        private async void ShowAssumptionsPopup(object sender, RoutedEventArgs e)
+        private void Assumption_SelectionChanged(object sender, TappedRoutedEventArgs e)
         {
+            ListBox lb = (ListBox)sender;
+            String input = (String)lb.SelectedValue;
+            getAssumption(input);
             
-            if (QueryResult != null)
-            {
-                if (QueryResult.Assumptions != null)
-                {
-                    var menu = new PopupMenu();
-
-                    // max. items in contextmenu is 6
-                    // http://social.msdn.microsoft.com/Forums/en-US/winappsuidesign/thread/4442fd09-5692-474f-914e-6769e3e10a12/
-                    for (int i = 0; i < QueryResult.Assumptions[0].Values.Count && i < 6; i++)
-                    {
-                        Value Value = QueryResult.Assumptions[0].Values[i];
-                        menu.Commands.Add(new UICommand(Value.Description, (command) =>
-                        {
-                            getAssumption(Value.Input);
-                        }));
-                    }
-
-                    var chosenCommand = await menu.ShowForSelectionAsync(GetElementRect((FrameworkElement)sender, Placement.Above));
-                }
-            }
         }
 
         private async void getAssumption(String AssumptionName)
@@ -535,7 +536,7 @@ namespace WolframAlpha
             System.Diagnostics.Debug.WriteLine(address);
             System.Diagnostics.Debug.WriteLine("Getting assumption " + AssumptionName);
 
-            startNetworkAction();
+            startNetworkAction(true, false);
 
             Task<String> sourceTask = Helper.GetResultAsync(address);
             String source = await sourceTask;
@@ -546,7 +547,17 @@ namespace WolframAlpha
 
             SetResult(result);
 
-            stopNetworkAction();
+            stopNetworkAction(true, false);
+        }
+
+        private void HidePopup(object sender, TappedRoutedEventArgs e)
+        {
+            TransparentGrid.Visibility = Visibility.Collapsed;
+        }
+
+        private void ShowPopup()
+        {
+            TransparentGrid.Visibility = Visibility.Visible;
         }
     }
 }

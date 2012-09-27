@@ -33,7 +33,7 @@ namespace WolframAlphaTest
             StringAssert.Contains(s2, "APP_ID");
             StringAssert.Contains(s2, "WHO_DAT_GIRL");
 
-            String s3 = ub.AddState("MORE_DIGITS", "42", 2).Build();
+            String s3 = ub.AddState("MORE_DIGITS", "42").Build();
             StringAssert.Contains(s3, "Number");
             StringAssert.DoesNotMatch(s3, new Regex("Word"));
             StringAssert.Contains(s3, "APP_ID");

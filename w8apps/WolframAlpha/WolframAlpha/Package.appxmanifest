@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Package xmlns="http://schemas.microsoft.com/appx/2010/manifest">
-  <Identity Name="5fc25d3a-7b3e-4661-9a91-6dae58d69fe7" Publisher="CN=Lukas" Version="1.0.0.0" />
+  <Identity Name="5fc25d3a-7b3e-4661-9a91-6dae58d69fe7" Publisher="CN=Lukas" Version="0.1.0.1" />
   <Properties>
     <DisplayName>WolframAlpha</DisplayName>
     <PublisherDisplayName>Lukas</PublisherDisplayName>

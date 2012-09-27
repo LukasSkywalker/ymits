@@ -28,8 +28,6 @@ namespace WolframAlpha
 
         private Geocoordinate Coordinates { get; set; }
 
-        private UrlBuilder UrlBuilder;
-
         public MainPage()
         {
             this.InitializeComponent();

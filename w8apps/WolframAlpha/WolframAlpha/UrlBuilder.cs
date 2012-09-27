@@ -17,8 +17,6 @@ namespace WolframAlpha
         public string State { get; set; }
         public string PodId { get; set; }
 
-        private Dictionary<string, Dictionary<String, int>> StateCounter;
-
         public UrlBuilder() {
         }
 
