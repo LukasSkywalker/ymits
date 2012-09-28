@@ -94,8 +94,121 @@ namespace WolframAlpha
                 await md.ShowAsync();
             }
 
-            if (AssumptionsListBox.Items.Count > 0)
-                AssumptionsListBox.SelectedIndex = 0;
+            ProcessAssumptions(QueryResult.Assumptions);
+
+            /*if (AssumptionsListBox.Items.Count > 0)
+                AssumptionsListBox.SelectedIndex = 0;*/
+        }
+
+        private void AddDescription(String title) {
+            TextBlock tb = new TextBlock();
+            tb.Text = title;
+            tb.Style = (Style)Application.Current.Resources["SubheaderTextStyle"];
+            tb.Margin = new Thickness(5, 0, 0, 5);
+            AssumptionsStackPanel.Children.Add(tb);
+        }
+
+        private void ProcessAssumptions(ObservableCollection<Assumption> assumptions){
+            foreach (Assumption assumption in assumptions) {
+                switch (assumption.Type) {
+                    case "Clash":
+                        // other meanings this query could have
+                        // display as radiobuttons
+                        AddDescription("Use as");
+
+                        for (int i = 0; i < assumption.Values.Count; i++ )
+                        {
+                            Value val = assumption.Values[i];
+                            RadioButton radioButton = new RadioButton();
+                            radioButton.Content = val.Description;
+                            radioButton.Tag = val.Input;
+                            radioButton.GroupName = assumption.Type;
+                            if (i == 0) radioButton.IsChecked = true;
+                            AssumptionsStackPanel.Children.Add(radioButton);
+                        }
+                        break;
+                    case "FormulaSelect":
+                        // other formulas for this query
+                        // display as radiobuttons
+                        AddDescription("Use as formula for");
+                        for (int i = 0; i < assumption.Values.Count; i++)
+                        {
+                            Value val = assumption.Values[i];
+                            RadioButton radioButton = new RadioButton();
+                            radioButton.Content = val.Description;
+                            radioButton.Tag = val.Input;
+                            radioButton.GroupName = assumption.Type;
+                            if (i == 0) radioButton.IsChecked = true;
+                            AssumptionsStackPanel.Children.Add(radioButton);
+                        }
+                        break;
+                    case "FormulaSolve":
+                        // value to solve for
+                        // display as combobox
+                        AddDescription("Solve for");
+                        ComboBox comboBox1 = new ComboBox();
+                        foreach(Value val in assumption.Values)
+                        {
+                            comboBox1.Items.Add(val.Description);  
+                        }
+                        comboBox1.SelectedIndex = 0;
+                        AssumptionsStackPanel.Children.Add(comboBox1);
+                        break;
+                    case "FormulaVariable":
+                        // variables which can be chosen
+                        // display as labelled textbox MyLabel [_____]
+
+                        /* TODO For variables that take an arbitrary value, typically entered via an input field,
+                         * the count will always be 1, but for variables that take one of a fixed set of values,
+                         * typically represented as a pulldown menuof choices, the count will be the number of
+                         * possible choices, withone <value> element for each possibility.
+                         * 
+                         * To specify a different value, you need to work with the value of the |input| attribute.
+                         * replace what comes after the _ character with the URL-encoded new value, e.g.
+                         *  [wa.com][...]?assumption=*F.DopplerShift.vs-_6.5+m%2Fs
+                         */
+                        AddDescription("Variables");
+                        string label = assumption.Description;
+                        Value value = assumption.Values[0];
+                        string tbText = value.Description;
+                        TextBlock tBlock = new TextBlock();
+                        tBlock.Text = label;
+                        AssumptionsStackPanel.Children.Add(tBlock);
+                        TextBox tBox = new TextBox();
+                        tBox.Text = tbText;
+                        tBox.Tag = value.Input;
+                        AssumptionsStackPanel.Children.Add(tBox);
+                        break;
+                    case "FormulaVariableOption":
+                        // options for the variables
+                        // display as radiobuttons
+                        AddDescription("Variable options");
+                        for (int i = 0; i < assumption.Values.Count; i++)
+                        {
+                            Value val = assumption.Values[i];
+                            RadioButton radioButton = new RadioButton();
+                            radioButton.Content = val.Description;
+                            radioButton.Tag = val.Input;
+                            radioButton.GroupName = assumption.Type;
+                            if (i == 0) radioButton.IsChecked = true;
+                            AssumptionsStackPanel.Children.Add(radioButton);
+                        }
+                        break;
+                    case "FormulaVariableInclude":
+                        // additional variables to include
+                        // display as checkboxes
+                        AddDescription("Include also");
+                        foreach (Value val in assumption.Values) {
+                            CheckBox cb = new CheckBox();
+                            cb.Tag = val.Input;
+                            TextBlock tb = new TextBlock();
+                            tb.Text = val.Description;
+                            AssumptionsStackPanel.Children.Add(tb);
+                            AssumptionsStackPanel.Children.Add(cb);
+                        }
+                        break;
+                }
+            }
         }
 
         private void SetQueryText(String queryText)
@@ -132,60 +245,6 @@ namespace WolframAlpha
             SetResult(result);
             stopNetworkAction(true, false);
         }
-
-        #region Page state management
-
-        /// <summary>
-        /// Populates the page with content passed during navigation.  Any saved state is also
-        /// provided when recreating a page from a prior session.
-        /// </summary>
-        /// <param name="navigationParameter">The parameter value passed to
-        /// <see cref="Frame.Navigate(Type, Object)"/> when this page was initially requested.
-        /// </param>
-        /// <param name="pageState">A dictionary of state preserved by this page during an earlier
-        /// session.  This will be null the first time a page is visited.</param>
-        /*protected override void LoadState(Object navigationParameter, Dictionary<String, Object> pageState)
-        {
-            // TODO: Assign a bindable group to this.DefaultViewModel["Group"]
-            // TODO: Assign a collection of bindable items to this.DefaultViewModel["Items"]
-
-            if (pageState == null)
-            {
-                // When this is a new page, select the first item automatically unless logical page
-                // navigation is being used (see the logical page navigation #region below.)
-                if (!this.UsingLogicalPageNavigation() && this.podsViewSource.View != null)
-                {
-                    this.podsViewSource.View.MoveCurrentToFirst();
-                }
-            }
-            else
-            {
-                // Restore the previously saved state associated with this page
-                if (pageState.ContainsKey("SelectedItem") && this.podsViewSource.View != null)
-                {
-                    // TODO: Invoke this.itemsViewSource.View.MoveCurrentTo() with the selected
-                    //       item as specified by the value of pageState["SelectedItem"]
-                }
-            }
-        }*/
-
-        /// <summary>
-        /// Preserves state associated with this page in case the application is suspended or the
-        /// page is discarded from the navigation cache.  Values must conform to the serialization
-        /// requirements of <see cref="SuspensionManager.SessionState"/>.
-        /// </summary>
-        /// <param name="pageState">An empty dictionary to be populated with serializable state.</param>
-        /*protected override void SaveState(Dictionary<String, Object> pageState)
-        {
-            if (this.podsViewSource.View != null)
-            {
-                var selectedItem = this.podsViewSource.View.CurrentItem;
-                // TODO: Derive a serializable navigation parameter and assign it to
-                //       pageState["SelectedItem"]
-            }
-        }*/
-
-        #endregion
 
         #region Logical page navigation
 
@@ -324,7 +383,6 @@ namespace WolframAlpha
             if (!result.Success)
                 throw new Exception("Errör");
 
-            // TODO NRE HERE!!!
             Pod Pod = result.Pods[0];
             int oldIndex = QueryResult.getIndexById(Pod.Id);
             if (oldIndex != -1)
@@ -478,7 +536,6 @@ namespace WolframAlpha
                     {
                         using (DataWriter dataWriter = new DataWriter(outputStream))
                         {
-                            //TODO: Replace "Bytes" with the type you want to write.
                             dataWriter.WriteBytes(b);
                             await dataWriter.StoreAsync();
                             dataWriter.DetachStream();

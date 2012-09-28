@@ -314,6 +314,9 @@ namespace WolframAlpha
         [XmlAttribute("template")]
         public String Template { get; set; }
 
+        [XmlAttribute("desc")]
+        public String Description { get; set; }
+
         [XmlElement("value")]
         public ObservableCollection<Value> Values { get; set; }
     }
@@ -383,9 +386,8 @@ namespace WolframAlpha
         [XmlAttribute("new")]
         public String New { get; set; }
 
-        //TODO
-        //[XmlElement("alternative")]
-        //public Alternative[] Alternatives { get; set; }
+        [XmlElement("alternative")]
+        public Alternative[] Alternatives { get; set; }
     }
 
     public class Generalization{
@@ -415,7 +417,11 @@ namespace WolframAlpha
         public String Level { get; set; }
 
         [XmlTextAttribute]
-        public String Value;
+        public String Value {get; set; }
+    }
 
+    public class Alternative {
+        [XmlTextAttribute]
+        public String Value { get; set; }
     }
 }

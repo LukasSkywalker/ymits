@@ -97,20 +97,27 @@
                 </ItemsPanelTemplate>
             </GridView.ItemsPanel>
         </GridView>
-        <!-- {Binding SelectedItem, ElementName=itemListView} -->
+        
         <Grid Grid.Column="1" Grid.Row="1">
-            <StackPanel Orientation="Vertical" Margin="20,0,20,20">
-                <TextBlock Text="Use as" Style="{StaticResource SubheaderTextStyle}" Margin="10,0,0,5" 
-                           Visibility="{Binding Assumptions, Converter={StaticResource LengthToVisibilityConverter}}"/>
-                <ListBox x:Name="AssumptionsListBox" ItemsSource="{Binding Assumptions[0].Values}" DisplayMemberPath="Description" SelectedValuePath="Input"
-                         Tapped="Assumption_SelectionChanged" BorderThickness="0" Padding="20,0,0,0" VerticalAlignment="Stretch"
-                         Visibility="{Binding Assumptions, Converter={StaticResource LengthToVisibilityConverter}}"/>
-                <TextBlock Text="Sources" Margin="10,20,0,5"  Style="{StaticResource SubheaderTextStyle}"
-                           Visibility="{Binding Sources, Converter={StaticResource LengthToVisibilityConverter}}"/>
-                <ListBox x:Name="SourcesListBox" ItemsSource="{Binding Sources}" DisplayMemberPath="Text" SelectedValuePath="URL"
-                          SelectionChanged="ItemSource_SelectionChanged" BorderThickness="0" Padding="20,0,0,0" VerticalAlignment="Stretch"
-                         Visibility="{Binding Sources, Converter={StaticResource LengthToVisibilityConverter}}"/>
-            </StackPanel>
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+                <StackPanel x:Name="AssumptionsStackPanel" Orientation="Vertical" Grid.Row="0">
+                    
+                    <TextBlock Text="Options" Style="{StaticResource SubheaderTextStyle}" 
+                               Visibility="{Binding Assumptions, Converter={StaticResource LengthToVisibilityConverter}}"/>
+                </StackPanel>
+                <StackPanel x:Name="SourcesStackPanel" Orientation="Vertical" Grid.Row="1">
+                    <TextBlock Text="Sources" Style="{StaticResource SubheaderTextStyle}"
+                               Visibility="{Binding Sources, Converter={StaticResource LengthToVisibilityConverter}}"/>
+                    
+                    <ListBox x:Name="SourcesListBox" ItemsSource="{Binding Sources}" DisplayMemberPath="Text" SelectedValuePath="URL"
+                              SelectionChanged="ItemSource_SelectionChanged" BorderThickness="0" Padding="20,0,0,0" VerticalAlignment="Stretch"
+                             Visibility="{Binding Sources, Converter={StaticResource LengthToVisibilityConverter}}"/>
+                </StackPanel>
+            </Grid>
         </Grid>
 
         <!-- end right grid -->
