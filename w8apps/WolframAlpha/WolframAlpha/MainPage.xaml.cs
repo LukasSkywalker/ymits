@@ -89,6 +89,7 @@ namespace WolframAlpha
         {
             args.Request.ApplicationCommands.Add(new SettingsCommand("A", "About", (p) => { flyoutAbout.IsOpen = true; }));
             args.Request.ApplicationCommands.Add(new SettingsCommand("S", "Settings", (p) => { flyoutSettings.IsOpen = true; }));
+            args.Request.ApplicationCommands.Add(new SettingsCommand("P", "Privacy Policy", (p) => { flyoutPrivacy.IsOpen = true; }));
         }
 
         private void DataChangeHandler(ApplicationData sender, object args)
@@ -119,7 +120,17 @@ namespace WolframAlpha
 
             string result = Serialize(HistoryList);
 
-            RoamingSettings.Values["History"] = result;
+            System.Diagnostics.Debug.WriteLine(ApplicationData.Current.RoamingStorageQuota*1024);
+
+            System.Diagnostics.Debug.WriteLine(System.Text.UnicodeEncoding.Unicode.GetByteCount(result));
+
+            try
+            {
+                RoamingSettings.Values["History"] = result;
+            }
+            catch (Exception e) {
+                Helper.DumpException(e);
+            }
             HistoryListBox.ItemsSource = HistoryList;
             
             return;
@@ -197,8 +208,11 @@ namespace WolframAlpha
             
             }
             String QueryText = searchTextBox.Text;
-            AddToHistory(QueryText);
-            this.Frame.Navigate(typeof(ItemDetailPage), QueryText);
+            if (!String.IsNullOrWhiteSpace(QueryText))
+            {
+                AddToHistory(QueryText);
+                this.Frame.Navigate(typeof(ItemDetailPage), QueryText);
+            }
         }
 
         private void History_SelectionChanged(object sender, SelectionChangedEventArgs e)

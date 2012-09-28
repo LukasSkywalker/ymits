@@ -85,6 +85,10 @@ namespace WolframAlpha
         [XmlElement("generalization")]
         public Generalization Generalization { get; set; }
 
+        [XmlArray("didyoumeans")]
+        [XmlArrayItem("didyoumean")]
+        public ObservableCollection<DidYouMean> DidYouMeans { get; set; }
+
         public Pod getPodAt(int Index){
             return Pods[Index];
         }
@@ -401,5 +405,17 @@ namespace WolframAlpha
 
         [XmlElement("msg")]
         public String Message { get; set; }
+    }
+
+    public class DidYouMean {
+        [XmlAttribute("score")]
+        public String Score { get; set; }
+
+        [XmlAttribute("level")]
+        public String Level { get; set; }
+
+        [XmlTextAttribute]
+        public String Value;
+
     }
 }

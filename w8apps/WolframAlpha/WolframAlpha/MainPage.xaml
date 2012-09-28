@@ -18,28 +18,100 @@
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="Auto"/>
             <ColumnDefinition Width="*"/>
-            <!--<ColumnDefinition Width="Auto"/>-->
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
             <RowDefinition Height="*"/>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
-        <cfo:CharmFlyout Grid.RowSpan="2" Grid.Column="2"
+        <cfo:CharmFlyout Grid.ColumnSpan="2" Grid.RowSpan="2"
            x:Name="flyoutAbout"
            Heading="About"
-           HeadingBackgroundBrush="#FF4E0000">
+           HeadingBackgroundBrush="DarkGray">
             <StackPanel>
                 <TextBlock
                    FontSize="16">Wolfram|Alpha by Lukas Diener</TextBlock>
                 <TextBlock
                    FontSize="16">For support:</TextBlock>
-                <HyperlinkButton>http://lukasdiener.tk</HyperlinkButton>
+                <HyperlinkButton NavigateUri="http://www.lukasdiener.tk">http://www.lukasdiener.tk</HyperlinkButton>
             </StackPanel>
         </cfo:CharmFlyout>
-        <cfo:CharmFlyout Grid.RowSpan="2" Grid.Column="2"
+        <cfo:CharmFlyout Grid.ColumnSpan="2" Grid.RowSpan="2"
            x:Name="flyoutSettings"
-           Heading="About"
-           HeadingBackgroundBrush="#FF4E0000">
+           Heading="Settings"
+           HeadingBackgroundBrush="DarkGray">
+        </cfo:CharmFlyout>
+        <cfo:CharmFlyout Grid.ColumnSpan="2" Grid.RowSpan="2"
+           x:Name="flyoutPrivacy"
+           Heading="Privacy Policy"
+           HeadingBackgroundBrush="DarkGray">
+            <Grid Margin="12,0,12,0">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+
+                <TextBlock FontSize="18" Grid.Row="0">
+                        Wolfram|Alpha by Lukas Diener
+                </TextBlock>
+                <ScrollViewer Grid.Row="1">
+                    <StackPanel VerticalAlignment="Top" HorizontalAlignment="Left">
+                        <TextBlock FontSize="16" TextWrapping="Wrap">
+                        We understand your concerns about how your information is used and shared, and we endeavor to use
+                        such information carefully and sensibly. This page explains how the information you provide is collected and
+                        used.
+                        </TextBlock>
+                        <TextBlock FontSize="16" TextWrapping="Wrap" Style="{StaticResource PageSubheaderTextStyle}" Margin="0,10,0,10">
+                            What Information Do We Collect?
+                        </TextBlock>
+                        <TextBlock FontSize="16" TextWrapping="Wrap">
+                        We receive non-personally identifiable information whenever you interact with our app, including your Internet
+                        Protocol (IP) address, geographical region, and your search queries.
+                        </TextBlock>
+                        <TextBlock FontSize="16" TextWrapping="Wrap" Style="{StaticResource PageSubheaderTextStyle}" Margin="0,10,0,10">
+                            How Is Your Information Used?
+                        </TextBlock>
+                        <TextBlock FontSize="16" TextWrapping="Wrap">
+                        We do not sell, rent, or lease your information to third parties. The information we obtain from Wolfram|Alpha
+                        users helps us enhance and refine our service and content. Non-personal information collected about you through
+                        your experience and queries is used to better understand the entire population that is utilizing our website
+                        and how we might improve our services to improve the collective experience. Except as noted below, we track and
+                        record IP addresses that access our website for internal reporting, diagnostic, and analysis purposes only.
+                    
+                        Your IP address is used to determine, when possible, your approximate geographical location, which affects such
+                        things as your results' default currency and units of measure, based on what country you are in. Your browser
+                        type may be used to fine-tune the results for optimal display, for example on mobile devices or to work around
+                        limitations of a particular browser. Referrer URLs may be used to generate usage statistics and analyze usage
+                        patterns.
+                        </TextBlock>
+                        <TextBlock FontSize="16" TextWrapping="Wrap" Style="{StaticResource PageSubheaderTextStyle}" Margin="0,10,0,10">
+                            Other Disclosures of Your Information
+                        </TextBlock>
+                        <TextBlock FontSize="16" TextWrapping="Wrap">
+                        We may release personally identifying information when we believe release is necessary to comply with lawful
+                        court orders. Any collected information associated with your use of the website (personal and non-personal)
+                        will be disclosed to government authorities or third parties only pursuant to a lawful request, subpoena, or
+                        other process that legally compels disclosure of that information.
+
+                        We may also preserve, use, or disclose your information if necessary to enforce our Terms of Use and related
+                        agreements; to detect, prevent, or otherwise address fraud, security or technical issues, including high-volume
+                        use of the website; to respond to support requests; or to protect the rights, property, or safety of
+                        Wolfram|Alpha, our users, or others.
+                        </TextBlock>
+                        <TextBlock FontSize="16" TextWrapping="Wrap" Style="{StaticResource PageSubheaderTextStyle}" Margin="0,10,0,10">
+                            Security
+                        </TextBlock>
+                        <TextBlock FontSize="16" TextWrapping="Wrap">
+                        We take appropriate measures to ensure the security of our website and systems. This includes precautions to
+                        safeguard your personal information against loss, theft, and misuse, as well as against unauthorized access,
+                        alteration, disclosure, or destruction of data.
+
+                        Despite our efforts to protect your personal information, there is always some risk that an unauthorized third
+                        party may find a way around our security systems or that transmissions of your information over the internet
+                        may be intercepted. Your use of the website constitutes an acceptance of such risk.
+                        </TextBlock>
+                    </StackPanel>
+                </ScrollViewer>
+            </Grid>
         </cfo:CharmFlyout>
         <ListBox x:Name="HistoryListBox" Grid.Column="0" Grid.Row="0"  Margin="12,12,12,64" Width="320"
                  SelectionChanged="History_SelectionChanged" SelectedValuePath="Text" Visibility="Collapsed">

@@ -8,6 +8,7 @@
     xmlns:common="using:WolframAlpha.Common"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:cfo="using:CharmFlyoutLibrary"
     mc:Ignorable="d">
 
     <Page.Resources>
@@ -30,6 +31,32 @@
             <ColumnDefinition x:Name="primaryColumn" Width="*"/>
             <ColumnDefinition x:Name="secondaryColumn" Width="300"/>
         </Grid.ColumnDefinitions>
+
+        <cfo:CharmFlyout Grid.ColumnSpan="2" Grid.RowSpan="2"
+           x:Name="flyoutNotification"
+           Heading="{Binding Heading}"
+           HeadingBackgroundBrush="DarkGray">
+            <cfo:CharmFlyout.ParentFlyout>
+                <cfo:CharmFlyout/>
+            </cfo:CharmFlyout.ParentFlyout>
+            <Grid Margin="12,0,12,0">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+                <ScrollViewer Grid.Row="1">
+                    <StackPanel VerticalAlignment="Top" HorizontalAlignment="Left">
+                        <ListView ItemsSource="{Binding Items}">
+                            <ListView.ItemTemplate>
+                                <DataTemplate>
+                                    <Button FontSize="16" Content="{Binding Message}" Command="{Binding Command}"/>
+                                </DataTemplate>
+                            </ListView.ItemTemplate>
+                        </ListView>
+                    </StackPanel>
+                </ScrollViewer>
+            </Grid>
+        </cfo:CharmFlyout>
 
         <!-- Back button and page title -->
         <Grid x:Name="titlePanel" Grid.ColumnSpan="2">
@@ -143,28 +170,25 @@
                             <ListView.ItemContainerStyle>
                                 <Style TargetType="ListViewItem">
                                     <Setter Property="VerticalContentAlignment" Value="Center"/>
-                                    <Setter Property="Padding" Value="0,0,0,0"/>
-                                    <Setter Property="Height" Value="30"/>
                                 </Style>
                             </ListView.ItemContainerStyle>
                             <ListView.ItemTemplate>
                                 <DataTemplate>
-                                    <TextBlock Text="{Binding Name}" Tag="{Binding}"  Tapped="ItemStates_SelectionChanged"/>
+                                    <Button Content="{Binding Name}" Tag="{Binding}"  Click="ItemStates_SelectionChanged"/>
                                 </DataTemplate>
                             </ListView.ItemTemplate>
                         </ListView>
                         <ListView x:Name="InfosListBox" ItemsSource="{Binding Infos}" Grid.Row="4"
-                              VerticalAlignment="Bottom" SelectionMode="None">
+                                  VerticalAlignment="Bottom" SelectionMode="None" Margin="10,10,10,10"
+                                  Visibility="{Binding Infos, Converter={StaticResource LengthToVisibilityConverter}}">
                             <ListView.ItemContainerStyle>
                                 <Style TargetType="ListViewItem">
                                     <Setter Property="VerticalContentAlignment" Value="Center"/>
-                                    <Setter Property="Padding" Value="0,0,0,0"/>
-                                    <Setter Property="Height" Value="30"/>
                                 </Style>
                             </ListView.ItemContainerStyle>
                             <ListView.ItemTemplate>
                                 <DataTemplate>
-                                    <TextBlock Text="{Binding Text}" Tag="{Binding}" Tapped="ItemInfos_SelectionChanged"/>
+                                    <Button Content="{Binding Text}" Tag="{Binding}" Click="ItemInfos_SelectionChanged"/>
                                 </DataTemplate>
                             </ListView.ItemTemplate>
                         </ListView>

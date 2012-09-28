@@ -30,6 +30,17 @@ namespace WolframAlpha.Common
                 }
                 catch (Exception ex) {
                     Helper.DumpException(ex);
+
+                    try
+                    {
+                        int length = ((ObservableCollection<Info>)value).Count;
+                        if (length > 0) return Visibility.Visible;
+                        else return Visibility.Collapsed;
+                    }
+                    catch (Exception exc)
+                    {
+                        Helper.DumpException(exc);
+                    }
                 }
             }
             return Visibility.Collapsed;

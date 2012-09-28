@@ -1,32 +1,24 @@
-﻿using System;
+﻿using CharmFlyoutLibrary;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.IO;
-using System.Linq;
 using System.Net;
 using System.Net.Http;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using System.Windows.Input;
 using Windows.ApplicationModel.DataTransfer;
 using Windows.ApplicationModel.Search;
 using Windows.Foundation;
-using Windows.Foundation.Collections;
 using Windows.Storage;
 using Windows.Storage.Pickers;
-using Windows.Storage.Provider;
 using Windows.Storage.Streams;
 using Windows.System;
-using Windows.UI.Input;
 using Windows.UI.Popups;
 using Windows.UI.ViewManagement;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Controls.Primitives;
-using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
-using Windows.UI.Xaml.Media.Animation;
-using Windows.UI.Xaml.Media.Imaging;
 using Windows.UI.Xaml.Navigation;
 using WolframAlpha.Common;
 
@@ -75,39 +67,33 @@ namespace WolframAlpha
 
             VisualStateManager.GoToState(this, "ResultsFound", true);
 
-            if (QueryResult.Errors != null)
+            Helper.DisplayWarnings(QueryResult);
+            Helper.DisplayErrors(QueryResult);
+
+            if (QueryResult.DidYouMeans != null)
             {
-                foreach (Error Error in QueryResult.Errors)
+                AppNotification an = new AppNotification("Did you mean");
+                foreach (DidYouMean DidYouMean in QueryResult.DidYouMeans)
                 {
-                    MessageDialog md = new MessageDialog(Error.Code + " " + Error.Message, "Error");
-                    await md.ShowAsync();
+                    ICommand cmd = new RelayCommand(x => { this.Frame.Navigate(typeof(ItemDetailPage), DidYouMean.Value); flyoutNotification.IsOpen = false; });
+                    AppNotification.Item it = new AppNotification.Item(DidYouMean.Value, cmd);
+                    an.AddMessage(it);
+                }
+                if (QueryResult.DidYouMeans.Count > 0)
+                {
+                    flyoutNotification.ParentFlyout = null;
+                    flyoutNotification.DataContext = an;
+                    flyoutNotification.IsOpen = true;
                 }
             }
 
-            if (QueryResult.Warnings != null)
+
+            if (QueryResult.Error && QueryResult.Errors == null)
             {
-                foreach (Warning Warning in QueryResult.Warnings)
-                {
-                    MessageDialog md = new MessageDialog("Something bad happened. But we don't know what, so just go on.", "Warning");
-                    if (Warning.Spellcheck != null)
-                    {
-                        md = new MessageDialog(Warning.Spellcheck[0].Text, "Warning");
-                    }
-                    if (Warning.Delimiters != null)
-                    {
-                        md = new MessageDialog(Warning.Delimiters[0].Text, "Warning");
-                    }
-                    if (Warning.Reinterpret != null)
-                    {
-                        md = new MessageDialog(Warning.Reinterpret[0].Text + " " + Warning.Reinterpret[0].New, "Warning");
-                    }
-                    if (Warning.Translation != null)
-                    {
-                        md = new MessageDialog(Warning.Translation[0].Phrase + ": " + Warning.Translation[0].Text, "Warning");
-                    }
-                    await md.ShowAsync();
-                }
+                MessageDialog md = new MessageDialog("Unknown error. Please try again.", "Error");
+                await md.ShowAsync();
             }
+
             if (AssumptionsListBox.Items.Count > 0)
                 AssumptionsListBox.SelectedIndex = 0;
         }
@@ -390,9 +376,9 @@ namespace WolframAlpha
         }
 
         // gets invoked when user clicks on an item in the states listbox, e.g. [More Digits], [Fractual representation]
-        private void ItemStates_SelectionChanged(object sender, TappedRoutedEventArgs e)
+        private void ItemStates_SelectionChanged(object sender, RoutedEventArgs e)
         {
-            TextBlock lb = ((TextBlock)sender);
+            Button lb = ((Button)sender);
             
             Pod Pod = (Pod)itemListView.SelectedItem;
             String PodId = Pod.Id;
@@ -401,9 +387,9 @@ namespace WolframAlpha
             getState(StatesValue, PodId);
         }
 
-        private async void ItemInfos_SelectionChanged(object sender, TappedRoutedEventArgs e)
+        private async void ItemInfos_SelectionChanged(object sender, RoutedEventArgs e)
         {
-            TextBlock lb = ((TextBlock)sender);
+            Button lb = ((Button)sender);
 
             Pod Pod = (Pod)itemListView.SelectedItem;
             String PodId = Pod.Id;
