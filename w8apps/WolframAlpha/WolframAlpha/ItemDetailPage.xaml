@@ -104,11 +104,12 @@
                     <RowDefinition Height="*"/>
                     <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
-                <StackPanel x:Name="AssumptionsStackPanel" Orientation="Vertical" Grid.Row="0">
-                    
-                    <TextBlock Text="Options" Style="{StaticResource SubheaderTextStyle}" 
-                               Visibility="{Binding Assumptions, Converter={StaticResource LengthToVisibilityConverter}}"/>
-                </StackPanel>
+                <ScrollViewer Grid.Row="0">
+                    <StackPanel x:Name="AssumptionsStackPanel" Orientation="Vertical">
+                        <TextBlock Text="Options" Style="{StaticResource SubheaderTextStyle}" 
+                                   Visibility="{Binding Assumptions, Converter={StaticResource LengthToVisibilityConverter}}"/>
+                    </StackPanel>
+                </ScrollViewer>
                 <StackPanel x:Name="SourcesStackPanel" Orientation="Vertical" Grid.Row="1">
                     <TextBlock Text="Sources" Style="{StaticResource SubheaderTextStyle}"
                                Visibility="{Binding Sources, Converter={StaticResource LengthToVisibilityConverter}}"/>

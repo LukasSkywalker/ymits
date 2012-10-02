@@ -37,6 +37,7 @@ namespace WolframAlpha
         private String QueryAssumption = "";
         private Dictionary<String,List<String>> States;
         private SearchPane searchPane;
+        private AssumptionStore FormulaAssumptions;
 
         // like podid-states, e.g. [Numeric definition:-more digits, -more digits, -less digits]
 
@@ -44,16 +45,10 @@ namespace WolframAlpha
         {
             this.InitializeComponent();
             States = new Dictionary<string,List<string>>();
+            FormulaAssumptions = new AssumptionStore();
 
             searchPane = SearchPane.GetForCurrentView();
             searchPane.SuggestionsRequested += new TypedEventHandler<SearchPane, SearchPaneSuggestionsRequestedEventArgs>(SearchtermSuggester.GetSuggestions);
-
-            this.DefaultViewModel["MyCommand"] = new DelegateCommand<int>(OnExecute);
-        }
-
-        private void OnExecute(int obj)
-        {
-            throw new NotImplementedException();
         }
 
         private async void SetResult(QueryResult result)
@@ -109,6 +104,7 @@ namespace WolframAlpha
         }
 
         private void ProcessAssumptions(ObservableCollection<Assumption> assumptions){
+            AssumptionsStackPanel.Children.Clear();
             foreach (Assumption assumption in assumptions) {
                 switch (assumption.Type) {
                     case "Clash":
@@ -124,6 +120,7 @@ namespace WolframAlpha
                             radioButton.Tag = val.Input;
                             radioButton.GroupName = assumption.Type;
                             if (i == 0) radioButton.IsChecked = true;
+                            radioButton.Checked += (s, e) => ClashChanged(s);
                             AssumptionsStackPanel.Children.Add(radioButton);
                         }
                         break;
@@ -139,6 +136,7 @@ namespace WolframAlpha
                             radioButton.Tag = val.Input;
                             radioButton.GroupName = assumption.Type;
                             if (i == 0) radioButton.IsChecked = true;
+                            radioButton.Checked += (s, e) => FormulaSelectChanged(s);
                             AssumptionsStackPanel.Children.Add(radioButton);
                         }
                         break;
@@ -149,9 +147,13 @@ namespace WolframAlpha
                         ComboBox comboBox1 = new ComboBox();
                         foreach(Value val in assumption.Values)
                         {
-                            comboBox1.Items.Add(val.Description);  
+                            ComboBoxItem cbi = new ComboBoxItem();
+                            cbi.Content = val.Description;
+                            cbi.Tag = val.Input;
+                            comboBox1.Items.Add(cbi); 
                         }
                         comboBox1.SelectedIndex = 0;
+                        comboBox1.SelectionChanged += (s, e) => FormulaSolveChanged(s);
                         AssumptionsStackPanel.Children.Add(comboBox1);
                         break;
                     case "FormulaVariable":
@@ -177,6 +179,7 @@ namespace WolframAlpha
                         TextBox tBox = new TextBox();
                         tBox.Text = tbText;
                         tBox.Tag = value.Input;
+                        tBox.TextChanged += (s, e) => FormulaVariableChanged(s); 
                         AssumptionsStackPanel.Children.Add(tBox);
                         break;
                     case "FormulaVariableOption":
@@ -191,6 +194,7 @@ namespace WolframAlpha
                             radioButton.Tag = val.Input;
                             radioButton.GroupName = assumption.Type;
                             if (i == 0) radioButton.IsChecked = true;
+                            radioButton.Checked += (s, e) => FormulaVariableOptionChanged(s);
                             AssumptionsStackPanel.Children.Add(radioButton);
                         }
                         break;
@@ -201,6 +205,7 @@ namespace WolframAlpha
                         foreach (Value val in assumption.Values) {
                             CheckBox cb = new CheckBox();
                             cb.Tag = val.Input;
+                            cb.Checked += (s, e) => FormulaVariableIncludeChanged(s);
                             TextBlock tb = new TextBlock();
                             tb.Text = val.Description;
                             AssumptionsStackPanel.Children.Add(tb);
@@ -209,6 +214,93 @@ namespace WolframAlpha
                         break;
                 }
             }
+        }
+
+        private void FormulaVariableOptionChanged(object s)
+        {
+            // this option should be discarded
+            //    5
+            RadioButton rb = s as RadioButton;
+            String input = (String)rb.Tag;
+
+            FormulaAssumptions.Clear("FormulaVariableOption");
+            FormulaAssumptions.Add("FormulaVariableOption", input);
+
+            System.Diagnostics.Debug.WriteLine("added "+input);
+
+            System.Diagnostics.Debug.WriteLine(FormulaAssumptions.GetAll());
+            getAssumption(FormulaAssumptions.GetAll());
+            // throw new NotImplementedException();
+        }
+
+        private void FormulaVariableIncludeChanged(object s)
+        {
+            //this option should be preserved
+            //    6
+
+            CheckBox cb = s as CheckBox;
+            String input = (String)cb.Tag;
+
+            System.Diagnostics.Debug.WriteLine("added " + input);
+
+            FormulaAssumptions.Clear("FormulaVariableInclude");
+
+            FormulaAssumptions.Add("FormulaVariableInclude", input);
+
+            System.Diagnostics.Debug.WriteLine(FormulaAssumptions.GetAll());
+            getAssumption(FormulaAssumptions.GetAll());
+        }
+
+        private void FormulaVariableChanged(object s)
+        {
+            //this option should be discarded, but other vars preserved
+            //    4
+            // throw new NotImplementedException();
+        }
+
+        private void FormulaSolveChanged(object s)
+        {
+            // this option should be discarded -  and clears other values as well
+            //    2
+            ComboBox cb = s as ComboBox;
+            ComboBoxItem cbi = (ComboBoxItem)cb.SelectedItem;
+            String input = (String)cbi.Tag;
+
+            FormulaAssumptions.Clear("FormulaSolve");
+            FormulaAssumptions.Add("FormulaSolve", input);
+            System.Diagnostics.Debug.WriteLine("added " + input);
+            getAssumption(FormulaAssumptions.GetAll());
+            // throw new NotImplementedException();
+        }
+
+        private void ClashChanged(object s)
+        {
+            //this option should be discarded everytime
+            //    1
+            // throw new NotImplementedException();
+            RadioButton rb = s as RadioButton;
+            String input = (String)rb.Tag;
+
+            FormulaAssumptions.Clear("Clash");
+            FormulaAssumptions.Add("Clash", input);
+            System.Diagnostics.Debug.WriteLine("added " + input);
+            getAssumption(FormulaAssumptions.GetAll());
+        }
+
+        private void FormulaSelectChanged(object s)
+        {
+            // this option should be discarded everytime
+            //    3
+            RadioButton rb = s as RadioButton;
+            String input = (String)rb.Tag;
+
+            FormulaAssumptions.Clear("FormulaSelect");
+            FormulaAssumptions.Add("FormulaSelect", input);
+            System.Diagnostics.Debug.WriteLine("added " + input);
+
+            System.Diagnostics.Debug.WriteLine(FormulaAssumptions.GetAll());
+            getAssumption(FormulaAssumptions.GetAll());
+            // throw new NotImplementedException();
         }
 
         private void SetQueryText(String queryText)
@@ -230,14 +322,18 @@ namespace WolframAlpha
             base.OnNavigatedTo(e);
 
             // SEARCH CONTRACT 2.5 Enable users to type into the search box directly from your app
-            searchPane.ShowOnKeyboardInput = true;
+            // don't - you can't change formula-variables with this.
+            //searchPane.ShowOnKeyboardInput = true;
 
 
             String queryText = (String)e.Parameter;
+            String location = "";
+            if (App.LocationEnabled)
+                location = App.Location.Latitude+","+App.Location.Longitude;
             startNetworkAction(true, false);
             SetQueryText(queryText);
 
-            string address = String.Format(App.ServiceURL, App.AppId, WebUtility.UrlEncode(queryText), QueryAssumption);
+            string address = String.Format(App.ServiceURL, App.AppId, WebUtility.UrlEncode(queryText), QueryAssumption, location);
             Task<String> sourceTask = Helper.GetResultAsync(address);
             String source = await sourceTask;
             QueryResult result = Helper.ParseResult(source);
@@ -370,7 +466,11 @@ namespace WolframAlpha
                 stateParameter = stateParameter.Substring(10);
             }
 
-            string address = String.Format(App.ServiceURLState, App.AppId, WebUtility.UrlEncode(QueryText), stateParameter, PodId, QueryAssumption);
+            String location = "";
+            if (App.LocationEnabled)
+                location = App.Location.Latitude + "," + App.Location.Longitude;
+
+            string address = String.Format(App.ServiceURLState, App.AppId, WebUtility.UrlEncode(QueryText), stateParameter, PodId, QueryAssumption, location);
 
             System.Diagnostics.Debug.WriteLine(address);
 
@@ -593,7 +693,11 @@ namespace WolframAlpha
 
             QueryAssumption = AssumptionName;
 
-            string address = String.Format(App.ServiceURLAssumption, App.AppId, WebUtility.UrlEncode(QueryText), AssumptionName);
+            String location = "";
+            if (App.LocationEnabled)
+                location = App.Location.Latitude + "," + App.Location.Longitude;
+
+            string address = String.Format(App.ServiceURLAssumption, App.AppId, WebUtility.UrlEncode(QueryText), AssumptionName, location);
 
             System.Diagnostics.Debug.WriteLine(address);
             System.Diagnostics.Debug.WriteLine("Getting assumption " + AssumptionName);

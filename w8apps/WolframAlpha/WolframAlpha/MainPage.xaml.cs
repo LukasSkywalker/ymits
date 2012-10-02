@@ -35,6 +35,13 @@ namespace WolframAlpha
             this.InitializeComponent();
             this.DataContext = LocationEnabled;
 
+            try
+            {
+                bool locationEnabled = (bool)RoamingSettings.Values["Location"];
+                LocationCheckbox.IsChecked = locationEnabled;
+            }
+            catch (Exception) { }
+
             ApplicationData.Current.DataChanged += new TypedEventHandler<ApplicationData, object>(DataChangeHandler);
             SettingsPane.GetForCurrentView().CommandsRequested += CommandsRequested;
 
@@ -248,6 +255,28 @@ namespace WolframAlpha
         private void HideHistory() {
             HistoryListBox.Visibility = Visibility.Collapsed;
             HistoryClearButton.Visibility = Visibility.Collapsed;
+        }
+
+        private async void LocationCheckbox_Checked_1(object sender, RoutedEventArgs e)
+        {
+            bool? isChecked = (sender as CheckBox).IsChecked;
+            if (isChecked.HasValue && isChecked.Value)
+            {
+                // enable
+                RoamingSettings.Values["Location"] = true;
+                App.LocationEnabled = true;
+                LocationProgress.IsActive = true;
+                LocationProgress.Visibility = Visibility.Visible;
+                Coordinates = await GeoLocator.GetGeolocation();
+                App.Location = Coordinates;
+                LocationProgress.IsActive = false;
+                LocationProgress.Visibility = Visibility.Collapsed;
+            }
+            else {
+                // disable
+                RoamingSettings.Values["Location"] = false;
+                App.LocationEnabled = false;
+            }
         }
     }
 }

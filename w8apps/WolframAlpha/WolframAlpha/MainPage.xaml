@@ -135,29 +135,18 @@
         </ListBox>
         <Button x:Name="HistoryClearButton" Content="Clear" Grid.Column="0" Grid.Row="0" HorizontalAlignment="Center"
                 VerticalAlignment="Bottom" Margin="0,0,0,12" Click="ClearHistory" Visibility="Collapsed"/>
-        <StackPanel Grid.Column="1" Grid.Row="0" Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Center">
-            <TextBox x:Name="searchTextBox" Margin="0,0,0,0" TabIndex="0" TextWrapping="Wrap" Text="" VerticalAlignment="Center" Width="268" KeyUp="Search_KeyUp"/>
-            <Button Content="Search" Margin="0,0,0,0" TabIndex="1" VerticalAlignment="Center" Click="Button_Click_1"/>
-            <Button Content="History" Click="ShowHistory" />
+        <StackPanel Grid.Column="1" Grid.Row="0" Orientation="Vertical" HorizontalAlignment="Center" VerticalAlignment="Center">
+            <StackPanel  Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Center">
+                <TextBox x:Name="searchTextBox" Margin="0,0,0,0" TabIndex="0" TextWrapping="Wrap" Text="" VerticalAlignment="Center" Width="268" KeyUp="Search_KeyUp"/>
+                <Button Content="Search" Margin="0,0,0,0" TabIndex="1" VerticalAlignment="Center" Click="Button_Click_1"/>
+                <Button Content="History" Click="ShowHistory" />
+            </StackPanel>
+            <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Left">
+                <CheckBox IsChecked="False" x:Name="LocationCheckbox"  VerticalAlignment="Center" Checked="LocationCheckbox_Checked_1"/>
+                <TextBlock Text="Enable location detection" FontSize="20" VerticalAlignment="Center"/>
+                <ProgressRing x:Name="LocationProgress" Visibility="Collapsed" IsActive="False" Margin="10,0,0,0"/>
+            </StackPanel>
         </StackPanel>
-        <!--<StackPanel Grid.Column="0"
-        <Grid x:Name="ButtonBox" Grid.Column="2" Grid.Row="0" Width="200" Margin="12,12,12,12">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="*"/>
-            </Grid.ColumnDefinitions>
-            <Grid.RowDefinitions>
-                <RowDefinition Height="*"/>
-                <RowDefinition Height="*"/>
-                <RowDefinition Height="*"/>
-            </Grid.RowDefinitions>
-            <TextBlock Grid.Column="0" Grid.ColumnSpan="5" Grid.Row="0" Text="General" FontSize="20"/>
-            <TextBlock Grid.Column="0" Grid.ColumnSpan="5" Grid.Row="1" Text="Calculus/Analysis" FontSize="20"/>
-            <TextBlock Grid.Column="0" Grid.ColumnSpan="5" Grid.Row="2" Text="Algebra" FontSize="20"/>
-        </Grid>-->
         <Grid x:Name="AdditionalKeyboard" Grid.Column="0" Grid.ColumnSpan="3" Grid.Row="1" Visibility="Visible" Background="Black">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
