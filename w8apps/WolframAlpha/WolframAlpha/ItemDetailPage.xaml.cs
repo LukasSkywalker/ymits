@@ -534,24 +534,24 @@ namespace WolframAlpha
         }
 
         // gets invoked when user clicks on an item in the states listbox, e.g. [More Digits], [Fractual representation]
-        private void ItemStates_SelectionChanged(object sender, RoutedEventArgs e)
+        private void ItemStates_SelectionChanged(object sender, TappedRoutedEventArgs e)
         {
-            Button lb = ((Button)sender);
+            TextBlock tb = ((TextBlock)sender);
             
             Pod Pod = (Pod)itemListView.SelectedItem;
             String PodId = Pod.Id;
-            String StatesValue = ((State)lb.Tag).Input;
+            String StatesValue = ((State)tb.Tag).Input;
 
             getState(StatesValue, PodId);
         }
 
-        private async void ItemInfos_SelectionChanged(object sender, RoutedEventArgs e)
+        private async void ItemInfos_SelectionChanged(object sender, TappedRoutedEventArgs e)
         {
-            Button lb = ((Button)sender);
+            TextBlock tb = ((TextBlock)sender);
 
             Pod Pod = (Pod)itemListView.SelectedItem;
             String PodId = Pod.Id;
-            Info Info = (Info)lb.Tag;
+            Info Info = (Info)tb.Tag;
 
             var menu = new PopupMenu();
 
@@ -654,14 +654,22 @@ namespace WolframAlpha
             Button btn = sender as Button;
             String Plaintext = (String)btn.Tag;
 
+            if (String.IsNullOrWhiteSpace(Plaintext))
+            {
+                MessageDialog md = new MessageDialog("No text available", "Text");
+                await md.ShowAsync();
+                return;
+            }
+
+
             DataPackage dataPackage = new DataPackage();
             dataPackage.RequestedOperation = DataPackageOperation.Copy;
             dataPackage.SetText(Plaintext);
 
             Clipboard.SetContent(dataPackage);
 
-            MessageDialog md = new MessageDialog("The text was copied to your clipboard", "Text");
-            await md.ShowAsync();
+            MessageDialog mdg = new MessageDialog("The text was copied to your clipboard", "Text");
+            await mdg.ShowAsync();
         }
 
         internal bool EnsureUnsnapped()

@@ -14,6 +14,7 @@
     <Page.Resources>
         <common:LengthToVisibilityConverter x:Key="LengthToVisibilityConverter"/>
         <common:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
+        <common:NullToVisibilityConverter x:Key="NullToVisibilityConverter"/>
         <x:String x:Key="AppName">Wolfram|Alpha</x:String>
     </Page.Resources>
 
@@ -125,7 +126,7 @@
 
         <Grid x:Name="TransparentGrid" Visibility="Collapsed" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Opacity="1"
               Grid.Row="0" Grid.Column="0" Grid.RowSpan="2" Grid.ColumnSpan="2" DataContext="{Binding SelectedItem, ElementName=itemListView}">
-            <Grid VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Opacity="0.6" Background="AliceBlue" Tapped="HidePopup"/>
+            <Grid VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Opacity="0.6" Background="Black" Tapped="HidePopup"/>
             <Grid VerticalAlignment="Center" HorizontalAlignment="Center" Width="800" Height="600" Background="White">
                 <Border BorderThickness="2,2,2,2" BorderBrush="Black" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Padding="10,10,10,10">
                     <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
@@ -158,8 +159,10 @@
                                                 <TextBlock Grid.Row="0" Grid.ColumnSpan="2"  Text="{Binding Title}" FontWeight="Bold"/>
                                                 <Image Grid.Row="1" Grid.Column="0"  Source="{Binding ImageSource}" Stretch="None" AutomationProperties.Name="{Binding Title}" />
                                                 <StackPanel Orientation="Vertical" Grid.Row="1" Grid.Column="1">
-                                                    <Button Tag="{Binding ImageSource}" Style="{StaticResource SaveButtonStyle}" Click="SaveImage"/>
-                                                    <Button Tag="{Binding Plaintext}" Style="{StaticResource TxtButtonStyle}" Click="CopyPlaintext"/>
+                                                    <Button Tag="{Binding ImageSource}" Style="{StaticResource SaveButtonStyle}" Click="SaveImage"
+                                                            Visibility="{Binding ImageSource, Converter={StaticResource NullToVisibilityConverter}}"/>
+                                                    <Button Tag="{Binding Plaintext}" Style="{StaticResource TxtButtonStyle}" Click="CopyPlaintext"
+                                                            Visibility="{Binding Plaintext, Converter={StaticResource NullToVisibilityConverter}}"/>
                                                 </StackPanel>
                                             </Grid>
                                         </DataTemplate>
@@ -182,7 +185,7 @@
                             </ListView.ItemContainerStyle>
                             <ListView.ItemTemplate>
                                 <DataTemplate>
-                                    <Button Content="{Binding Name}" Tag="{Binding}"  Click="ItemStates_SelectionChanged"/>
+                                    <TextBlock Text="{Binding Name}" Tag="{Binding}"  Tapped="ItemStates_SelectionChanged"/>
                                 </DataTemplate>
                             </ListView.ItemTemplate>
                         </ListView>
@@ -196,7 +199,7 @@
                             </ListView.ItemContainerStyle>
                             <ListView.ItemTemplate>
                                 <DataTemplate>
-                                    <Button Content="{Binding Text}" Tag="{Binding}" Click="ItemInfos_SelectionChanged"/>
+                                    <TextBlock Text="{Binding Text}" Tag="{Binding}" Tapped="ItemInfos_SelectionChanged" />
                                 </DataTemplate>
                             </ListView.ItemTemplate>
                         </ListView>

@@ -28,9 +28,9 @@ namespace WolframAlpha
     {
         public string AppName = "WolframAlpha";
         public const string AppId = "R2R8RY-3X62YX7W3A";
-        public const string ServiceURL = "http://api.wolframalpha.com/v2/query?appid={0}&input={1}&assumption={2}&latlong={3}";
-        public const string ServiceURLState = "http://api.wolframalpha.com/v2/query?input={1}&appid={0}&podstate={2}&includepodid={3}&assumption={4}&latlong={5}";
-        public const string ServiceURLAssumption = "http://api.wolframalpha.com/v2/query?input={1}&appid={0}&assumption={2}&latlong={3}";
+        public const string ServiceURL = "http://api.wolframalpha.com/v2/query?appid={0}&input={1}&assumption={2}&latlong={3}&width=600";
+        public const string ServiceURLState = "http://api.wolframalpha.com/v2/query?input={1}&appid={0}&podstate={2}&includepodid={3}&assumption={4}&latlong={5}&width=600";
+        public const string ServiceURLAssumption = "http://api.wolframalpha.com/v2/query?input={1}&appid={0}&assumption={2}&latlong={3}&width=600";
         public static Geocoordinate Location;
         public static bool LocationEnabled = false;
 

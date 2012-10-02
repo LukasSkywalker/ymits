@@ -116,6 +116,7 @@
     <Compile Include="Common\ImageTransparencyConverter.cs" />
     <Compile Include="Common\LayoutAwarePage.cs" />
     <Compile Include="Common\LengthToVisibilityConverter.cs" />
+    <Compile Include="Common\NullToVisibilityConverter.cs" />
     <Compile Include="Common\RichTextColumns.cs" />
     <Compile Include="Common\SubPodFlatConverter.cs" />
     <Compile Include="Common\SuspensionManager.cs" />

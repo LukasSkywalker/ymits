@@ -89,6 +89,23 @@ namespace WolframAlpha
         [XmlArrayItem("didyoumean")]
         public ObservableCollection<DidYouMean> DidYouMeans { get; set; }
 
+        [XmlArray("tips")]
+        [XmlArrayItem("tip")]
+        public ObservableCollection<Tip> Tips { get; set; }
+
+        [XmlElement("languagemsg")]
+        public LanguageMessage LanguageMessage { get; set; }
+
+        [XmlElement("futuretopic")]
+        public FutureTopic FutureTopic { get; set; }
+
+        [XmlArray("relatedexamples")]
+        [XmlArrayItem("relatedexample")]
+        public ObservableCollection<RelatedExample> RelatedExamples { get; set; }
+
+        [XmlElement("examplepage")]
+        public ExamplePage ExamplePage { get; set; }
+
         public Pod getPodAt(int Index){
             return Pods[Index];
         }
@@ -420,8 +437,57 @@ namespace WolframAlpha
         public String Value {get; set; }
     }
 
+    public class Tip
+    {
+        [XmlAttribute("text")]
+        public String Text { get; set; }
+    }
+
     public class Alternative {
         [XmlTextAttribute]
         public String Value { get; set; }
+    }
+
+    public class LanguageMessage {
+        [XmlAttribute("english")]
+        public String English { get; set; }
+
+        [XmlAttribute("other")]
+        public String Other { get; set; }
+    }
+
+    public class FutureTopic
+    {
+        [XmlAttribute("topic")]
+        public String Topic { get; set; }
+
+        [XmlAttribute("msg")]
+        public String Message { get; set; }
+    }
+
+    public class RelatedExample
+    {
+        [XmlAttribute("input")]
+        public String Input { get; set; }
+
+        [XmlAttribute("desc")]
+        public String Description { get; set; }
+
+        [XmlAttribute("category")]
+        public String Category { get; set; }
+
+        [XmlAttribute("categorythumb")]
+        public String CategoryThumb { get; set; }
+
+        [XmlAttribute("categorypage")]
+        public String CategoryPage { get; set; }
+    }
+
+    public class ExamplePage {
+        [XmlAttribute("category")]
+        public String Category { get; set; }
+
+        [XmlAttribute("url")]
+        public String URL { get; set; }
     }
 }
