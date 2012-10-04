@@ -169,7 +169,7 @@ namespace WolframAlpha
                         TextBox tBox = new TextBox();
                         tBox.Text = tbText;
                         tBox.Tag = value.Input;
-                        tBox.TextChanged += (s, e) => FormulaVariableChanged(s); 
+                        tBox.KeyUp += (s, e) => FormulaVariableChanged(s, e); 
                         AssumptionsStackPanel.Children.Add(tBox);
                         break;
                     case "FormulaVariableOption":
@@ -241,11 +241,26 @@ namespace WolframAlpha
             getAssumption(FormulaAssumptions.GetAll());
         }
 
-        private void FormulaVariableChanged(object s)
+        private void FormulaVariableChanged(object s, KeyRoutedEventArgs e)
         {
             //this option should be discarded, but other vars preserved
             //    4
             // throw new NotImplementedException();
+            if (e.Key == VirtualKey.Enter)
+            {
+                TextBox tb = s as TextBox;
+                System.Diagnostics.Debug.WriteLine(tb.Tag);
+                int startIndex = ((string)tb.Tag).IndexOf("_") + 1;
+                String input = ((string)tb.Tag).Substring(0, startIndex)+WebUtility.UrlEncode(tb.Text);
+                System.Diagnostics.Debug.WriteLine(input);
+
+                FormulaAssumptions.Clear("FormulaVariable");
+
+                FormulaAssumptions.Add("FormulaVariable", input);
+
+                System.Diagnostics.Debug.WriteLine(FormulaAssumptions.GetAll());
+                getAssumption(FormulaAssumptions.GetAll());
+            }
         }
 
         private void FormulaSolveChanged(object s)

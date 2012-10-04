@@ -101,7 +101,7 @@
                     <RowDefinition Height="*"/>
                     <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
-                <ScrollViewer Grid.Row="0">
+                <ScrollViewer Grid.Row="0" Padding="0,0,20,0">
                     <StackPanel x:Name="AssumptionsStackPanel" Orientation="Vertical">
                         <TextBlock Text="Options" Style="{StaticResource SubheaderTextStyle}" 
                                    Visibility="{Binding Assumptions, Converter={StaticResource LengthToVisibilityConverter}}"/>
