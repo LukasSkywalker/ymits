@@ -24,11 +24,11 @@ namespace WolframAlpha
 
         public class Item {
             public String Message { get; set; }
-            public ICommand Command { get; set; }
+            public String Term { get; set; }
 
-            public Item(String message, ICommand cmd) {
+            public Item(String message) {
                 this.Message = message;
-                this.Command = cmd;
+                this.Term = message;
             }
         }
     }

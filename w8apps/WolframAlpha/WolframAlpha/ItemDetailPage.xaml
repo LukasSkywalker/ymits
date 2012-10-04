@@ -50,7 +50,7 @@
                         <ListView ItemsSource="{Binding Items}">
                             <ListView.ItemTemplate>
                                 <DataTemplate>
-                                    <Button FontSize="16" Content="{Binding Message}" Command="{Binding Command}"/>
+                                    <TextBlock FontSize="16" Text="{Binding Message}" Tag="{Binding Term}"  Tapped="Notification_OnClick"/>
                                 </DataTemplate>
                             </ListView.ItemTemplate>
                         </ListView>
@@ -80,12 +80,7 @@
                 <TextBlock x:Name="pageTitle" Text="{StaticResource AppName}" IsHitTestVisible="false" Style="{StaticResource PageHeaderTextStyle}"  />
                 <TextBlock x:Name="resultText" Text="Results for&#x00a0;" IsHitTestVisible="false" Style="{StaticResource PageSubheaderTextStyle}"/>
                 <TextBlock x:Name="queryText" Text="{Binding DefaultViewModel.QueryTextQuoted, ElementName=pageRoot}" IsHitTestVisible="false" Style="{StaticResource PageSubheaderTextStyle}"/>
-                <!--<TextBlock x:Name="spaceText" Text=",&#160;" IsHitTestVisible="false" Style="{StaticResource PageSubheaderTextStyle}" Visibility="{Binding AssumptionCount, Converter={StaticResource LengthToVisibilityConverter}}"/>
-                <TextBlock x:Name="assumption" IsHitTestVisible="false" Style="{StaticResource PageSubheaderTextStyle}" Visibility="{Binding AssumptionCount, Converter={StaticResource LengthToVisibilityConverter}}"/>
-                <TextBlock Text="&#160;" Tag="n-b sp" IsHitTestVisible="False" Style="{StaticResource PageSubheaderTextStyle}" Visibility="{Binding AssumptionCount, Converter={StaticResource LengthToVisibilityConverter}}"/>-->
             </StackPanel>
-            <!--<Button Grid.Row="1"  Grid.Column="1" x:Name="otherAssumptions" Content="Other meanings" Click="ShowAssumptionsPopup"
-			Visibility="{Binding AssumptionCount, Converter={StaticResource LengthToVisibilityConverter}}" Margin="0,82,0,20"/>-->
         </Grid>
 
         <GridView x:Name="itemListView" Grid.Row="1" ItemsSource="{Binding Pods}"
@@ -93,11 +88,12 @@
                   Margin="40,0,10,10" Tapped="ItemListView_Tapped">
             <GridView.ItemsPanel>
                 <ItemsPanelTemplate>
-                    <WrapGrid MaximumRowsOrColumns="3" VerticalChildrenAlignment="Top"
-                              HorizontalChildrenAlignment="Left" Margin="0,0,0,0" />
+                    <WrapGrid  MaximumRowsOrColumns="3" VerticalChildrenAlignment="Top"
+                              HorizontalChildrenAlignment="Left" Margin="0,0,0,0"/>
                 </ItemsPanelTemplate>
             </GridView.ItemsPanel>
         </GridView>
+       
         
         <Grid Grid.Column="1" Grid.Row="1">
             <Grid>
@@ -127,7 +123,7 @@
         <Grid x:Name="TransparentGrid" Visibility="Collapsed" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Opacity="1"
               Grid.Row="0" Grid.Column="0" Grid.RowSpan="2" Grid.ColumnSpan="2" DataContext="{Binding SelectedItem, ElementName=itemListView}">
             <Grid VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Opacity="0.6" Background="Black" Tapped="HidePopup"/>
-            <Grid VerticalAlignment="Center" HorizontalAlignment="Center" Width="800" Height="600" Background="White">
+            <Grid VerticalAlignment="Center" x:Name="itemDetailGrid" HorizontalAlignment="Center" Width="800" Height="600" Background="White">
                 <Border BorderThickness="2,2,2,2" BorderBrush="Black" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Padding="10,10,10,10">
                     <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
                         <Grid.RowDefinitions>
@@ -139,11 +135,11 @@
                         </Grid.RowDefinitions>
                         <ProgressBar x:Name="progressMeter2" VerticalAlignment="Stretch" Visibility="Collapsed"
                                      HorizontalAlignment="Stretch" Grid.Row="0"/>
-                        <TextBlock Text="{Binding Title}" Style="{StaticResource SubheaderTextStyle}" Grid.Row="1"/>
-                        <ScrollViewer x:Name="itemDetail2" AutomationProperties.AutomationId="ItemDetailScrollViewer" Padding="40,0,20,0"
+                        <TextBlock Text="{Binding Title}" x:Name="itemTitle" Style="{StaticResource SubheaderTextStyle}" Grid.Row="1"/>
+                        <ScrollViewer x:Name="itemDetail" AutomationProperties.AutomationId="ItemDetailScrollViewer" Padding="40,0,20,0"
                                       Margin="0,10,0,0" Style="{StaticResource VerticalScrollViewerStyle}" Grid.Row="2">
-                            <StackPanel x:Name="itemDetailTitlePanel2">
-                                <ListView x:Name="SubPodsListView2" ItemsSource="{Binding SubPods}"
+                            <StackPanel x:Name="itemDetailTitlePanel">
+                                <ListView x:Name="SubPodsListView" ItemsSource="{Binding SubPods}"
                                           SelectionMode="None">
                                     <ListView.ItemTemplate>
                                         <DataTemplate>
@@ -310,9 +306,12 @@
                         <ObjectAnimationUsingKeyFrames Storyboard.TargetName="itemListView" Storyboard.TargetProperty="Padding">
                             <DiscreteObjectKeyFrame KeyTime="0" Value="10,0,0,0"/>
                         </ObjectAnimationUsingKeyFrames>
-                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="itemsListGrid" Storyboard.TargetProperty="Margin">
-                            <DiscreteObjectKeyFrame KeyTime="0" Value="15,0,0,0"/>
+                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="itemListView" Storyboard.TargetProperty="MaxWidth">
+                            <DiscreteObjectKeyFrame KeyTime="0" Value="320"/>
                         </ObjectAnimationUsingKeyFrames>
+                        <!--<ObjectAnimationUsingKeyFrames Storyboard.TargetName="itemsListGrid" Storyboard.TargetProperty="Margin">
+                            <DiscreteObjectKeyFrame KeyTime="0" Value="15,0,0,0"/>
+                        </ObjectAnimationUsingKeyFrames>-->
                     </Storyboard>
                 </VisualState>
 
@@ -367,9 +366,6 @@
                         <ObjectAnimationUsingKeyFrames Storyboard.TargetName="itemTitle" Storyboard.TargetProperty="Margin">
                             <DiscreteObjectKeyFrame KeyTime="0" Value="0"/>
                         </ObjectAnimationUsingKeyFrames>
-                        <!--<ObjectAnimationUsingKeyFrames Storyboard.TargetName="itemSubtitle" Storyboard.TargetProperty="Style">
-                            <DiscreteObjectKeyFrame KeyTime="0" Value="{StaticResource CaptionTextStyle}"/>
-                        </ObjectAnimationUsingKeyFrames>-->
                     </Storyboard>
                 </VisualState>
             </VisualStateGroup>

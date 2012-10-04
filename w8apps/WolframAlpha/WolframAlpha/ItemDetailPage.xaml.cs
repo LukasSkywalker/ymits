@@ -65,23 +65,13 @@ namespace WolframAlpha
             Helper.DisplayWarnings(QueryResult);
             Helper.DisplayErrors(QueryResult);
 
-            if (QueryResult.DidYouMeans != null)
+            AppNotification notificationList = NotificationHandler.GetNotifications(QueryResult);
+            
+            if (notificationList.Items.Count > 0)
             {
-                AppNotification an = new AppNotification("Did you mean");
-                foreach (DidYouMean DidYouMean in QueryResult.DidYouMeans)
-                {
-                    ICommand cmd = new RelayCommand(x => { this.Frame.Navigate(typeof(ItemDetailPage), DidYouMean.Value); flyoutNotification.IsOpen = false; });
-                    AppNotification.Item it = new AppNotification.Item(DidYouMean.Value, cmd);
-                    an.AddMessage(it);
-                }
-                if (QueryResult.DidYouMeans.Count > 0)
-                {
-                    flyoutNotification.ParentFlyout = null;
-                    flyoutNotification.DataContext = an;
-                    flyoutNotification.IsOpen = true;
-                }
+                flyoutNotification.DataContext = notificationList;
+                flyoutNotification.IsOpen = true;
             }
-
 
             if (QueryResult.Error && QueryResult.Errors == null)
             {
@@ -732,6 +722,14 @@ namespace WolframAlpha
         private void ShowPopup()
         {
             TransparentGrid.Visibility = Visibility.Visible;
+        }
+
+        private void Notification_OnClick(object sender, TappedRoutedEventArgs e)
+        {
+            Button btn = sender as Button;
+            String Term = (String)btn.Tag;
+            flyoutNotification.IsOpen = false;
+            this.Frame.Navigate(typeof(MainPage), Term);
         }
     }
 }

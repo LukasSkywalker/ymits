@@ -106,19 +106,19 @@ namespace WolframAlpha
                 foreach (Warning Warning in QueryResult.Warnings)
                 {
                     MessageDialog md = new MessageDialog("Something bad happened. But we don't know what, so just go on.", "Warning");
-                    if (Warning.Spellcheck != null)
+                    if (Warning.Spellcheck.Count > 0)
                     {
                         md = new MessageDialog(Warning.Spellcheck[0].Text, "Warning");
                     }
-                    if (Warning.Delimiters != null)
+                    if (Warning.Delimiters.Count > 0)
                     {
                         md = new MessageDialog(Warning.Delimiters[0].Text, "Warning");
                     }
-                    if (Warning.Reinterpret != null)
+                    if (Warning.Reinterpret.Count > 0)
                     {
                         md = new MessageDialog(Warning.Reinterpret[0].Text + " " + Warning.Reinterpret[0].New, "Warning");
                     }
-                    if (Warning.Translation != null)
+                    if (Warning.Translation.Count > 0)
                     {
                         md = new MessageDialog(Warning.Translation[0].Phrase + ": " + Warning.Translation[0].Text, "Warning");
                     }
