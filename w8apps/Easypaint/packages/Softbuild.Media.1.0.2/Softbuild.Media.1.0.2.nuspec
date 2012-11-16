@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
+  <metadata>
+    <id>Softbuild.Media</id>
+    <version>1.0.2</version>
+    <title>WriteableBitmapEffector</title>
+    <authors>Kenji Wada</authors>
+    <owners>Kenji Wada</owners>
+    <projectUrl>https://github.com/CH3COOH/WriteableBitmapEffector</projectUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>SoftbuildLibrary is WriteableBitmap Effector for Windows Store apps (WinRT).</description>
+    <copyright>Kenji Wada</copyright>
+    <language>en-US</language>
+  </metadata>
+</package>
