@@ -79,6 +79,10 @@ namespace WolframAlpha
             searchPane.SuggestionsRequested += new TypedEventHandler<SearchPane, SearchPaneSuggestionsRequestedEventArgs>(SearchtermSuggester.GetSuggestions);
         }
 
+        private void ShowKeyboard(object sender, RoutedEventArgs e) {
+            AdditionalKeyboard.Visibility = AdditionalKeyboard.Visibility == Visibility.Visible ? Visibility.Collapsed : Visibility.Visible;
+        }
+
         private void Grid_KeyDown(object sender, KeyRoutedEventArgs e)
         {
             if (searchTextBox.FocusState != FocusState.Unfocused)
@@ -181,6 +185,8 @@ namespace WolframAlpha
         /// property is typically used to configure the page.</param>
         protected async override void OnNavigatedTo(NavigationEventArgs e)
         {
+            SettingsPane.GetForCurrentView().CommandsRequested += StartPage_CommandsRequested;
+            
             HistoryListBox.ItemsSource = Deserialize((String)RoamingSettings.Values["History"]);
 
             if (LocationEnabled)
@@ -191,6 +197,10 @@ namespace WolframAlpha
             HideHistory();
         }
 
+        void StartPage_CommandsRequested(SettingsPane sender, SettingsPaneCommandsRequestedEventArgs args)
+        {
+            App.AddSettingsCommands(args);
+        }
         private bool NullToFalse(object a) {
             if (a == null) return false;
             else return (bool)a;

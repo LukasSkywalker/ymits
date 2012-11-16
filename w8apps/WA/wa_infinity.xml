@@ -1,0 +1,164 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<queryresult success='true'
+    error='false'
+    numpods='6'
+    datatypes='MathWorld'
+    timedout=''
+    timedoutpods=''
+    timing='1.188'
+    parsetiming='0.119'
+    parsetimedout='false'
+    recalculate=''
+    id='MSPa80551a36d734ag824a2e000028g1a40ih2h606bh'
+    host='http://www4c.wolframalpha.com'
+    server='22'
+    related='http://www4c.wolframalpha.com/api/v2/relatedQueries.jsp?id=MSPa80561a36d734ag824a2e00001f8e2123b12c4140&amp;s=22'
+    version='2.6'>
+ <pod title='Input interpretation'
+     scanner='Identity'
+     id='Input'
+     position='100'
+     error='false'
+     numsubpods='1'>
+  <subpod title=''>
+   <plaintext>infinity</plaintext>
+   <img src='http://www4c.wolframalpha.com/Calculate/MSP/MSP80571a36d734ag824a2e000061885e59hih68ge8?MSPStoreType=image/gif&amp;s=22'
+       alt='infinity'
+       title='infinity'
+       width='48'
+       height='18' />
+  </subpod>
+ </pod>
+ <pod title='Basic definition'
+     scanner='Data'
+     id='BasicDefinitionPod:MathWorldData'
+     position='300'
+     error='false'
+     numsubpods='1'
+     primary='true'>
+  <subpod title=''>
+   <plaintext>An unbounded quantity greater than every real number.</plaintext>
+   <img src='http://www4c.wolframalpha.com/Calculate/MSP/MSP80581a36d734ag824a2e000055579i958i3fa86d?MSPStoreType=image/gif&amp;s=22'
+       alt='An unbounded quantity greater than every real number.'
+       title='An unbounded quantity greater than every real number.'
+       width='373'
+       height='20' />
+  </subpod>
+ </pod>
+ <pod title='Detailed definition'
+     scanner='Data'
+     id='DefinitionPod:MathWorldData'
+     position='400'
+     error='false'
+     numsubpods='1'
+     primary='true'>
+  <subpod title=''>
+   <plaintext>Infinity, most often denoted as infinity, is an unbounded quantity that is greater than every real number. The symbol infinity had been used as an alternative to M (1000) in Roman numerals until 1655, when John Wallis suggested it be used instead for infinity.
+Infinity is a very tricky concept to work with, as evidenced by some of the counterintuitive results that follow from Georg Cantor&apos;s treatment of infinite sets.
+Informally, 1/infinity = 0, a statement that can be made rigorous using the limit concept,
+lim_(x-&gt;infinity) 1/x = 0
+Similarly,
+lim_(x-&gt;0^+) 1/x = infinity, where the notation 0^+ indicates that the limit is taken from the positive side of the real line.
+In Mathematica, infinity is represented using the symbol Infinity.</plaintext>
+   <img src='http://www4c.wolframalpha.com/Calculate/MSP/MSP80591a36d734ag824a2e00004f8gef2b3b1379b0?MSPStoreType=image/gif&amp;s=22'
+       alt='Infinity, most often denoted as infinity, is an unbounded quantity that is greater than every real number. The symbol infinity had been used as an alternative to M (1000) in Roman numerals until 1655, when John Wallis suggested it be used instead for infinity.
+Infinity is a very tricky concept to work with, as evidenced by some of the counterintuitive results that follow from Georg Cantor&apos;s treatment of infinite sets.
+Informally, 1/infinity = 0, a statement that can be made rigorous using the limit concept,
+lim_(x-&gt;infinity) 1/x = 0
+Similarly,
+lim_(x-&gt;0^+) 1/x = infinity, where the notation 0^+ indicates that the limit is taken from the positive side of the real line.
+In Mathematica, infinity is represented using the symbol Infinity.'
+       title='Infinity, most often denoted as infinity, is an unbounded quantity that is greater than every real number. The symbol infinity had been used as an alternative to M (1000) in Roman numerals until 1655, when John Wallis suggested it be used instead for infinity.
+Infinity is a very tricky concept to work with, as evidenced by some of the counterintuitive results that follow from Georg Cantor&apos;s treatment of infinite sets.
+Informally, 1/infinity = 0, a statement that can be made rigorous using the limit concept,
+lim_(x-&gt;infinity) 1/x = 0
+Similarly,
+lim_(x-&gt;0^+) 1/x = infinity, where the notation 0^+ indicates that the limit is taken from the positive side of the real line.
+In Mathematica, infinity is represented using the symbol Infinity.'
+       width='492'
+       height='359' />
+  </subpod>
+  <infos count='1'>
+   <info>
+    <link url='http://mathworld.wolfram.com/Infinity.html'
+        text='More information' />
+   </info>
+  </infos>
+ </pod>
+ <pod title='Related topics'
+     scanner='Data'
+     id='RelatedTopicsPod:MathWorldData'
+     position='500'
+     error='false'
+     numsubpods='1'>
+  <subpod title=''>
+   <plaintext>aleph  |  aleph-0  |  aleph-1  |  cardinal number  |  complex infinity  |  continuum  |  continuum hypothesis  |  directed infinity  |  division by zero  |  Hilbert hotel  |  infinite  |  infinite set  |  infinitesimal  |  limit  |  line at infinity  |  l&apos;Hospital&apos;s rule  |  point at infinity  |  transfinite number  |  uncountably infinite  |  zero</plaintext>
+   <img src='http://www4c.wolframalpha.com/Calculate/MSP/MSP80601a36d734ag824a2e00000d8gg06345ch49ed?MSPStoreType=image/gif&amp;s=22'
+       alt='aleph  |  aleph-0  |  aleph-1  |  cardinal number  |  complex infinity  |  continuum  |  continuum hypothesis  |  directed infinity  |  division by zero  |  Hilbert hotel  |  infinite  |  infinite set  |  infinitesimal  |  limit  |  line at infinity  |  l&apos;Hospital&apos;s rule  |  point at infinity  |  transfinite number  |  uncountably infinite  |  zero'
+       title='aleph  |  aleph-0  |  aleph-1  |  cardinal number  |  complex infinity  |  continuum  |  continuum hypothesis  |  directed infinity  |  division by zero  |  Hilbert hotel  |  infinite  |  infinite set  |  infinitesimal  |  limit  |  line at infinity  |  l&apos;Hospital&apos;s rule  |  point at infinity  |  transfinite number  |  uncountably infinite  |  zero'
+       width='482'
+       height='87' />
+  </subpod>
+ </pod>
+ <pod title='Educational grade level'
+     scanner='Data'
+     id='EducationPod:MathWorldData'
+     position='600'
+     error='false'
+     numsubpods='1'>
+  <subpod title=''>
+   <plaintext>high school level (California mathematical analysis standard)</plaintext>
+   <img src='http://www4c.wolframalpha.com/Calculate/MSP/MSP80611a36d734ag824a2e00002g0bidea9da03393?MSPStoreType=image/gif&amp;s=22'
+       alt='high school level (California mathematical analysis standard)'
+       title='high school level (California mathematical analysis standard)'
+       width='402'
+       height='18' />
+  </subpod>
+ </pod>
+ <pod title='Subject classifications'
+     scanner='Data'
+     id='SubjectPod:MathWorldData'
+     position='700'
+     error='false'
+     numsubpods='2'>
+  <subpod title='MathWorld'>
+   <plaintext>cardinal numbers</plaintext>
+   <img src='http://www4c.wolframalpha.com/Calculate/MSP/MSP80621a36d734ag824a2e000012i133egg485i9e3?MSPStoreType=image/gif&amp;s=22'
+       alt='cardinal numbers'
+       title='cardinal numbers'
+       width='117'
+       height='18' />
+  </subpod>
+  <subpod title='MSC 2010'>
+   <plaintext>03E10</plaintext>
+   <img src='http://www4c.wolframalpha.com/Calculate/MSP/MSP80631a36d734ag824a2e000031h3af5df6c16g51?MSPStoreType=image/gif&amp;s=22'
+       alt='03E10'
+       title='03E10'
+       width='41'
+       height='18' />
+  </subpod>
+  <states count='1'>
+   <state name='Show details'
+       input='SubjectPod:MathWorldData__Show details' />
+  </states>
+ </pod>
+ <assumptions count='1'>
+  <assumption type='Clash'
+      word='infinity'
+      template='Assuming &quot;${word}&quot; is ${desc1}. Use as ${desc2} instead'
+      count='4'>
+   <value name='MathWorld'
+       desc='referring to a mathematical definition'
+       input='*C.infinity-_*MathWorld-' />
+   <value name='NamedConstant'
+       desc='a mathematical constant'
+       input='*C.infinity-_*NamedConstant-' />
+   <value name='Character'
+       desc='a character'
+       input='*C.infinity-_*Character-' />
+   <value name='Word'
+       desc='a word'
+       input='*C.infinity-_*Word-' />
+  </assumption>
+ </assumptions>
+</queryresult>

@@ -1,0 +1,21 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<queryresult success='false'
+    error='false'
+    numpods='0'
+    datatypes=''
+    timedout=''
+    timedoutpods=''
+    timing='0.785'
+    parsetiming='0.225'
+    parsetimedout='false'
+    recalculate=''
+    id=''
+    host='http://www2.wolframalpha.com'
+    server='18'
+    related=''
+    version='2.6'>
+ <didyoumeans count='2'>
+  <didyoumean score='0.456619' level='medium'>tone</didyoumean>
+  <didyoumean score='0.333333' level='medium'>note c</didyoumean>
+ </didyoumeans>
+</queryresult>

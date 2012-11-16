@@ -13,6 +13,7 @@ using Windows.Storage;
 using Windows.Storage.Pickers;
 using Windows.Storage.Streams;
 using Windows.System;
+using Windows.UI.ApplicationSettings;
 using Windows.UI.Popups;
 using Windows.UI.ViewManagement;
 using Windows.UI.Xaml;
@@ -65,9 +66,8 @@ namespace WolframAlpha
             Helper.DisplayWarnings(QueryResult);
             Helper.DisplayErrors(QueryResult);
 
-            AppNotification notificationList = NotificationHandler.GetNotifications(QueryResult);
-            
-            if (notificationList.Items.Count > 0)
+            List<AppNotification> notificationList = NotificationHandler.GetNotifications(QueryResult);
+            if (notificationList.Count > 0)
             {
                 flyoutNotification.DataContext = notificationList;
                 flyoutNotification.IsOpen = true;
@@ -322,9 +322,16 @@ namespace WolframAlpha
             searchPane.ShowOnKeyboardInput = false;
         }
 
+        void StartPage_CommandsRequested(SettingsPane sender, SettingsPaneCommandsRequestedEventArgs args)
+        {
+            App.AddSettingsCommands(args);
+        }
+
         protected async override void OnNavigatedTo(NavigationEventArgs e)
         {
             base.OnNavigatedTo(e);
+
+            SettingsPane.GetForCurrentView().CommandsRequested += StartPage_CommandsRequested;
 
             // SEARCH CONTRACT 2.5 Enable users to type into the search box directly from your app
             // don't - you can't change formula-variables with this.
@@ -340,10 +347,19 @@ namespace WolframAlpha
 
             string address = String.Format(App.ServiceURL, App.AppId, WebUtility.UrlEncode(queryText), QueryAssumption, location);
             Task<String> sourceTask = Helper.GetResultAsync(address);
-            String source = await sourceTask;
-            QueryResult result = Helper.ParseResult(source);
-
-            SetResult(result);
+            try
+            {
+                String source = await sourceTask;
+                QueryResult result = Helper.ParseResult(source);
+                SetResult(result);
+            }
+            catch (HttpRequestException ex)
+            {
+                Helper.DumpException(ex);
+                MessageDialog md = new MessageDialog("It seems that you have no internet connection. Please connect and try again", "Error");
+                md.ShowAsync();
+            }
+            
             stopNetworkAction(true, false);
         }
 
@@ -482,19 +498,27 @@ namespace WolframAlpha
             System.Diagnostics.Debug.WriteLine("Getting state for pod ID "+PodId);
 
             Task<String> sourceTask = Helper.GetResultAsync(address);
-            String source = await sourceTask;
-            QueryResult result = Helper.ParseResult(source);
-
-            if (!result.Success)
-                throw new Exception("Errör");
-
-            Pod Pod = result.Pods[0];
-            int oldIndex = QueryResult.getIndexById(Pod.Id);
-            if (oldIndex != -1)
+            try
             {
-                System.Diagnostics.Debug.WriteLine("Updating Pod '" + Pod.Title + " " + Pod.Id + "' at position " + oldIndex);
-                QueryResult.Pods[oldIndex] = Pod;
-                ((ObservableCollection<Pod>)this.DefaultViewModel["Pods"])[oldIndex] = Pod;
+                String source = await sourceTask;
+                QueryResult result = Helper.ParseResult(source);
+
+                if (!result.Success)
+                    Helper.DisplayErrors(result);
+
+                Pod Pod = result.Pods[0];
+                int oldIndex = QueryResult.getIndexById(Pod.Id);
+                if (oldIndex != -1)
+                {
+                    System.Diagnostics.Debug.WriteLine("Updating Pod '" + Pod.Title + " " + Pod.Id + "' at position " + oldIndex);
+                    QueryResult.Pods[oldIndex] = Pod;
+                    ((ObservableCollection<Pod>)this.DefaultViewModel["Pods"])[oldIndex] = Pod;
+                }
+            }
+            catch (HttpRequestException ex) {
+                Helper.DumpException(ex);
+                MessageDialog md = new MessageDialog("It seems that you have no internet connection. Please connect and try again", "Error");
+                md.ShowAsync();
             }
 
             stopNetworkAction(false, true);
@@ -631,26 +655,34 @@ namespace WolframAlpha
                 client.DefaultRequestHeaders.Add("User-Agent", "Mozilla/5.0 (compatible; MSIE 10.0; Windows NT 6.2; WOW64; Trident/6.0)");
                 HttpRequestMessage request = new
                     HttpRequestMessage(HttpMethod.Get, new Uri(ImageSource));
-                var response = await client.
-                    SendAsync(request, HttpCompletionOption.ResponseHeadersRead);
-                Byte[] b = await response.Content.ReadAsByteArrayAsync();
-
-                using (IRandomAccessStream fileStream = await file.OpenAsync(FileAccessMode.ReadWrite))
+                try
                 {
-                    using (IOutputStream outputStream = fileStream.GetOutputStreamAt(0))
-                    {
-                        using (DataWriter dataWriter = new DataWriter(outputStream))
-                        {
-                            dataWriter.WriteBytes(b);
-                            await dataWriter.StoreAsync();
-                            dataWriter.DetachStream();
-                        }
+                    var response = await client.
+                        SendAsync(request, HttpCompletionOption.ResponseHeadersRead);
+                    Byte[] b = await response.Content.ReadAsByteArrayAsync();
 
-                        await outputStream.FlushAsync();
+                    using (IRandomAccessStream fileStream = await file.OpenAsync(FileAccessMode.ReadWrite))
+                    {
+                        using (IOutputStream outputStream = fileStream.GetOutputStreamAt(0))
+                        {
+                            using (DataWriter dataWriter = new DataWriter(outputStream))
+                            {
+                                dataWriter.WriteBytes(b);
+                                await dataWriter.StoreAsync();
+                                dataWriter.DetachStream();
+                            }
+
+                            await outputStream.FlushAsync();
+                        }
                     }
+                    MessageDialog md = new MessageDialog("The image was saved successfully to " + file.Path, "Image");
+                    await md.ShowAsync();
                 }
-                MessageDialog md = new MessageDialog("The image was saved successfully to "+file.Path, "Image");
-                await md.ShowAsync();
+                catch (HttpRequestException ex) {
+                    Helper.DumpException(ex);
+                    MessageDialog md = new MessageDialog("It seems that you have no internet connection. Please connect and try again", "Error");
+                    md.ShowAsync();
+                }
             }
         }
 
@@ -718,13 +750,21 @@ namespace WolframAlpha
             startNetworkAction(true, false);
 
             Task<String> sourceTask = Helper.GetResultAsync(address);
-            String source = await sourceTask;
-            QueryResult result = Helper.ParseResult(source);
+            try
+            {
+                String source = await sourceTask;
+                QueryResult result = Helper.ParseResult(source);
 
-            if (!result.Success)
-                throw new Exception("Errör");
+                if (!result.Success)
+                    Helper.DisplayErrors(result);
 
-            SetResult(result);
+                SetResult(result);
+            }
+            catch (HttpRequestException ex) {
+                Helper.DumpException(ex);
+                MessageDialog md = new MessageDialog("It seems that you have no internet connection. Please connect and try again", "Error");
+                md.ShowAsync();
+            }
 
             stopNetworkAction(true, false);
         }
@@ -739,12 +779,33 @@ namespace WolframAlpha
             TransparentGrid.Visibility = Visibility.Visible;
         }
 
-        private void Notification_OnClick(object sender, TappedRoutedEventArgs e)
+        private async void Notification_OnClick(object sender, TappedRoutedEventArgs e)
         {
-            Button btn = sender as Button;
-            String Term = (String)btn.Tag;
-            flyoutNotification.IsOpen = false;
-            this.Frame.Navigate(typeof(MainPage), Term);
+            FrameworkElement element = (FrameworkElement)e.OriginalSource;
+            AppNotification.Item notification = (AppNotification.Item)element.DataContext;
+            switch (notification.Type) {
+                case "dym":
+                    this.Frame.Navigate(typeof(ItemDetailPage), notification.Term);
+                    flyoutNotification.IsOpen = false;
+                    break;
+                case "tips":
+                    // do nothing
+                    break;
+                case "lang":
+                    // do nothing
+                    break;
+                case "ft":
+                    // do nothing
+                    break;
+                case "relex":
+                    await Launcher.LaunchUriAsync(new Uri(notification.Term));
+                    flyoutNotification.IsOpen = false;
+                    break;
+                case "expg":
+                    await Launcher.LaunchUriAsync(new Uri(notification.Term));
+                    flyoutNotification.IsOpen = false;
+                    break;
+            }
         }
     }
 }

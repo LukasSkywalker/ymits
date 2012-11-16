@@ -23,27 +23,31 @@
             <RowDefinition Height="*"/>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
+        <Button Grid.Column="1" Grid.Row="1" VerticalAlignment="Bottom" Content="⌨" Tag="toggleKB" Click="ShowKeyboard" Style="{StaticResource KeyboardButtonStyle2}"/>
         <cfo:CharmFlyout Grid.ColumnSpan="2" Grid.RowSpan="2"
-           x:Name="flyoutAbout"
-           Heading="About"
-           HeadingBackgroundBrush="DarkGray">
+    		x:Name="flyoutAbout"
+    		Heading="About"
+    		HeadingBackgroundBrush="DarkGray">
             <StackPanel>
                 <TextBlock
-                   FontSize="16">Wolfram|Alpha by Lukas Diener</TextBlock>
+    				FontSize="16">
+    				<Run Text="Wolfram|Alpha by Lukas Diener"/>
+                </TextBlock>
                 <TextBlock
-                   FontSize="16">For support:</TextBlock>
-                <HyperlinkButton NavigateUri="http://www.lukasdiener.tk">http://www.lukasdiener.tk</HyperlinkButton>
+    				FontSize="16">
+    				<Run Text="For support:"/>
+                </TextBlock>
+                <HyperlinkButton NavigateUri="http://www.lukasdiener.tk" Content="http://www.lukasdiener.tk"/>
             </StackPanel>
         </cfo:CharmFlyout>
         <cfo:CharmFlyout Grid.ColumnSpan="2" Grid.RowSpan="2"
-           x:Name="flyoutSettings"
-           Heading="Settings"
-           HeadingBackgroundBrush="DarkGray">
-        </cfo:CharmFlyout>
+    		x:Name="flyoutSettings"
+    		Heading="Settings"
+    		HeadingBackgroundBrush="DarkGray"/>
         <cfo:CharmFlyout Grid.ColumnSpan="2" Grid.RowSpan="2"
-           x:Name="flyoutPrivacy"
-           Heading="Privacy Policy"
-           HeadingBackgroundBrush="DarkGray">
+    		x:Name="flyoutPrivacy"
+    		Heading="Privacy Policy"
+    		HeadingBackgroundBrush="DarkGray">
             <Grid Margin="12,0,12,0">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/>
@@ -51,70 +55,46 @@
                 </Grid.RowDefinitions>
 
                 <TextBlock FontSize="18" Grid.Row="0">
-                        Wolfram|Alpha by Lukas Diener
+    				<Run Text="Wolfram|Alpha by Lukas Diener"/>
                 </TextBlock>
                 <ScrollViewer Grid.Row="1">
                     <StackPanel VerticalAlignment="Top" HorizontalAlignment="Left">
                         <TextBlock FontSize="16" TextWrapping="Wrap">
-                        We understand your concerns about how your information is used and shared, and we endeavor to use
-                        such information carefully and sensibly. This page explains how the information you provide is collected and
-                        used.
+    						<Run Text="We understand your concerns about how your information is used and shared, and we endeavor to use such information carefully and sensibly. This page explains how the information you provide is collected and used."/>
                         </TextBlock>
                         <TextBlock FontSize="16" TextWrapping="Wrap" Style="{StaticResource PageSubheaderTextStyle}" Margin="0,10,0,10">
-                            What Information Do We Collect?
+    						<Run Text="What Information Do We Collect?"/>
                         </TextBlock>
                         <TextBlock FontSize="16" TextWrapping="Wrap">
-                        We receive non-personally identifiable information whenever you interact with our app, including your Internet
-                        Protocol (IP) address, geographical region, and your search queries.
+    						<Run Text="If you chose so, we use your location (latitude/longitude) to refine search results, such as for the query 'weather'."/>
+                        </TextBlock>
+                        <TextBlock FontSize="16" TextWrapping="Wrap">
+    						<Run Text="We receive non-personally identifiable information whenever you interact with our app, including your Internet Protocol (IP) address, geographical region, and your search queries."/>
                         </TextBlock>
                         <TextBlock FontSize="16" TextWrapping="Wrap" Style="{StaticResource PageSubheaderTextStyle}" Margin="0,10,0,10">
-                            How Is Your Information Used?
+    						<Run Text="How Is Your Information Used?"/>
                         </TextBlock>
                         <TextBlock FontSize="16" TextWrapping="Wrap">
-                        We do not sell, rent, or lease your information to third parties. The information we obtain from Wolfram|Alpha
-                        users helps us enhance and refine our service and content. Non-personal information collected about you through
-                        your experience and queries is used to better understand the entire population that is utilizing our website
-                        and how we might improve our services to improve the collective experience. Except as noted below, we track and
-                        record IP addresses that access our website for internal reporting, diagnostic, and analysis purposes only.
-                    
-                        Your IP address is used to determine, when possible, your approximate geographical location, which affects such
-                        things as your results' default currency and units of measure, based on what country you are in. Your browser
-                        type may be used to fine-tune the results for optimal display, for example on mobile devices or to work around
-                        limitations of a particular browser. Referrer URLs may be used to generate usage statistics and analyze usage
-                        patterns.
+    						<Run Text="We do not sell, rent, or lease your information to third parties. The information we obtain from Wolfram|Alpha users helps us enhance and refine our service and content. Non-personal information collected about you through your experience and queries is used to better understand the entire population that is utilizing our website and how we might improve our services to improve the collective experience. Except as noted below, we track and record IP addresses that access our website for internal reporting, diagnostic, and analysis purposes only. Your IP address is used to determine, when possible, your approximate geographical location, which affects such things as your results' default currency and units of measure, based on what country you are in. Your browser type may be used to fine-tune the results for optimal display, for example on mobile devices or to work around limitations of a particular browser. Referrer URLs may be used to generate usage statistics and analyze usage patterns."/>
                         </TextBlock>
                         <TextBlock FontSize="16" TextWrapping="Wrap" Style="{StaticResource PageSubheaderTextStyle}" Margin="0,10,0,10">
-                            Other Disclosures of Your Information
+    						<Run Text="Other Disclosures of Your Information"/>
                         </TextBlock>
                         <TextBlock FontSize="16" TextWrapping="Wrap">
-                        We may release personally identifying information when we believe release is necessary to comply with lawful
-                        court orders. Any collected information associated with your use of the website (personal and non-personal)
-                        will be disclosed to government authorities or third parties only pursuant to a lawful request, subpoena, or
-                        other process that legally compels disclosure of that information.
-
-                        We may also preserve, use, or disclose your information if necessary to enforce our Terms of Use and related
-                        agreements; to detect, prevent, or otherwise address fraud, security or technical issues, including high-volume
-                        use of the website; to respond to support requests; or to protect the rights, property, or safety of
-                        Wolfram|Alpha, our users, or others.
+    						<Run Text="We may release personally identifying information when we believe release is necessary to comply with lawful court orders. Any collected information associated with your use of the website (personal and non-personal) will be disclosed to government authorities or third parties only pursuant to a lawful request, subpoena, or other process that legally compels disclosure of that information. We may also preserve, use, or disclose your information if necessary to enforce our Terms of Use and related agreements; to detect, prevent, or otherwise address fraud, security or technical issues, including high-volume use of the website; to respond to support requests; or to protect the rights, property, or safety of Wolfram|Alpha, our users, or others."/>
                         </TextBlock>
                         <TextBlock FontSize="16" TextWrapping="Wrap" Style="{StaticResource PageSubheaderTextStyle}" Margin="0,10,0,10">
-                            Security
+    						<Run Text="Security"/>
                         </TextBlock>
                         <TextBlock FontSize="16" TextWrapping="Wrap">
-                        We take appropriate measures to ensure the security of our website and systems. This includes precautions to
-                        safeguard your personal information against loss, theft, and misuse, as well as against unauthorized access,
-                        alteration, disclosure, or destruction of data.
-
-                        Despite our efforts to protect your personal information, there is always some risk that an unauthorized third
-                        party may find a way around our security systems or that transmissions of your information over the internet
-                        may be intercepted. Your use of the website constitutes an acceptance of such risk.
+    						<Run Text="We take appropriate measures to ensure the security of our website and systems. This includes precautions to safeguard your personal information against loss, theft, and misuse, as well as against unauthorized access, alteration, disclosure, or destruction of data. Despite our efforts to protect your personal information, there is always some risk that an unauthorized third party may find a way around our security systems or that transmissions of your information over the internet may be intercepted. Your use of the website constitutes an acceptance of such risk."/>
                         </TextBlock>
                     </StackPanel>
                 </ScrollViewer>
             </Grid>
         </cfo:CharmFlyout>
         <ListBox x:Name="HistoryListBox" Grid.Column="0" Grid.Row="0"  Margin="12,12,12,64" Width="320"
-                 SelectionChanged="History_SelectionChanged" SelectedValuePath="Text" Visibility="Collapsed">
+    		SelectionChanged="History_SelectionChanged" SelectedValuePath="Text" Visibility="Collapsed">
             <ListBox.ItemContainerStyle>
                 <Style TargetType="ListBoxItem">
                     <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
@@ -128,13 +108,13 @@
                             <ColumnDefinition Width="*"/>
                         </Grid.ColumnDefinitions>
                         <TextBlock Text="{Binding Text}" Grid.Column="0" HorizontalAlignment="Left"/>
-                        <TextBlock Text="{Binding DateTime,Converter={StaticResource DateTimeConverter}}" Grid.Column="1" HorizontalAlignment="Right"/>
+                        <TextBlock Text="{Binding DateTime, Converter={StaticResource DateTimeConverter}}" Grid.Column="1" HorizontalAlignment="Right"/>
                     </Grid>
                 </DataTemplate>
             </ListBox.ItemTemplate>
         </ListBox>
         <Button x:Name="HistoryClearButton" Content="Clear" Grid.Column="0" Grid.Row="0" HorizontalAlignment="Center"
-                VerticalAlignment="Bottom" Margin="0,0,0,12" Click="ClearHistory" Visibility="Collapsed"/>
+    		VerticalAlignment="Bottom" Margin="0,0,0,12" Click="ClearHistory" Visibility="Collapsed"/>
         <StackPanel Grid.Column="1" Grid.Row="0" Orientation="Vertical" HorizontalAlignment="Center" VerticalAlignment="Center">
             <StackPanel  Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Center">
                 <TextBox x:Name="searchTextBox" Margin="0,0,0,0" TabIndex="0" TextWrapping="Wrap" Text="" VerticalAlignment="Center" Width="268" KeyUp="Search_KeyUp"/>
@@ -155,67 +135,73 @@
                 <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
             <StackPanel x:Name="Row1" Orientation="Horizontal" HorizontalAlignment="Center" Grid.Column="0" Grid.Row="0">
-                <Button Content="&#x03C0;" Tag="pi" Click="InsertCharacter" Style="{StaticResource KeyboardButtonStyle}"/>
-                <Button Content="&#x00B0;" Tag="degree" Click="InsertCharacter" Style="{StaticResource KeyboardButtonStyle}"/>
-                <Button Content="&#x221E;" Tag="infinity" Click="InsertCharacter" Style="{StaticResource KeyboardButtonStyle}"/>
-                <Button Content="&#x221A;" Tag="sqrt" Click="InsertCharacter" Style="{StaticResource KeyboardButtonStyle}"/>
-                <Button Content="&#x222B;" Tag="integrate from x=0 to 10" Click="InsertCharacter" Style="{StaticResource KeyboardButtonStyle}"/>
-                <Button Content="&#x2211;" Tag="sum from x=0 to 10" Click="InsertCharacter" Style="{StaticResource KeyboardButtonStyle}"/>
-                <Button Content="&#x2202;" Tag="d" Click="InsertCharacter" Style="{StaticResource KeyboardButtonStyle}"/>
-                <Button Content="&#x03A0;" Tag="table" Click="InsertCharacter" Style="{StaticResource KeyboardButtonStyle}"/>
-                <Button Content="&#x2200;" Tag="for every" Click="InsertCharacter" Style="{StaticResource KeyboardButtonStyle}"/>
-                <Button Content="&#x2203;" Tag="exists" Click="InsertCharacter" Style="{StaticResource KeyboardButtonStyle}"/>
-                <Button Content="&#x222A;" Tag="Union" Click="InsertCharacter" Style="{StaticResource KeyboardButtonStyle}"/>
-                <Button Content="&#x2229;" Tag="Intersection" Click="InsertCharacter" Style="{StaticResource KeyboardButtonStyle}"/>
-                <Button Content="&#x2207;" Tag="gradient" Click="InsertCharacter" Style="{StaticResource KeyboardButtonStyle}"/>
-                <Button Content="&#x0394;" Tag="delta" Click="InsertCharacter" Style="{StaticResource KeyboardButtonStyle}"/>
+                <Button Content="π" Tag="pi" Click="InsertCharacter" Style="{StaticResource KeyboardButtonStyle}"/>
+                <Button Content="°" Tag="degree" Click="InsertCharacter" Style="{StaticResource KeyboardButtonStyle}"/>
+                <Button Content="∞" Tag="infinity" Click="InsertCharacter" Style="{StaticResource KeyboardButtonStyle}"/>
+                <Button Content="√" Tag="sqrt" Click="InsertCharacter" Style="{StaticResource KeyboardButtonStyle}"/>
+                <Button Content="∫" Tag="integrate from x=0 to 10" Click="InsertCharacter" Style="{StaticResource KeyboardButtonStyle}"/>
+                <Button Content="∑" Tag="sum from x=0 to 10" Click="InsertCharacter" Style="{StaticResource KeyboardButtonStyle}"/>
+                <Button Content="∂" Tag="d" Click="InsertCharacter" Style="{StaticResource KeyboardButtonStyle}"/>
+                <Button Content="Π" Tag="table" Click="InsertCharacter" Style="{StaticResource KeyboardButtonStyle}"/>
+                <Button Content="∀" Tag="for every" Click="InsertCharacter" Style="{StaticResource KeyboardButtonStyle}"/>
+                <Button Content="∃" Tag="exists" Click="InsertCharacter" Style="{StaticResource KeyboardButtonStyle}"/>
+                <Button Content="∪" Tag="Union" Click="InsertCharacter" Style="{StaticResource KeyboardButtonStyle}"/>
+                <Button Content="∩" Tag="Intersection" Click="InsertCharacter" Style="{StaticResource KeyboardButtonStyle}"/>
+                <Button Content="∇" Tag="gradient" Click="InsertCharacter" Style="{StaticResource KeyboardButtonStyle}"/>
+                <Button Content="Δ" Tag="delta" Click="InsertCharacter" Style="{StaticResource KeyboardButtonStyle}"/>
             </StackPanel>
             <StackPanel x:Name="Row2" Orientation="Horizontal" HorizontalAlignment="Center" Grid.Column="0" Grid.Row="1">
-                <Button Content="&#x03B1;" Tag="alpha" Click="InsertCharacter" Style="{StaticResource KeyboardButtonStyle}"/>
-                <Button Content="&#x03B2;" Tag="beta" Click="InsertCharacter" Style="{StaticResource KeyboardButtonStyle}"/>
-                <Button Content="&#x03B3;" Tag="gamma" Click="InsertCharacter" Style="{StaticResource KeyboardButtonStyle}"/>
-                <Button Content="&#x03B4;" Tag="delta" Click="InsertCharacter" Style="{StaticResource KeyboardButtonStyle}"/>
-                <Button Content="&#x03B5;" Tag="epsilon" Click="InsertCharacter" Style="{StaticResource KeyboardButtonStyle}"/>
-                <Button Content="&#x03B6;" Tag="zeta" Click="InsertCharacter" Style="{StaticResource KeyboardButtonStyle}"/>
-                <Button Content="&#x03B7;" Tag="eta" Click="InsertCharacter" Style="{StaticResource KeyboardButtonStyle}"/>
-                <Button Content="&#x03B8;" Tag="theta" Click="InsertCharacter" Style="{StaticResource KeyboardButtonStyle}"/>
-                <Button Content="&#x03BA;" Tag="kappa" Click="InsertCharacter" Style="{StaticResource KeyboardButtonStyle}"/>
-                <Button Content="&#x03BB;" Tag="lambda" Click="InsertCharacter" Style="{StaticResource KeyboardButtonStyle}"/>
-                <Button Content="&#x03BC;" Tag="mu" Click="InsertCharacter" Style="{StaticResource KeyboardButtonStyle}"/>
-                <Button Content="&#x03BD;" Tag="nu" Click="InsertCharacter" Style="{StaticResource KeyboardButtonStyle}"/>
-                <Button Content="&#x03BE;" Tag="xi" Click="InsertCharacter" Style="{StaticResource KeyboardButtonStyle}"/>
-                <Button Content="&#x03C1;" Tag="rho" Click="InsertCharacter" Style="{StaticResource KeyboardButtonStyle}"/>
+                <Button Content="α" Tag="alpha" Click="InsertCharacter" Style="{StaticResource KeyboardButtonStyle}"/>
+                <Button Content="β" Tag="beta" Click="InsertCharacter" Style="{StaticResource KeyboardButtonStyle}"/>
+                <Button Content="γ" Tag="gamma" Click="InsertCharacter" Style="{StaticResource KeyboardButtonStyle}"/>
+                <Button Content="δ" Tag="delta" Click="InsertCharacter" Style="{StaticResource KeyboardButtonStyle}"/>
+                <Button Content="ε" Tag="epsilon" Click="InsertCharacter" Style="{StaticResource KeyboardButtonStyle}"/>
+                <Button Content="ζ" Tag="zeta" Click="InsertCharacter" Style="{StaticResource KeyboardButtonStyle}"/>
+                <Button Content="η" Tag="eta" Click="InsertCharacter" Style="{StaticResource KeyboardButtonStyle}"/>
+                <Button Content="θ" Tag="theta" Click="InsertCharacter" Style="{StaticResource KeyboardButtonStyle}"/>
+                <Button Content="κ" Tag="kappa" Click="InsertCharacter" Style="{StaticResource KeyboardButtonStyle}"/>
+                <Button Content="λ" Tag="lambda" Click="InsertCharacter" Style="{StaticResource KeyboardButtonStyle}"/>
+                <Button Content="⊂" Tag="subset" Click="InsertCharacter" Style="{StaticResource KeyboardButtonStyle}"/>
+                <Button Content="⊃" Tag="subset" Click="InsertCharacter" Style="{StaticResource KeyboardButtonStyle}"/>
+                <Button Content="⊆" Tag="subset" Click="InsertCharacter" Style="{StaticResource KeyboardButtonStyle}"/>
+                <Button Content="⊇" Tag="subset" Click="InsertCharacter" Style="{StaticResource KeyboardButtonStyle}"/>
+
             </StackPanel>
             <StackPanel x:Name="Row3" Orientation="Horizontal" HorizontalAlignment="Center" Grid.Column="0" Grid.Row="2">
-                <Button Content="&#x03C3;" Tag="sigma" Click="InsertCharacter" Style="{StaticResource KeyboardButtonStyle}"/>
-                <Button Content="&#x03C4;" Tag="tau" Click="InsertCharacter" Style="{StaticResource KeyboardButtonStyle}"/>
-                <Button Content="&#x03C6;" Tag="phi" Click="InsertCharacter" Style="{StaticResource KeyboardButtonStyle}"/>
-                <Button Content="&#x03C7;" Tag="chi" Click="InsertCharacter" Style="{StaticResource KeyboardButtonStyle}"/>
-                <Button Content="&#x03C8;" Tag="psi" Click="InsertCharacter" Style="{StaticResource KeyboardButtonStyle}"/>
-                <Button Content="&#x03C9;" Tag="omega" Click="InsertCharacter" Style="{StaticResource KeyboardButtonStyle}"/>
-                <Button Content="&#x0393;" Tag="gamma" Click="InsertCharacter" Style="{StaticResource KeyboardButtonStyle}"/>
-                <Button Content="&#x0398;" Tag="theta" Click="InsertCharacter" Style="{StaticResource KeyboardButtonStyle}"/>
-                <Button Content="&#x039B;" Tag="lambda" Click="InsertCharacter" Style="{StaticResource KeyboardButtonStyle}"/>
-                <Button Content="&#x039E;" Tag="xi" Click="InsertCharacter" Style="{StaticResource KeyboardButtonStyle}"/>
-                <Button Content="&#x03A5;" Tag="upsilon" Click="InsertCharacter" Style="{StaticResource KeyboardButtonStyle}"/>
-                <Button Content="&#x03A6;" Tag="phi" Click="InsertCharacter" Style="{StaticResource KeyboardButtonStyle}"/>
-                <Button Content="&#x03A8;" Tag="psi" Click="InsertCharacter" Style="{StaticResource KeyboardButtonStyle}"/>
+                <Button Content="μ" Tag="mu" Click="InsertCharacter" Style="{StaticResource KeyboardButtonStyle}"/>
+                <Button Content="ν" Tag="nu" Click="InsertCharacter" Style="{StaticResource KeyboardButtonStyle}"/>
+                <Button Content="ξ" Tag="xi" Click="InsertCharacter" Style="{StaticResource KeyboardButtonStyle}"/>
+                <Button Content="ρ" Tag="rho" Click="InsertCharacter" Style="{StaticResource KeyboardButtonStyle}"/>
+                <Button Content="σ" Tag="sigma" Click="InsertCharacter" Style="{StaticResource KeyboardButtonStyle}"/>
+                <Button Content="τ" Tag="tau" Click="InsertCharacter" Style="{StaticResource KeyboardButtonStyle}"/>
+                <Button Content="φ" Tag="phi" Click="InsertCharacter" Style="{StaticResource KeyboardButtonStyle}"/>
+                <Button Content="χ" Tag="chi" Click="InsertCharacter" Style="{StaticResource KeyboardButtonStyle}"/>
+                <Button Content="ψ" Tag="psi" Click="InsertCharacter" Style="{StaticResource KeyboardButtonStyle}"/>
+                <Button Content="ω" Tag="omega" Click="InsertCharacter" Style="{StaticResource KeyboardButtonStyle}"/>
+                <!--<Button Content="&#x0393;" Tag="gamma" Click="InsertCharacter" Style="{StaticResource KeyboardButtonStyle}"/>-->
+                <Button Content="Θ" Tag="theta" Click="InsertCharacter" Style="{StaticResource KeyboardButtonStyle}"/>
+                <!--<Button Content="&#x039B;" Tag="lambda" Click="InsertCharacter" Style="{StaticResource KeyboardButtonStyle}"/>-->
+                <!--<Button Content="&#x039E;" Tag="xi" Click="InsertCharacter" Style="{StaticResource KeyboardButtonStyle}"/>-->
+                <Button Content="Υ" Tag="upsilon" Click="InsertCharacter" Style="{StaticResource KeyboardButtonStyle}"/>
+                <Button Content="Φ" Tag="phi" Click="InsertCharacter" Style="{StaticResource KeyboardButtonStyle}"/>
+                <Button Content="Ψ" Tag="psi" Click="InsertCharacter" Style="{StaticResource KeyboardButtonStyle}"/>
             </StackPanel>
             <StackPanel x:Name="Row4" Orientation="Horizontal" HorizontalAlignment="Center" Grid.Column="0" Grid.Row="3">
-                <Button Content="&#x03A9;" Tag="omega" Click="InsertCharacter" Style="{StaticResource KeyboardButtonStyle}"/>
-                <Button Content="omega_inv" Tag="" Click="InsertCharacter" Style="{StaticResource KeyboardButtonStyle}"/>
-                <Button Content="&#x212B;" Tag="angström" Click="InsertCharacter" Style="{StaticResource KeyboardButtonStyle}"/>
-                <Button Content="&#x0127;" Tag="h with stroke" Click="InsertCharacter" Style="{StaticResource KeyboardButtonStyle}"/>
-                <Button Content="&#x2135;" Tag="aleph" Click="InsertCharacter" Style="{StaticResource KeyboardButtonStyle}"/>
-                <Button Content="&#x21D4;" Tag="&lt;-&gt;" Click="InsertCharacter" Style="{StaticResource KeyboardButtonStyle}"/>
-                <Button Content="&#x2192;" Tag="->" Click="InsertCharacter" Style="{StaticResource KeyboardButtonStyle}"/>
-                <Button Content="&#x2295;" Tag="direct sum" Click="InsertCharacter" Style="{StaticResource KeyboardButtonStyle}"/>
-                <Button Content="&#x2609;" Tag="sun" Click="InsertCharacter" Style="{StaticResource KeyboardButtonStyle}"/>
-                <Button Content="&#x2642;" Tag="man" Click="InsertCharacter" Style="{StaticResource KeyboardButtonStyle}"/>
-                <Button Content="&#x2640;" Tag="woman" Click="InsertCharacter" Style="{StaticResource KeyboardButtonStyle}"/>
-                <Button Content="&#x271D;" Tag="latin cross" Click="InsertCharacter" Style="{StaticResource KeyboardButtonStyle}"/>
-                <Button Content="&#x2227;" Tag="and" Click="InsertCharacter" Style="{StaticResource KeyboardButtonStyle}"/>
-                <Button Content="&#x2228;" Tag="or" Click="InsertCharacter" Style="{StaticResource KeyboardButtonStyle}"/>
+                <Button Content="Ω" Tag="omega" Click="InsertCharacter" Style="{StaticResource KeyboardButtonStyle}"/>
+                <!--<Button Content="omega_inv" Tag="" Click="InsertCharacter" Style="{StaticResource KeyboardButtonStyle}"/>-->
+                <Button Content="Å" Tag="angström" Click="InsertCharacter" Style="{StaticResource KeyboardButtonStyle}"/>
+                <Button Content="ħ" Tag="h with stroke" Click="InsertCharacter" Style="{StaticResource KeyboardButtonStyle}"/>
+                <Button Content="ℵ" Tag="aleph" Click="InsertCharacter" Style="{StaticResource KeyboardButtonStyle}"/>
+                <Button Content="⇔" Tag="&lt;-&gt;" Click="InsertCharacter" Style="{StaticResource KeyboardButtonStyle}"/>
+                <Button Content="→" Tag="-&gt;" Click="InsertCharacter" Style="{StaticResource KeyboardButtonStyle}"/>
+                <Button Content="⊕" Tag="direct sum" Click="InsertCharacter" Style="{StaticResource KeyboardButtonStyle}"/>
+                <Button Content="☉" Tag="sun" Click="InsertCharacter" Style="{StaticResource KeyboardButtonStyle}"/>
+                <Button Content="♂" Tag="man" Click="InsertCharacter" Style="{StaticResource KeyboardButtonStyle}"/>
+                <Button Content="♀" Tag="woman" Click="InsertCharacter" Style="{StaticResource KeyboardButtonStyle}"/>
+                <Button Content="✝" Tag="latin cross" Click="InsertCharacter" Style="{StaticResource KeyboardButtonStyle}"/>
+                <Button Content="∧" Tag="and" Click="InsertCharacter" Style="{StaticResource KeyboardButtonStyle}"/>
+                <Button Content="∨" Tag="or" Click="InsertCharacter" Style="{StaticResource KeyboardButtonStyle}"/>
+                <Button Content="⌨" Tag="toggleKB" Click="ShowKeyboard" Style="{StaticResource KeyboardButtonStyle2}"/>
             </StackPanel>
         </Grid>
     </Grid>

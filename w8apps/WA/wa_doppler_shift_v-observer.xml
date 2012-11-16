@@ -1,0 +1,187 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<queryresult success='true'
+    error='false'
+    numpods='5'
+    datatypes='Formula'
+    timedout=''
+    timedoutpods=''
+    timing='0.911'
+    parsetiming='0.277'
+    parsetimedout='false'
+    recalculate=''
+    id='MSPa43701a39abghifh48fi900001a9cad5cefcf92f2'
+    host='http://www2.wolframalpha.com'
+    server='22'
+    related='http://www2.wolframalpha.com/api/v2/relatedQueries.jsp?id=MSPa43711a39abghifh48fi90000552fh6c55b371e5a&amp;s=22'
+    version='2.6'>
+ <pod title='Input interpretation'
+     scanner='Formula'
+     id='Input'
+     position='100'
+     error='false'
+     numsubpods='1'>
+  <subpod title=''>
+   <plaintext>Doppler shift</plaintext>
+   <img src='http://www2.wolframalpha.com/Calculate/MSP/MSP43721a39abghifh48fi9000023adhb7b287c46c7?MSPStoreType=image/gif&amp;s=22'
+       alt='Doppler shift'
+       title='Doppler shift'
+       width='99'
+       height='23' />
+  </subpod>
+ </pod>
+ <pod title='Equation'
+     scanner='Formula'
+     id='Equation'
+     position='200'
+     error='false'
+     numsubpods='1'>
+  <subpod title=''>
+   <plaintext>f_o/f_s = (c+v_o)/(c+v_s) |  
+f_o/f_s | frequency reduction factor
+v_s | speed of the source away from the observer
+c | sound speed
+v_o | speed of the observer towards the source
+(the ratio between emitted and observed sound frequencies due to relative motion)</plaintext>
+   <img src='http://www2.wolframalpha.com/Calculate/MSP/MSP43731a39abghifh48fi900000ghgc11f2g0affcd?MSPStoreType=image/gif&amp;s=22'
+       alt='f_o/f_s = (c+v_o)/(c+v_s) |  
+f_o/f_s | frequency reduction factor
+v_s | speed of the source away from the observer
+c | sound speed
+v_o | speed of the observer towards the source
+(the ratio between emitted and observed sound frequencies due to relative motion)'
+       title='f_o/f_s = (c+v_o)/(c+v_s) |  
+f_o/f_s | frequency reduction factor
+v_s | speed of the source away from the observer
+c | sound speed
+v_o | speed of the observer towards the source
+(the ratio between emitted and observed sound frequencies due to relative motion)'
+       width='445'
+       height='206' />
+  </subpod>
+ </pod>
+ <pod title='Input values'
+     scanner='Formula'
+     id='InputValue'
+     position='300'
+     error='false'
+     numsubpods='1'>
+  <subpod title=''>
+   <plaintext>speed of the source away from the observer | 10 m/s  (meters per second)
+sound speed | 340.3 m/s  (meters per second)
+speed of the observer towards the source | 0 m/s  (meters per second)</plaintext>
+   <img src='http://www2.wolframalpha.com/Calculate/MSP/MSP43741a39abghifh48fi900000g574208g9gbfbie?MSPStoreType=image/gif&amp;s=22'
+       alt='speed of the source away from the observer | 10 m/s  (meters per second)
+sound speed | 340.3 m/s  (meters per second)
+speed of the observer towards the source | 0 m/s  (meters per second)'
+       title='speed of the source away from the observer | 10 m/s  (meters per second)
+sound speed | 340.3 m/s  (meters per second)
+speed of the observer towards the source | 0 m/s  (meters per second)'
+       width='496'
+       height='134' />
+  </subpod>
+ </pod>
+ <pod title='Result'
+     scanner='Formula'
+     id='Result'
+     position='400'
+     error='false'
+     numsubpods='1'
+     primary='true'>
+  <subpod title=''
+      primary='true'>
+   <plaintext>frequency reduction factor | 0.9715</plaintext>
+   <img src='http://www2.wolframalpha.com/Calculate/MSP/MSP43751a39abghifh48fi90000598a709a1i32d93h?MSPStoreType=image/gif&amp;s=22'
+       alt='frequency reduction factor | 0.9715'
+       title='frequency reduction factor | 0.9715'
+       width='268'
+       height='36' />
+  </subpod>
+ </pod>
+ <pod title='Audible frequencies'
+     scanner='Formula'
+     id='AudibleFrequencies'
+     position='500'
+     error='false'
+     numsubpods='1'>
+  <subpod title=''>
+   <plaintext>source: 1  |  observed: 0.9715</plaintext>
+   <img src='http://www2.wolframalpha.com/Calculate/MSP/MSP43761a39abghifh48fi9000058963cc61bddb9fd?MSPStoreType=image/gif&amp;s=22'
+       alt='source: 1  |  observed: 0.9715'
+       title='source: 1  |  observed: 0.9715'
+       width='196'
+       height='18' />
+  </subpod>
+ </pod>
+ <assumptions count='7'>
+  <assumption type='FormulaSolve'
+      template='Calculate ${desc1}'
+      count='4'>
+   <value name='DopplerShift.DopplerRatio'
+       desc='frequency reduction factor'
+       input='*FS-_**DopplerShift.DopplerRatio--' />
+   <value name='DopplerShift.vs'
+       desc='speed of the source away from the observer'
+       input='*FS-_**DopplerShift.vs--' />
+   <value name='DopplerShift.vo'
+       desc='speed of the observer towards the source'
+       input='*FS-_**DopplerShift.vo--' />
+   <value name='DopplerShift.c'
+       desc='sound speed'
+       input='*FS-_**DopplerShift.c--' />
+  </assumption>
+  <assumption type='FormulaSelect'
+      template='Assuming ${desc1}. Use ${desc2} instead'
+      count='2'>
+   <value name='DopplerShift'
+       desc='Doppler shift'
+       input='FSelect_*DopplerShift-' />
+   <value name='RelativisticDopplerShift'
+       desc='relativistic Doppler shift'
+       input='FSelect_**RelativisticDopplerShift--' />
+  </assumption>
+  <assumption type='FormulaVariable'
+      desc='speed of the source away from the observer'
+      current='1'
+      count='1'>
+   <value name='DopplerShift.vs'
+       desc='10 m/s'
+       valid='true'
+       input='*F.DopplerShift.vs-_10+m%2Fs' />
+  </assumption>
+  <assumption type='FormulaVariable'
+      desc='sound speed'
+      current='1'
+      count='1'>
+   <value name='DopplerShift.c'
+       desc='340.3 m/s'
+       valid='true'
+       input='*F.DopplerShift.c-_340.3+m%2Fs' />
+  </assumption>
+  <assumption type='FormulaVariable'
+      desc='speed of the observer towards the source'
+      current='1'
+      count='1'>
+   <value name='DopplerShift.vo'
+       desc='0 m/s'
+       valid='true'
+       input='*F.DopplerShift.vo-_0+m%2Fs' />
+  </assumption>
+  <assumption type='FormulaVariableOption'
+      template='Assuming ${desc1}. Use ${desc2} instead'
+      count='2'>
+   <value name='DopplerShift.DopplerRatio'
+       desc='frequency reduction factor'
+       input='*FVarOpt-_**DopplerShift.DopplerRatio-.*DopplerShift.vo--' />
+   <value name='DopplerShift.fo,DopplerShift.fs'
+       desc='frequency observed and frequency at the source'
+       input='*FVarOpt-_**DopplerShift.fo-.*DopplerShift.fs-.*DopplerShift.vo--' />
+  </assumption>
+  <assumption type='FormulaVariableInclude'
+      template='Also include ${desc1}'
+      count='1'>
+   <value name='DopplerShift.vw'
+       desc='wind speed'
+       input='*FVarOpt-_**DopplerShift.vw-.*DopplerShift.DopplerRatio-.*DopplerShift.vo--' />
+  </assumption>
+ </assumptions>
+</queryresult>

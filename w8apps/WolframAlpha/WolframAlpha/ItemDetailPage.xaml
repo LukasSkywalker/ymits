@@ -15,7 +15,7 @@
         <common:LengthToVisibilityConverter x:Key="LengthToVisibilityConverter"/>
         <common:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
         <common:NullToVisibilityConverter x:Key="NullToVisibilityConverter"/>
-        <x:String x:Key="AppName">Wolfram|Alpha</x:String>
+        <x:String x:Key="AppName">Wolfram</x:String>
     </Page.Resources>
 
     <!--
@@ -33,9 +33,11 @@
             <ColumnDefinition x:Name="secondaryColumn" Width="300"/>
         </Grid.ColumnDefinitions>
 
+		<ListView></ListView>
+
         <cfo:CharmFlyout Grid.ColumnSpan="2" Grid.RowSpan="2"
            x:Name="flyoutNotification"
-           Heading="{Binding Heading}"
+           Heading="Options"
            HeadingBackgroundBrush="DarkGray">
             <cfo:CharmFlyout.ParentFlyout>
                 <cfo:CharmFlyout/>
@@ -47,10 +49,21 @@
                 </Grid.RowDefinitions>
                 <ScrollViewer Grid.Row="1">
                     <StackPanel VerticalAlignment="Top" HorizontalAlignment="Left">
-                        <ListView ItemsSource="{Binding Items}">
+                        <ListView ItemsSource="{Binding}" SelectionMode="None">
+                            
                             <ListView.ItemTemplate>
                                 <DataTemplate>
-                                    <TextBlock FontSize="16" Text="{Binding Message}" Tag="{Binding Term}"  Tapped="Notification_OnClick"/>
+                                    <StackPanel>
+                                        <TextBlock Text="{Binding Heading}" Style="{StaticResource PageSubheaderTextStyle}"/>
+                                        <ListView ItemsSource="{Binding Items}">
+                                            <ListView.ItemTemplate>
+                                                <DataTemplate>
+                                                    <TextBlock FontSize="16" Text="{Binding Message}" Tag="{Binding Term}"
+                                                               Tapped="Notification_OnClick" TextWrapping="Wrap"/>
+                                                </DataTemplate>
+                                            </ListView.ItemTemplate>
+                                        </ListView>
+                                    </StackPanel>
                                 </DataTemplate>
                             </ListView.ItemTemplate>
                         </ListView>
@@ -122,7 +135,9 @@
 
         <Grid x:Name="TransparentGrid" Visibility="Collapsed" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Opacity="1"
               Grid.Row="0" Grid.Column="0" Grid.RowSpan="2" Grid.ColumnSpan="2" DataContext="{Binding SelectedItem, ElementName=itemListView}">
-            <Grid VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Opacity="0.6" Background="Black" Tapped="HidePopup"/>
+            <Grid VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Opacity="0.6" Background="Black" Tapped="HidePopup">
+                <Button Content="Close" HorizontalAlignment="Right" VerticalAlignment="Top"/>
+            </Grid>
             <Grid VerticalAlignment="Center" x:Name="itemDetailGrid" HorizontalAlignment="Center" Width="800" Height="600" Background="White">
                 <Border BorderThickness="2,2,2,2" BorderBrush="Black" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Padding="10,10,10,10">
                     <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
@@ -134,7 +149,7 @@
                             <RowDefinition Height="Auto"/>
                         </Grid.RowDefinitions>
                         <ProgressBar x:Name="progressMeter2" VerticalAlignment="Stretch" Visibility="Collapsed"
-                                     HorizontalAlignment="Stretch" Grid.Row="0"/>
+                                     HorizontalAlignment="Left" Grid.Row="0"/>
                         <TextBlock Text="{Binding Title}" x:Name="itemTitle" Style="{StaticResource SubheaderTextStyle}" Grid.Row="1"/>
                         <ScrollViewer x:Name="itemDetail" AutomationProperties.AutomationId="ItemDetailScrollViewer" Padding="40,0,20,0"
                                       Margin="0,10,0,0" Style="{StaticResource VerticalScrollViewerStyle}" Grid.Row="2">

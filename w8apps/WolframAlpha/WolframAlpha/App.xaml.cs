@@ -9,6 +9,7 @@ using Windows.Devices.Geolocation;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
 using Windows.Storage;
+using Windows.UI.ApplicationSettings;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Primitives;
@@ -44,6 +45,16 @@ namespace WolframAlpha
             this.Suspending += OnSuspending;
 
             String a = new UrlBuilder().AddAppId(AppId).AddAssumption("Number").AddInput("mySearchTerm").Build();
+        }
+
+        public static void AddSettingsCommands(SettingsPaneCommandsRequestedEventArgs args)
+        {
+            args.Request.ApplicationCommands.Clear();
+            SettingsCommand privacyPref = new SettingsCommand("privacyPref", "Privacy Policy", (uiCommand) =>
+            {
+                Windows.System.Launcher.LaunchUriAsync(new Uri("http://musicdc.sourceforge.net/wolfram.php"));
+            });
+            args.Request.ApplicationCommands.Add(privacyPref);
         }
 
         /// <summary>

@@ -1,10 +1,10 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Package xmlns="http://schemas.microsoft.com/appx/2010/manifest">
-  <Identity Name="5fc25d3a-7b3e-4661-9a91-6dae58d69fe7" Publisher="CN=Lukas" Version="0.1.0.1" />
+  <Identity Name="48394LukasDiener.Wolfram" Publisher="CN=5360E734-E386-40B8-A705-92BCE4D08C54" Version="0.1.0.7" />
   <Properties>
-    <DisplayName>WolframAlpha</DisplayName>
+    <DisplayName>Wolfram</DisplayName>
     <PublisherDisplayName>Lukas Diener</PublisherDisplayName>
-    <Logo>Assets\StoreLogo.png</Logo>
+    <Logo>Assets\StoreLogo_50x502.png</Logo>
   </Properties>
   <Prerequisites>
     <OSMinVersion>6.2.1</OSMinVersion>
@@ -15,15 +15,9 @@
   </Resources>
   <Applications>
     <Application Id="App" Executable="$targetnametoken$.exe" EntryPoint="WolframAlpha.App">
-      <VisualElements DisplayName="WolframAlpha" Logo="Assets\Logo.png" SmallLogo="Assets\SmallLogo.png" Description="WolframAlpha" ForegroundText="light" BackgroundColor="#464646" ToastCapable="false">
+      <VisualElements DisplayName="Wolfram" Logo="Assets\Logo_150x150.png" SmallLogo="Assets\SmallLogo_30x30.png" Description="WolframAlpha" ForegroundText="light" BackgroundColor="#464646" ToastCapable="false">
         <DefaultTile ShowName="allLogos" />
-        <SplashScreen Image="Assets\SplashScreen.png" />
-        <InitialRotationPreference>
-          <Rotation Preference="portrait" />
-          <Rotation Preference="landscape" />
-          <Rotation Preference="portraitFlipped" />
-          <Rotation Preference="landscapeFlipped" />
-        </InitialRotationPreference>
+        <SplashScreen Image="Assets\SplashScreen_620x300.png" BackgroundColor="#FFFFFF" />
       </VisualElements>
       <Extensions>
         <Extension Category="windows.search" />
