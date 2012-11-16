@@ -8,6 +8,7 @@
     xmlns:common="using:MusicBird.Common"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:cfo="using:CharmFlyoutLibrary"
     mc:Ignorable="d">
 
     <Page.Resources>
@@ -26,7 +27,23 @@
             <RowDefinition Height="140"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
-
+        
+        <cfo:CharmFlyout Grid.RowSpan="2"
+           x:Name="flyoutPrivacy"
+           Heading="Privacy Policy"
+           HeadingBackgroundBrush="LightGray">
+            <StackPanel>
+                <TextBlock
+                   FontSize="16">MusicBird</TextBlock>
+                <TextBlock FontSize="14" TextWrapping="Wrap">
+                    MusicBird does not collect nor store any of your private data. It might be that websites MusicBird connects to store a number called IP-address.
+                    It identifies every device on the internet and could possibly be used to identify users of MusicBird.
+                    MusicBird does not provide any additional data and does not store cookies and similar things, making it more private than a normal browser.
+                    Websites MusicBird connects to are www.mp3skull.com and www.last.fm. Please refer to their respective policies to learn more.
+                </TextBlock>
+            </StackPanel>
+        </cfo:CharmFlyout>
+        
         <!-- Back button and page title -->
         <Grid>
             <Grid.ColumnDefinitions>

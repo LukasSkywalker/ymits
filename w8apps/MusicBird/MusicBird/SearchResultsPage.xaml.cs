@@ -18,6 +18,7 @@ using Windows.Media;
 using Windows.Networking.BackgroundTransfer;
 using Windows.Networking.Connectivity;
 using Windows.Storage;
+using Windows.UI.ApplicationSettings;
 using Windows.UI.Core;
 using Windows.UI.Popups;
 using Windows.UI.Xaml;
@@ -40,17 +41,21 @@ namespace MusicBird
         private HttpClient suggestionClient;
         private List<TrackListItem> resultsList;
         private DispatcherTimer _timer;
+        private DispatcherTimer playTimeoutTimer;
         private List<DownloadOperation> activeDownloads;
         private CancellationTokenSource cts;
         private ulong totalSize;
         private SearchPane searchPane;
         private List<TrackListItem> unFilteredList;
+        private Windows.UI.Core.CoreDispatcher dispatcher;
 
         private const int BACKUP_SERVICE_LIMIT = 200;   // Default: 5
 
         public SearchResultsPage()
         {
             this.InitializeComponent();
+
+            this.dispatcher = Window.Current.CoreWindow.Dispatcher;
 
             ResourceLoader loader = new ResourceLoader("Resources");
             string str = loader.GetString("resultText/Text");
@@ -76,6 +81,7 @@ namespace MusicBird
             MediaControl.PausePressed += MediaControl_PausePressed;
             MediaControl.PlayPauseTogglePressed += MediaControl_PlayPauseTogglePressed;
             MediaControl.StopPressed += MediaControl_StopPressed;
+            MediaControl.SoundLevelChanged += MediaControl_SoundLevelChanged;
 
             volumeSlider.Value = playerElement.Volume * 10;
 
@@ -86,6 +92,53 @@ namespace MusicBird
             _timer = new DispatcherTimer();
             _timer.Interval = TimeSpan.FromSeconds(1);
             _timer.Tick += _timer_Tick;
+
+            playTimeoutTimer = new DispatcherTimer();
+            playTimeoutTimer.Interval = TimeSpan.FromSeconds(4);
+            playTimeoutTimer.Tick += playTimeoutTimer_Tick;
+        }
+
+        private void playTimeoutTimer_Tick(object sender, object e)
+        {
+            if (playerElement.CurrentState != MediaElementState.Playing) {
+                playerElement.Stop();
+                playerElement.Source = null;
+                var msgd = new MessageDialog("Error playing this track. Please try another file.");
+                try { msgd.ShowAsync(); }
+                catch (Exception) { }
+                HideWheel("playerTimeoutTimer_Tick");
+            }
+            playTimeoutTimer.Stop();
+        }
+
+        private async void MediaControl_SoundLevelChanged(object sender, object e)
+        {
+            await dispatcher.RunAsync(
+                Windows.UI.Core.CoreDispatcherPriority.Normal, () =>
+                {
+                    var soundLevel = Windows.Media.MediaControl.SoundLevel;
+                    switch (soundLevel)
+                    {
+                        case Windows.Media.SoundLevel.Muted:
+                            playerElement.Volume = 0;
+                            volumeSlider.Value = 0;
+                            break;
+                        case Windows.Media.SoundLevel.Low:
+                            playerElement.Volume = 0.2;
+                            volumeSlider.Value = 2;
+                            break;
+                        case Windows.Media.SoundLevel.Full:
+                            playerElement.Volume = 1;
+                            volumeSlider.Value = 10;
+                            break;
+                    }
+                });
+            
+        }
+
+        void StartPage_CommandsRequested(SettingsPane sender, SettingsPaneCommandsRequestedEventArgs args)
+        {
+            App.AddSettingsCommands(args);
         }
 
         protected override void OnNavigatedTo(NavigationEventArgs e)
@@ -93,6 +146,8 @@ namespace MusicBird
             base.OnNavigatedTo(e);
 
             searchPane.SuggestionsRequested += new TypedEventHandler<SearchPane, SearchPaneSuggestionsRequestedEventArgs>(OnSearchPaneSuggestionsRequested);
+
+            SettingsPane.GetForCurrentView().CommandsRequested += StartPage_CommandsRequested;
 
             // SEARCH CONTRACT 2.5 Enable users to type into the search box directly from your app
             searchPane.ShowOnKeyboardInput = true;
@@ -561,12 +616,34 @@ namespace MusicBird
             MediaControl.TrackName = track.title;
 
             playerElement.Play();
+            playTimeoutTimer.Start();
+            ShowWheel("playTrack");
+        }
+
+        private async void ShowWheel(String msg) {
+            await dispatcher.RunAsync(
+                Windows.UI.Core.CoreDispatcherPriority.Normal, () =>
+                {
+                    progressWheel.IsActive = true;
+                    progressWheel.Visibility = Visibility.Visible;
+                    //progressPanel.Visibility = Visibility.Visible;
+                });
+            System.Diagnostics.Debug.WriteLine("Showing wheel: "+msg);
+        }
+
+        private void HideWheel(String msg)
+        {
+            System.Diagnostics.Debug.WriteLine("Hiding wheel: " + msg);
+            progressWheel.IsActive = false;
+            progressWheel.Visibility = Visibility.Collapsed;
+            //progressPanel.Visibility = Visibility.Collapsed;
         }
 
 
         #region mediaControl handlers
         private void MediaControl_StopPressed(object sender, object e)
         {
+            ShowWheel("MediaControl_StopPressed");
             Dispatcher.RunAsync(CoreDispatcherPriority.Normal, new DispatchedHandler(() =>
             {
                 btnStop_Click(null, null);
@@ -575,6 +652,7 @@ namespace MusicBird
 
         private void MediaControl_PlayPauseTogglePressed(object sender, object e)
         {
+            ShowWheel("MediaControl_PlayPauseTogglePressed");
             Dispatcher.RunAsync(CoreDispatcherPriority.Normal, new DispatchedHandler(() =>
             {
                 if (playerElement.CurrentState == MediaElementState.Playing)
@@ -591,6 +669,7 @@ namespace MusicBird
 
         private void MediaControl_PausePressed(object sender, object e)
         {
+            ShowWheel("MediaControl_PausePressed");
             Dispatcher.RunAsync(CoreDispatcherPriority.Normal, new DispatchedHandler(() =>
             {
                 btnPlay_Click(null, null);
@@ -599,6 +678,7 @@ namespace MusicBird
 
         private void MediaControl_PlayPressed(object sender, object e)
         {
+            ShowWheel("MediaControl_PlayPressed");
             Dispatcher.RunAsync(CoreDispatcherPriority.Normal, new DispatchedHandler(() =>
             {
                 btnPlay_Click(null, null);
@@ -642,6 +722,10 @@ namespace MusicBird
         #region playback buttons event handler
         private void btnPlay_Click(object sender, RoutedEventArgs e)
         {
+            if (playerElement.Source != null)
+                ShowWheel("btnPlay_Click");
+            else
+                return;
             if (playerElement.CurrentState == MediaElementState.Playing)
             {
                 playerElement.Pause();
@@ -658,16 +742,19 @@ namespace MusicBird
 
         private void btnStop_Click(object sender, RoutedEventArgs e)
         {
+            ShowWheel("btnStop_Click");
             playerElement.Stop();
         }
 
         private void btnForward_Click(object sender, RoutedEventArgs e)
         {
+            ShowWheel("btnForward_Click");
             playerElement.DefaultPlaybackRate = 1.8;
             playerElement.Play();
         }
         private void btnReverse_Click(object sender, RoutedEventArgs e)
         {
+            ShowWheel("btnReverse_Click");
             playerElement.DefaultPlaybackRate = -1.8;
             playerElement.Play();
         }
@@ -724,19 +811,25 @@ namespace MusicBird
             switch (playerElement.CurrentState)
             {
                 case MediaElementState.Playing:
+                    HideWheel("mediaElement_CurrentStateChanged:playing");
                     _timer.Start();
+                    playTimeoutTimer.Stop();
                     btnPlay.Style = GetStyle("PauseButtonStyle");
                     enableButtons(true, true);
                     break;
 
                 case MediaElementState.Paused:
+                    HideWheel("mediaElement_CurrentStateChanged:paused");
                     _timer.Stop();
+                    playTimeoutTimer.Stop();
                     btnPlay.Style = GetStyle("PlayButtonStyle");
                     enableButtons(true, true);
                     break;
 
                 case MediaElementState.Stopped:
+                    HideWheel("mediaElement_CurrentStateChanged:stopped");
                     _timer.Stop();
+                    playTimeoutTimer.Stop();
                     btnPlay.Style = GetStyle("PlayButtonStyle");
                     progressSlider.Value = 0;
                     enableButtons(true, false);
@@ -746,6 +839,7 @@ namespace MusicBird
 
         private void mediaElement_MediaOpened(object sender, RoutedEventArgs e)
         {
+            HideWheel("mediaElement_MediaOpened");
             double absvalue = (int)Math.Round(
             playerElement.NaturalDuration.TimeSpan.TotalSeconds,
             MidpointRounding.AwayFromZero);
@@ -762,13 +856,20 @@ namespace MusicBird
         {
             _timer.Stop();
             progressSlider.Value = 0.0;
+            HideWheel("mediaElement_MediaEnded");
         }
 
-        private void mediaElement_MediaFailed(object sender, ExceptionRoutedEventArgs e)
+        private async void mediaElement_MediaFailed(object sender, ExceptionRoutedEventArgs e)
         {
+            HideWheel("mediaElement_MediaFailed");
             string hr = GetHresultFromErrorMessage(e);
             Debug.WriteLine("ERROR:" + hr);
-            playerElement.Play();
+            MessageDialog md = new MessageDialog("The playback of this file failed. Please try another.", "Error");
+            await md.ShowAsync();
+            playerElement.Stop();
+            playerElement.Source = null;
+            HideWheel("mediaElement_MediaFailed_After");
+            //playerElement.Play();
         }
 
         private void mediaElement_DownloadProgressChanged(object sender, RoutedEventArgs e)
@@ -981,10 +1082,10 @@ namespace MusicBird
             {
                 playTrack(track);
             }));
-            menu.Commands.Add(new UICommand("Save", (command) =>
+            /*menu.Commands.Add(new UICommand("Save", (command) =>
             {
                 saveTrack(track);
-            }));
+            }));*/
             await menu.ShowForSelectionAsync(GetElementRect((FrameworkElement)sender));
         }
 
@@ -998,7 +1099,8 @@ namespace MusicBird
         private void playButton_Click(object sender, RoutedEventArgs e)
         {
             TrackListItem track = (TrackListItem)(sender as FrameworkElement).DataContext;
-            playTrack(track);
+            if(track != null)
+                playTrack(track);
         }
 
         private void downloadButton_Click(object sender, RoutedEventArgs e)

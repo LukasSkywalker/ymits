@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Package xmlns="http://schemas.microsoft.com/appx/2010/manifest">
-  <Identity Name="b4e5ff58-c107-4613-aae5-3aaded7906de" Publisher="CN=Lukas" Version="1.0.0.0" />
+  <Identity Name="48394LukasDiener.MusicBird" Publisher="CN=5360E734-E386-40B8-A705-92BCE4D08C54" Version="1.0.0.5" />
   <Properties>
     <DisplayName>MusicBird</DisplayName>
     <PublisherDisplayName>Lukas Diener</PublisherDisplayName>
@@ -15,7 +15,7 @@
   </Resources>
   <Applications>
     <Application Id="App" Executable="$targetnametoken$.exe" EntryPoint="MusicBird.App">
-      <VisualElements DisplayName="MusicBird" Logo="Assets\Logo_150x150.png" SmallLogo="Assets\SmallLogo_30x30.png" Description="MusicBird" ForegroundText="light" BackgroundColor="#8cbe29">
+      <VisualElements DisplayName="MusicBird" Logo="Assets\Logo_150x150.png" SmallLogo="Assets\SmallLogo_30x30.png" Description="Listen to your favourite music, anywhere, anytime. Over 2 million tracks available." ForegroundText="light" BackgroundColor="#8cbe29">
         <LockScreen Notification="badge" BadgeLogo="Assets\SmallerLogo_24x24.png" />
         <DefaultTile ShowName="allLogos" />
         <SplashScreen Image="Assets\SplashScreen_620x300.png" BackgroundColor="#8cbe29" />
@@ -32,7 +32,6 @@
     </Application>
   </Applications>
   <Capabilities>
-    <Capability Name="musicLibrary" />
     <Capability Name="internetClient" />
   </Capabilities>
 </Package>

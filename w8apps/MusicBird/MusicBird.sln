@@ -3,11 +3,6 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Express 2012 for Windows 8
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MusicBird", "MusicBird\MusicBird.csproj", "{F212BCDA-FF0E-4B17-BE92-43EE3EDA98E8}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Performance Reports", "Performance Reports", "{3696E6BB-B267-40D4-B727-BBDCB6664AC9}"
-	ProjectSection(SolutionItems) = preProject
-		MusicBird120831.vspx = MusicBird120831.vspx
-	EndProjectSection
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MusicBirdTest", "MusicBirdTest\MusicBirdTest.csproj", "{4E10FE0F-5BFF-457B-88F8-55418A9BEC5A}"
 EndProject
 Global

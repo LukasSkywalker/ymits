@@ -16,6 +16,7 @@
         <CollectionViewSource x:Name="filtersViewSource" Source="{Binding Filters}"/>
         <common:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
         <common:PlayAccessibilityConverter x:Key="PlayAccessibilityConverter"/>
+        <common:TimeSpanConverter x:Key="TimeSpanConverter"/>
         <!-- TODO: Update the following string to be the name of your app -->
         <x:String x:Key="AppName">MusicBird</x:String>
     </Page.Resources>
@@ -109,6 +110,8 @@
                     SelectionChanged="Filter_SelectionChanged"
                     HorizontalAlignment="Left"/>
                 </StackPanel>
+                <ProgressRing Width="70" Height="70" x:Name="progressWheel" IsActive="False" Visibility="Collapsed"
+                                  Grid.Row="2"  VerticalAlignment="Center" HorizontalAlignment="Center" Opacity="1"/>
 
                 <ListView
                     x:Name="resultsListView"
@@ -208,7 +211,7 @@
                     <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
                 <TextBlock x:Name="currentTimeTextBlock" Grid.Column="0" HorizontalAlignment="Left"  TextWrapping="Wrap" Text="00:00" VerticalAlignment="Center" Margin="0,5,10,0"/>
-                <Slider x:Name="progressSlider" Grid.Column="1" ValueChanged="slider_ValueChanged" HorizontalAlignment="Stretch" VerticalAlignment="Center" Margin="0,0,0,-20" AutomationProperties.Name="Progress Slider"/>
+                <Slider x:Name="progressSlider" Grid.Column="1" ValueChanged="slider_ValueChanged" HorizontalAlignment="Stretch" VerticalAlignment="Center" Margin="0,0,0,-20" AutomationProperties.Name="Progress Slider" ThumbToolTipValueConverter="{StaticResource TimeSpanConverter}"/>
                 <TextBlock x:Name="totalTimeTextBlock" Grid.Column="2" HorizontalAlignment="Right" TextWrapping="Wrap" Text="00:00" VerticalAlignment="Center" Margin="10,5,0,0"/>
             </Grid>
         </Grid>

@@ -10,11 +10,9 @@ namespace MusicBird.Common
     public class TimeSpanConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, string language) {
-            if (value is TimeSpan)
+            if (value is double)
             {
-                int seconds = ((int)(double)value);
-                System.Diagnostics.Debug.WriteLine("target:" + targetType.ToString());
-                TimeSpan ts = TimeSpan.FromSeconds(seconds);
+                TimeSpan ts = TimeSpan.FromSeconds((double)value);
                 return ts.ToString(@"mm\:ss");
             }
             else {

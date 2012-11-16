@@ -7,6 +7,7 @@ using Windows.ApplicationModel.Activation;
 using Windows.ApplicationModel.Search;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
+using Windows.UI.ApplicationSettings;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Primitives;
@@ -32,6 +33,16 @@ namespace MusicBird
         {
             this.InitializeComponent();
             this.Suspending += OnSuspending;
+        }
+
+        public static void AddSettingsCommands(SettingsPaneCommandsRequestedEventArgs args)
+        {
+            args.Request.ApplicationCommands.Clear();
+            SettingsCommand privacyPref = new SettingsCommand("privacyPref", "Privacy Policy", (uiCommand) =>
+            {
+                Windows.System.Launcher.LaunchUriAsync(new Uri("http://musicdc.sourceforge.net/musicbird.php"));
+            });
+            args.Request.ApplicationCommands.Add(privacyPref);
         }
 
         /// <summary>

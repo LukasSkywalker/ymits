@@ -12,8 +12,9 @@
     <DefaultLanguage>en-US</DefaultLanguage>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{BC8A1FFA-BEE3-4634-8014-F334798102B3};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
-    <PackageCertificateKeyFile>MusicBird_TemporaryKey.pfx</PackageCertificateKeyFile>
+    <PackageCertificateKeyFile>MusicBird_StoreKey.pfx</PackageCertificateKeyFile>
     <AppxAutoIncrementPackageRevision>True</AppxAutoIncrementPackageRevision>
+    <PackageCertificateThumbprint>3A5B1D847E3D85FFDB554C4CDCA227382911AABC</PackageCertificateThumbprint>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -101,9 +102,6 @@
     <Prefer32Bit>true</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
-    <!-- A reference to the entire .Net Framework and Windows SDK are automatically included -->
-  </ItemGroup>
-  <ItemGroup>
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
@@ -132,9 +130,10 @@
     <AppxManifest Include="Package.appxmanifest">
       <SubType>Designer</SubType>
     </AppxManifest>
-    <PRIResource Include="Strings\de-DE\Resources.resw" />
+    <None Include="packages.config" />
     <PRIResource Include="Strings\en-US\Resources.resw" />
     <PRIResource Include="Assets\English.resw" />
+    <None Include="MusicBird_StoreKey.pfx" />
     <None Include="MusicBird_TemporaryKey.pfx" />
   </ItemGroup>
   <ItemGroup>
@@ -144,6 +143,7 @@
     <Content Include="Assets\SplashScreen_620x300.png" />
     <Content Include="Assets\StoreLogo.png" />
     <Content Include="Assets\StoreLogo_50x50.png" />
+    <None Include="Package.StoreAssociation.xml" />
     <Page Include="StartPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -162,6 +162,11 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="CharmFlyoutLibrary">
+      <HintPath>..\packages\CharmFlyout.1.0.11\lib\winrt45\CharmFlyoutLibrary.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '11.0' ">
     <VisualStudioVersion>11.0</VisualStudioVersion>
