@@ -151,7 +151,7 @@
                                     <TextBlock Text="{Binding title}"
                                TextWrapping="Wrap" FontSize="24" />
                                 </StackPanel>
-                                <!--<Button Grid.Column="2" Style="{StaticResource DownloadButtonStyle}" Click="downloadButton_Click" Tag=" " HorizontalAlignment="Right"/>-->
+                                <Button Grid.Column="2" Style="{StaticResource DownloadButtonStyle}" Click="downloadButton_Click" Tag=" " HorizontalAlignment="Right"/>
                                 <!--<TextBlock Text="{Binding size}" Foreground="#FFC8AB14" FontSize="20"/>-->
                             </Grid>
                         </DataTemplate>
@@ -188,7 +188,8 @@
                 <Button x:Name="btnForward" Click="btnForward_Click" Content="Forward"/>
                 <Button x:Name="btnMute" Click="btnMute_Click" Content="Mute" />-->
                 <Slider x:Name="volumeSlider" Width="45" Orientation="Vertical" ValueChanged="volume_ValueChanged" Maximum="10" StepFrequency="1" AutomationProperties.Name="Volume Slider"/>
-                <!--<TextBlock x:Name="downloadStatusTextBlock" Width="100"/>-->
+                <ProgressBar HorizontalAlignment="Center" Height="30" Margin="0,5,0,10" VerticalAlignment="Center" Minimum="0" Maximum="1"  Width="400" x:Name="DownloadProgressBar" Tapped="ShowPopup"/>
+                <TextBlock x:Name="DownloadProgressText" Width="225" Margin="20,0,0,0" Tapped="ShowPopup"/>
                 <MediaElement x:Name="playerElement" Width="100" AudioCategory="BackgroundCapableMedia"
                             CurrentStateChanged="mediaElement_CurrentStateChanged" MediaEnded="mediaElement_MediaEnded"
                             MediaFailed="mediaElement_MediaFailed" MediaOpened="mediaElement_MediaOpened"
@@ -223,6 +224,41 @@
             Visibility="Collapsed"
             Style="{StaticResource SubheaderTextStyle}"
             Text="No results match your search." />
+
+        <Grid x:Name="TransparentGrid" Visibility="Collapsed" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Opacity="1"
+              Grid.Row="0" Grid.RowSpan="4">
+            <Grid VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Opacity="0.6" Background="Black" Tapped="HidePopup">
+                <Button Content="Close" HorizontalAlignment="Right" VerticalAlignment="Top"/>
+            </Grid>
+            <Grid VerticalAlignment="Center" HorizontalAlignment="Center" Width="800" Height="600" Background="White">
+                <Border BorderThickness="2,2,2,2" BorderBrush="Black" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Padding="10,10,10,10">
+                    <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+                        <TextBlock Text="{Binding activeDownloads.Count}" Grid.Row="0" Style="{StaticResource SubheaderTextStyle}"/>
+                        <TextBlock Text="asfd" Grid.Row="0" Style="{StaticResource SubheaderTextStyle}"/>
+                        <ListView ItemsSource="{Binding activeDownloads}" SelectionMode="None" Grid.Row="1">
+                            <ListView.ItemTemplate>
+                                <DataTemplate>
+                                    <Grid Margin="0,10,0,0" Background="White" HorizontalAlignment="Stretch">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="Auto"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                            <ColumnDefinition Width="*"/>
+                                        </Grid.ColumnDefinitions>
+                                        <TextBlock Grid.Column="0"  Text="{Binding ResultFile.Name}" FontWeight="Bold"/>
+                                        <TextBlock Grid.Column="1"  Text="{Binding ResultFile.Name}" FontWeight="Bold"/>
+                                        <TextBlock Grid.Column="2"  Text="{Binding ResultFile.Name}" FontWeight="Bold"/>
+                                    </Grid>
+                                </DataTemplate>
+                            </ListView.ItemTemplate>
+                        </ListView>
+                    </Grid>
+                </Border>
+            </Grid>
+        </Grid>
 
         <VisualStateManager.VisualStateGroups>
 

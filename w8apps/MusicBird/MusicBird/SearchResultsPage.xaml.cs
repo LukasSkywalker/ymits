@@ -6,18 +6,17 @@ using System.Diagnostics;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
-using System.Net.Http.Headers;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using Windows.ApplicationModel.Resources;
-using Windows.ApplicationModel.Resources.Core;
 using Windows.ApplicationModel.Search;
 using Windows.Foundation;
 using Windows.Media;
 using Windows.Networking.BackgroundTransfer;
 using Windows.Networking.Connectivity;
 using Windows.Storage;
+using Windows.Storage.Pickers;
 using Windows.UI.ApplicationSettings;
 using Windows.UI.Core;
 using Windows.UI.Popups;
@@ -27,6 +26,7 @@ using Windows.UI.Xaml.Controls.Primitives;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
+using Windows.Web;
 
 // The Search Contract item template is documented at http://go.microsoft.com/fwlink/?LinkId=234240
 
@@ -42,9 +42,8 @@ namespace MusicBird
         private List<TrackListItem> resultsList;
         private DispatcherTimer _timer;
         private DispatcherTimer playTimeoutTimer;
-        private List<DownloadOperation> activeDownloads;
+        List<DownloadOperation> activeDownloads { get; set; }
         private CancellationTokenSource cts;
-        private ulong totalSize;
         private SearchPane searchPane;
         private List<TrackListItem> unFilteredList;
         private Windows.UI.Core.CoreDispatcher dispatcher;
@@ -63,8 +62,6 @@ namespace MusicBird
             resultText.Text = modstring;
 
             searchPane = SearchPane.GetForCurrentView();
-
-            totalSize = 0;
 
             cts = new CancellationTokenSource();
             resultsList = new List<TrackListItem>();
@@ -141,7 +138,7 @@ namespace MusicBird
             App.AddSettingsCommands(args);
         }
 
-        protected override void OnNavigatedTo(NavigationEventArgs e)
+        protected async override void OnNavigatedTo(NavigationEventArgs e)
         {
             base.OnNavigatedTo(e);
 
@@ -151,6 +148,8 @@ namespace MusicBird
 
             // SEARCH CONTRACT 2.5 Enable users to type into the search box directly from your app
             searchPane.ShowOnKeyboardInput = true;
+
+            await DiscoverActiveDownloadsAsync();
         }
 
         protected override void OnNavigatedFrom(NavigationEventArgs e)
@@ -474,117 +473,6 @@ namespace MusicBird
             }
             return trackList;
         }
-
-        private async void GetSizeAsync(string url)
-        {
-            /* GET SIZE */
-            Debug.WriteLine("Starting Size Request for "+url);
-            HttpClient httpClient = new HttpClient();
-            HttpRequestMessage request = new HttpRequestMessage(HttpMethod.Head, new Uri(url));
-            long size = 0;
-            try
-            {
-                HttpResponseMessage sizeMsg = await httpClient.SendAsync(request);
-                if (sizeMsg.IsSuccessStatusCode)
-                {
-                    size = (long)sizeMsg.Content.Headers.ContentLength;
-                }
-            }
-            catch (HttpRequestException e) {
-                
-            }
-            OnGetSizeCompleted(new KeyValuePair<string, long>(url, size));
-        }
-        
-        public async void OnGetSizeCompleted(KeyValuePair<string, long> val) {
-            Debug.WriteLine("KEY="+val.Key.ToString()+" VAL="+val.Value);
-            List<TrackListItem> tl = (List<TrackListItem>)this.DefaultViewModel["Results"];
-            for (int i = 0; i < tl.Count; i++) {
-                if (tl[i].url.Equals(val.Key)) {
-                    //await Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () => { tl[i].size = val.Value; });
-                    break;
-                }
-            }
-        }
-
-
-        //private async Task<List<TrackListItem>> getResultsBackup(string searchterm) {
-            /* THIS IS DEAD CODE */
-            
-            /*string responseText = "";
-            List<TrackListItem> trackList = new List<TrackListItem>();
-
-            try
-            {
-                string address = "http://prostopleer.com/search?q=" + searchterm.Trim().Replace(" ", "+");
-                searchClient.CancelPendingRequests();
-                HttpResponseMessage response = await searchClient.GetAsync(address);
-                response.EnsureSuccessStatusCode();
-                responseText = await response.Content.ReadAsStringAsync();
-
-                Regex pattern = new Regex("", RegexOptions.IgnoreCase);
-                
-                try
-                {
-                    String s = responseText;
-
-                    // Match the regular expression pattern against a text string.
-                    Match m = pattern.Match(s);
-
-                    while (m.Success)
-                    {
-                        string artist = WebUtility.HtmlDecode(Uri.UnescapeDataString(m.Groups[5].ToString())).Replace("_", " ");
-                        string title = WebUtility.HtmlDecode(Uri.UnescapeDataString(m.Groups[6].ToString())).Replace("_", " ");
-                        string hash = m.Groups[4].ToString();
-                        string path = m.Groups[3].ToString();
-
-                        String[] paths = path.Split('/');
-
-                        string url = "http://vpleer.ru/download/0/" + paths[2] + "/" + paths[3] + "/" + paths[4] + "/" + artist + " - " + title + ".mp3";
-
-                        if (url.IndexOf("4shared") == -1)
-                        {
-                            int match1 = getDistance(searchterm, artist + " " + title);
-                            int match2 = getDistance(searchterm, artist + " " + title);
-                            int match = Math.Min(match1, match2);
-                            TrackListItem item = new TrackListItem(artist, title, url, match);
-                            int insertPos = 0;
-                            for (int i = 0; i < trackList.Count; i++)
-                            {
-                                if (trackList[i].match < match)
-                                {
-                                    insertPos = i;
-                                    break;
-                                }
-                            }
-                            trackList.Insert(insertPos, item);
-                        }
-                        m = m.NextMatch();
-                    }
-
-                    System.Diagnostics.Debug.WriteLine("vpleer: Results found: " + trackList.Count);
-                }
-                finally
-                {
-                    // SEARCH CONTRACT 2.2 Populate your page with results from your app's data
-                }
-            }
-            catch (HttpRequestException hre)
-            {
-                var messageDialog = new MessageDialog("Network error: " + hre.Message + " Please check your connection and try again.");
-                messageDialog.ShowAsync();
-            }
-            catch (Exception ex)
-            {
-                // For debugging
-                Debug.WriteLine(ex.ToString());
-            }
-            finally
-            {
-                //toggleSearchIndicator();
-            }
-            return trackList;*/
-        //}
 
         private int getDistance(string searchterm, string p)
         {
@@ -932,102 +820,26 @@ namespace MusicBird
         private async void saveTrack(TrackListItem track)
         {
             string url = track.url;
-            try
-            {
-                Uri source = new Uri(url);
-                string destination = track.artist+" - "+track.title+".mp3";
 
-                if (destination == "")
-                {
-                    return;
-                }
+            Uri source = new Uri(url);
+            FileSavePicker savePicker = new FileSavePicker();
+            savePicker.SuggestedStartLocation = PickerLocationId.MusicLibrary;
+            savePicker.FileTypeChoices.Add("MPEG Layer 3 Audio", new List<string>() { ".mp3" });
+            savePicker.SuggestedFileName = track.artist + " - " + track.title;
 
-                StorageFile destinationFile = await KnownFolders.MusicLibrary.CreateFileAsync(
-                    destination, CreationCollisionOption.GenerateUniqueName);
+            StorageFile destinationFile = await savePicker.PickSaveFileAsync();
 
-                BackgroundDownloader downloader = new BackgroundDownloader();
-                DownloadOperation download = downloader.CreateDownload(source, destinationFile);
+            if (destinationFile == null) return;
 
-                // Attach progress and completion handlers.
-                await HandleDownloadAsync(download, true);
-            }
-            catch (Exception ex)
-            {
-                var messageDialog = new MessageDialog("Download error: " + ex.Message + " Please try again.");
-                messageDialog.ShowAsync();
-            }
-        }
+            BackgroundDownloader downloader = new BackgroundDownloader();
+            DownloadOperation download = downloader.CreateDownload(source, destinationFile);
 
-        private void DownloadProgress(DownloadOperation download)
-        {
-            //MarshalLog(String.Format("Progress: {0}, Status: {1}", download.Guid, download.Progress.Status));
-
-            double percent = 100;
-            if (download.Progress.TotalBytesToReceive > 0)
-            {
-                percent = download.Progress.BytesReceived * 100 / download.Progress.TotalBytesToReceive;
-                //TODO downloadStatusTextBlock.Text = "Downloading: "+percent+"%";
-                totalSize += download.Progress.TotalBytesToReceive;
-            }
-
-            //MarshalLog(String.Format(" - Transfered bytes: {0} of {1}, {2}%",
-               // download.Progress.BytesReceived, download.Progress.TotalBytesToReceive, percent));
-
-            if (download.Progress.HasRestarted)
-            {
-               // MarshalLog(" - Download restarted");
-            }
-
-            if (download.Progress.HasResponseChanged)
-            {
-                // We've received new response headers from the server. 
-               // MarshalLog(" - Response updated; Header count: " + download.GetResponseInformation().Headers.Count);
-
-                // If you want to stream the response data this is a good time to start. 
-                // download.GetResultStreamAt(0); 
-            }
-        } 
-
-        private async Task HandleDownloadAsync(DownloadOperation download, bool start)
-        {
-            try
-            {
-                // Store the download so we can pause/resume.
-                //activeDownloads.Add(download);
-
-                Progress<DownloadOperation> progressCallback = new Progress<DownloadOperation>(DownloadProgress);
-                if (start)
-                {
-                    // Start the download and attach a progress handler.
-                    await download.StartAsync().AsTask(cts.Token, progressCallback);
-                }
-                else
-                {
-                    // The download was already running when the application started, re-attach the progress handler.
-                    await download.AttachAsync().AsTask(cts.Token, progressCallback);
-                }
-
-                ResponseInformation response = download.GetResponseInformation();
-                //Log(String.Format("Completed: {0}, Status Code: {1}", download.Guid, response.StatusCode));
-            }
-            catch (TaskCanceledException)
-            {
-                //Log("Download cancelled.");
-            }
-            catch (Exception)
-            {
-                //LogException("Error", ex);
-            }
-            finally
-            {
-                //activeDownloads.Remove(download);
-            }
+            await HandleDownloadAsync(download, true);
         }
 
         private async Task DiscoverActiveDownloadsAsync()
         {
             activeDownloads = new List<DownloadOperation>();
-
             IReadOnlyList<DownloadOperation> downloads = null;
             try
             {
@@ -1035,35 +847,100 @@ namespace MusicBird
             }
             catch (Exception)
             {
-
+                if (false)
+                {
+                    throw;
+                }
+                return;
             }
-
-            //Log("Loading background downloads: " + downloads.Count);
-
+            System.Diagnostics.Debug.WriteLine("Loading background downloads: " + downloads.Count);
             if (downloads.Count > 0)
             {
-                totalSize = 0;
-
                 List<Task> tasks = new List<Task>();
                 foreach (DownloadOperation download in downloads)
                 {
-                    //Log(String.Format("Discovered background download: {0}, Status: {1}", download.Guid,
-                    //download.Progress.Status));
-
-                    // Attach progress and completion handlers. 
+                    System.Diagnostics.Debug.WriteLine(String.Format("Discovered background download: {0}, Status: {1}", download.Guid,
+                        download.Progress.Status));
                     tasks.Add(HandleDownloadAsync(download, false));
                 }
-
-                // Don't await HandleDownloadAsync() in the foreach loop since we would attach to the second 
-                // download only when the first one completed; attach to the third download when the second one 
-                // completes etc. We want to attach to all downloads immediately. 
-                // If there are actions that need to be taken once downloads complete, await tasks here, outside 
-                // the loop. 
                 await Task.WhenAll(tasks);
-
-                //TODO downloadStatusTextBlock.Text = totalSize.ToString();
             }
         }
+
+        private async Task HandleDownloadAsync(DownloadOperation download, bool start)
+        {
+            try
+            {
+                System.Diagnostics.Debug.WriteLine("Running: " + download.Guid);
+
+                // Store the download so we can pause/resume. 
+                activeDownloads.Add(download);
+
+                Progress<DownloadOperation> progressCallback = new Progress<DownloadOperation>(DownloadProgressHandler);
+                if (start)
+                {
+                    // Start the download and attach a progress handler. 
+                    await download.StartAsync().AsTask(cts.Token, progressCallback);
+                }
+                else
+                {
+                    // The download was already running when the application started, re-attach the progress handler. 
+                    await download.AttachAsync().AsTask(cts.Token, progressCallback);
+                }
+
+                ResponseInformation response = download.GetResponseInformation();
+
+                System.Diagnostics.Debug.WriteLine(String.Format("Completed: {0}, Status Code: {1}", download.Guid, response.StatusCode));
+            }
+            catch (TaskCanceledException)
+            {
+                System.Diagnostics.Debug.WriteLine("Canceled: " + download.Guid);
+            }
+            catch (Exception)
+            {
+
+            }
+            finally
+            {
+                activeDownloads.Remove(download);
+                UpdateDownloads();
+            }
+        }
+
+        private void DownloadProgressHandler(DownloadOperation obj)
+        {
+            UpdateDownloads();
+        }
+
+        private void UpdateDownloads() {
+            ulong totalSize = 0;
+            ulong totalReceived = 0;
+
+            foreach (DownloadOperation dlop in activeDownloads)
+            {
+                totalSize += dlop.Progress.TotalBytesToReceive;
+                totalReceived += dlop.Progress.BytesReceived;
+            }
+
+            try
+            {
+                double percentage = (double)totalReceived / (double)totalSize;
+                DownloadProgressBar.Value = percentage;
+                DownloadProgressText.Text = activeDownloads.Count + " Downloads. " + totalReceived / 1024 / 1024 + " of " + totalSize / 1024 / 1024 + "MB (" + Math.Round(percentage * 100) + "%)";
+            }
+            catch (Exception) { }
+        }
+
+        private void HidePopup(object sender, TappedRoutedEventArgs e)
+        {
+            TransparentGrid.Visibility = Visibility.Collapsed;
+        }
+
+        private void ShowPopup()
+        {
+            TransparentGrid.Visibility = Visibility.Visible;
+        }
+
         #endregion
 
         private void OnItemTapped(object sender, TappedRoutedEventArgs e)
@@ -1082,10 +959,10 @@ namespace MusicBird
             {
                 playTrack(track);
             }));
-            /*menu.Commands.Add(new UICommand("Save", (command) =>
+            menu.Commands.Add(new UICommand("Save", (command) =>
             {
                 saveTrack(track);
-            }));*/
+            }));
             await menu.ShowForSelectionAsync(GetElementRect((FrameworkElement)sender));
         }
 
@@ -1106,7 +983,13 @@ namespace MusicBird
         private void downloadButton_Click(object sender, RoutedEventArgs e)
         {
             TrackListItem track = (TrackListItem)(sender as FrameworkElement).DataContext;
+            System.Diagnostics.Debug.WriteLine(track.url);
             saveTrack(track);
+        }
+
+        private void ShowPopup(object sender, TappedRoutedEventArgs e)
+        {
+            ShowPopup();
         }
 
         /*private void GoBack(object sender, RoutedEventArgs e)

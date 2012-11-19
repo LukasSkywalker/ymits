@@ -44,6 +44,8 @@ namespace MusicBird
 
             SettingsPane.GetForCurrentView().CommandsRequested += StartPage_CommandsRequested;
             searchPane.SuggestionsRequested += new TypedEventHandler<SearchPane, SearchPaneSuggestionsRequestedEventArgs>(OnSearchPaneSuggestionsRequested);
+
+            searchTextBox.Focus(Windows.UI.Xaml.FocusState.Keyboard);
         }
 
         private void OnSearchPaneSuggestionsRequested(SearchPane sender, SearchPaneSuggestionsRequestedEventArgs args)
