@@ -807,5 +807,52 @@ namespace WolframAlpha
                     break;
             }
         }
+
+        private void ItemStates_Click(object sender, RoutedEventArgs e)
+        {
+            Button btn = ((Button)sender);
+
+            Pod Pod = (Pod)itemListView.SelectedItem;
+            String PodId = Pod.Id;
+            String StatesValue = ((State)btn.Tag).Input;
+
+            getState(StatesValue, PodId);
+        }
+
+        private async void ItemInfos_Click(object sender, RoutedEventArgs e)
+        {
+            Button btn = ((Button)sender);
+
+            Pod Pod = (Pod)itemListView.SelectedItem;
+            String PodId = Pod.Id;
+            Info Info = (Info)btn.Tag;
+
+            var menu = new PopupMenu();
+
+            if (Info.Image != null)
+            {
+            }
+            if (Info.Links != null)
+            {
+                foreach (Link Link in Info.Links)
+                {
+                    menu.Commands.Add(new UICommand(Link.Text, async (command) =>
+                    {
+                        await Launcher.LaunchUriAsync(new Uri(Link.Url));
+                    }));
+                }
+            }
+            if (Info.Units != null)
+            {
+                foreach (Unit Unit in Info.Units)
+                {
+                    menu.Commands.Add(new UICommand(Unit.Long, (command) =>
+                    {
+                        System.Diagnostics.Debug.WriteLine(Unit.Long + " " + Unit.Short);
+                    }));
+                }
+            }
+            var chosenCommand = await menu.ShowForSelectionAsync(GetElementRect((FrameworkElement)sender, Placement.Above));
+        }
     }
 }

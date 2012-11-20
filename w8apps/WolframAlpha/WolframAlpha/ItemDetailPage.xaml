@@ -149,7 +149,7 @@
                             <RowDefinition Height="Auto"/>
                         </Grid.RowDefinitions>
                         <ProgressBar x:Name="progressMeter2" VerticalAlignment="Stretch" Visibility="Collapsed"
-                                     HorizontalAlignment="Left" Grid.Row="0"/>
+                                     HorizontalAlignment="Stretch" Grid.Row="0"/>
                         <TextBlock Text="{Binding Title}" x:Name="itemTitle" Style="{StaticResource SubheaderTextStyle}" Grid.Row="1"/>
                         <ScrollViewer x:Name="itemDetail" AutomationProperties.AutomationId="ItemDetailScrollViewer" Padding="40,0,20,0"
                                       Margin="0,10,0,0" Style="{StaticResource VerticalScrollViewerStyle}" Grid.Row="2">
@@ -196,7 +196,8 @@
                             </ListView.ItemContainerStyle>
                             <ListView.ItemTemplate>
                                 <DataTemplate>
-                                    <TextBlock Text="{Binding Name}" Tag="{Binding}"  Tapped="ItemStates_SelectionChanged"/>
+                                    <!--<TextBlock Text="{Binding Name}" Tag="{Binding}"  Tapped="ItemStates_SelectionChanged"/>-->
+                                    <Button Style="{StaticResource TextButtonStyle2}" Content="{Binding Name}" Tag="{Binding}" Click="ItemStates_Click"/>
                                 </DataTemplate>
                             </ListView.ItemTemplate>
                         </ListView>
@@ -210,7 +211,8 @@
                             </ListView.ItemContainerStyle>
                             <ListView.ItemTemplate>
                                 <DataTemplate>
-                                    <TextBlock Text="{Binding Text}" Tag="{Binding}" Tapped="ItemInfos_SelectionChanged" />
+                                    <Button Style="{StaticResource TextButtonStyle2}" Content="{Binding Text}" Tag="{Binding}" Click="ItemInfos_Click"/>
+                                    <!--<TextBlock Text="{Binding Text}" Tag="{Binding}" Tapped="ItemInfos_SelectionChanged" />-->
                                 </DataTemplate>
                             </ListView.ItemTemplate>
                         </ListView>
