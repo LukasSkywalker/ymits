@@ -62,6 +62,8 @@ namespace WolframAlpha
                 // show buttons always
                 AdditionalKeyboard.Margin = new Thickness(0, 0, 0, (double)flyoutOffset);
                 AdditionalKeyboard.Visibility = Visibility.Visible;
+                KeyboardShowButton.Margin = new Thickness(0, 0, 0, (double)flyoutOffset);
+                KeyboardShowButton.Visibility = Visibility.Visible;
             };
 
             // hide keyboard when Virtual Keys hidden AND no keyboard
@@ -71,8 +73,11 @@ namespace WolframAlpha
                 //downAnimation.Begin();
                 // hide buttons when no keyboard
                 AdditionalKeyboard.Margin = new Thickness(0, 0, 0, 0);
-                if(new KeyboardCapabilities().KeyboardPresent == 0)
+                KeyboardShowButton.Margin = new Thickness(0, 0, 0, 0);
+                if (new KeyboardCapabilities().KeyboardPresent == 0)
+                {
                     AdditionalKeyboard.Visibility = Visibility.Collapsed;
+                }
             };
 
             searchPane = SearchPane.GetForCurrentView();
@@ -80,7 +85,11 @@ namespace WolframAlpha
         }
 
         private void ShowKeyboard(object sender, RoutedEventArgs e) {
-            AdditionalKeyboard.Visibility = AdditionalKeyboard.Visibility == Visibility.Visible ? Visibility.Collapsed : Visibility.Visible;
+            if (AdditionalKeyboard.Visibility == Visibility.Visible)
+                AdditionalKeyboard.Visibility = Visibility.Collapsed;
+            else
+                AdditionalKeyboard.Visibility = Visibility.Visible;
+            searchTextBox.Focus(FocusState.Keyboard);
         }
 
         private void Grid_KeyDown(object sender, KeyRoutedEventArgs e)

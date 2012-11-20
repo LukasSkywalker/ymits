@@ -23,7 +23,7 @@
             <RowDefinition Height="*"/>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
-        <Button Grid.Column="1" Grid.Row="1" VerticalAlignment="Bottom" Content="⌨" Tag="toggleKB" Click="ShowKeyboard" Style="{StaticResource KeyboardButtonStyle2}"/>
+        <Button x:Name="KeyboardShowButton" Grid.Column="1" Grid.Row="1" VerticalAlignment="Bottom" Content="⌨" Tag="toggleKB" Click="ShowKeyboard" Style="{StaticResource KeyboardButtonStyle2}"/>
         <cfo:CharmFlyout Grid.ColumnSpan="2" Grid.RowSpan="2"
     		x:Name="flyoutAbout"
     		Heading="About"
