@@ -15,6 +15,7 @@
         <common:LengthToVisibilityConverter x:Key="LengthToVisibilityConverter"/>
         <common:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
         <common:NullToVisibilityConverter x:Key="NullToVisibilityConverter"/>
+        <common:EmptyToMoreConverter x:Key="EmptyToMoreConverter"/>
         <x:String x:Key="AppName">Wolfram</x:String>
     </Page.Resources>
 
@@ -49,24 +50,25 @@
                 </Grid.RowDefinitions>
                 <ScrollViewer Grid.Row="1">
                     <StackPanel VerticalAlignment="Top" HorizontalAlignment="Left">
-                        <ListView ItemsSource="{Binding}" SelectionMode="None">
-                            
-                            <ListView.ItemTemplate>
+                        <ItemsControl ItemsSource="{Binding}">
+                            <ItemsControl.ItemTemplate>
                                 <DataTemplate>
                                     <StackPanel>
                                         <TextBlock Text="{Binding Heading}" Style="{StaticResource PageSubheaderTextStyle}"/>
-                                        <ListView ItemsSource="{Binding Items}">
+                                        <ListView ItemsSource="{Binding Items}" SelectionMode="None">
                                             <ListView.ItemTemplate>
                                                 <DataTemplate>
-                                                    <TextBlock FontSize="16" Text="{Binding Message}" Tag="{Binding Term}"
-                                                               Tapped="Notification_OnClick" TextWrapping="Wrap"/>
+                                                    <!--<TextBlock FontSize="16" Text="{Binding Message}" Tag="{Binding Term}"
+                                                               Tapped="Notification_OnClick" TextWrapping="Wrap"/>-->
+                                                    <Button Style="{StaticResource TextButtonStyle2}" Content="{Binding Message}"
+                                                            Tag="{Binding Term}" Click="Notification_Click"/>
                                                 </DataTemplate>
                                             </ListView.ItemTemplate>
                                         </ListView>
                                     </StackPanel>
                                 </DataTemplate>
-                            </ListView.ItemTemplate>
-                        </ListView>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
                     </StackPanel>
                 </ScrollViewer>
             </Grid>
@@ -116,12 +118,12 @@
                 </Grid.RowDefinitions>
                 <ScrollViewer Grid.Row="0" Padding="0,0,20,0">
                     <StackPanel x:Name="AssumptionsStackPanel" Orientation="Vertical">
-                        <TextBlock Text="Options" Style="{StaticResource SubheaderTextStyle}" 
+                        <TextBlock x:Name="OptionsHeader" Text="Options" Style="{StaticResource SubheaderTextStyle}" 
                                    Visibility="{Binding Assumptions, Converter={StaticResource LengthToVisibilityConverter}}"/>
                     </StackPanel>
                 </ScrollViewer>
                 <StackPanel x:Name="SourcesStackPanel" Orientation="Vertical" Grid.Row="1">
-                    <TextBlock Text="Sources" Style="{StaticResource SubheaderTextStyle}"
+                    <TextBlock x:Name="SourcesHeader" Text="Sources" Style="{StaticResource SubheaderTextStyle}"
                                Visibility="{Binding Sources, Converter={StaticResource LengthToVisibilityConverter}}"/>
                     
                     <ListBox x:Name="SourcesListBox" ItemsSource="{Binding Sources}" DisplayMemberPath="Text" SelectedValuePath="URL"
@@ -211,7 +213,7 @@
                             </ListView.ItemContainerStyle>
                             <ListView.ItemTemplate>
                                 <DataTemplate>
-                                    <Button Style="{StaticResource TextButtonStyle2}" Content="{Binding Text}" Tag="{Binding}" Click="ItemInfos_Click"/>
+                                    <Button Style="{StaticResource TextButtonStyle2}" Content="{Binding Text, Converter={StaticResource EmptyToMoreConverter}}" Tag="{Binding}" Click="ItemInfos_Click"/>
                                     <!--<TextBlock Text="{Binding Text}" Tag="{Binding}" Tapped="ItemInfos_SelectionChanged" />-->
                                 </DataTemplate>
                             </ListView.ItemTemplate>

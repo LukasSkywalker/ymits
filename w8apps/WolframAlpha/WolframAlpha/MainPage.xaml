@@ -10,7 +10,6 @@
     mc:Ignorable="d">
     
     <Page.Resources>
-        <common:DebugConverter x:Key="DebugConverter"/>
         <common:DateTimeConverter x:Key="DateTimeConverter"/>
     </Page.Resources>
 

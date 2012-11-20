@@ -331,6 +331,12 @@ namespace WolframAlpha
         {
             base.OnNavigatedTo(e);
 
+            Visibility hidden = Visibility.Collapsed;
+
+            SourcesHeader.Visibility = hidden;
+            SourcesListBox.Visibility = hidden;
+            OptionsHeader.Visibility = hidden;
+
             SettingsPane.GetForCurrentView().CommandsRequested += StartPage_CommandsRequested;
 
             // SEARCH CONTRACT 2.5 Enable users to type into the search box directly from your app
@@ -341,7 +347,8 @@ namespace WolframAlpha
             String queryText = (String)e.Parameter;
             String location = "";
             if (App.LocationEnabled)
-                location = App.Location.Latitude+","+App.Location.Longitude;
+                try { location = App.Location.Latitude + "," + App.Location.Longitude; }
+                catch (NullReferenceException) { }
             startNetworkAction(true, false);
             SetQueryText(queryText);
 
@@ -817,6 +824,36 @@ namespace WolframAlpha
             String StatesValue = ((State)btn.Tag).Input;
 
             getState(StatesValue, PodId);
+        }
+
+        private async void Notification_Click(object sender, RoutedEventArgs e)
+        {
+            FrameworkElement element = (FrameworkElement)e.OriginalSource;
+            AppNotification.Item notification = (AppNotification.Item)element.DataContext;
+            switch (notification.Type)
+            {
+                case "dym":
+                    this.Frame.Navigate(typeof(ItemDetailPage), notification.Term);
+                    flyoutNotification.IsOpen = false;
+                    break;
+                case "tips":
+                    // do nothing
+                    break;
+                case "lang":
+                    // do nothing
+                    break;
+                case "ft":
+                    // do nothing
+                    break;
+                case "relex":
+                    await Launcher.LaunchUriAsync(new Uri(notification.Term));
+                    flyoutNotification.IsOpen = false;
+                    break;
+                case "expg":
+                    await Launcher.LaunchUriAsync(new Uri(notification.Term));
+                    flyoutNotification.IsOpen = false;
+                    break;
+            }
         }
 
         private async void ItemInfos_Click(object sender, RoutedEventArgs e)
