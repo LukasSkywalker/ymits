@@ -8,31 +8,12 @@
     mc:Ignorable="d">
 
     <Grid Background="{StaticResource ApplicationPageBackgroundThemeBrush}">
-        <ComboBox x:Name="FractalSelector"  HorizontalAlignment="Left" Margin="10,47,0,0" VerticalAlignment="Top" Width="184" SelectionChanged="ComboBox_SelectionChanged">
-            <x:String>Mandelbrot</x:String>
-            <x:String>Julia</x:String>
-        </ComboBox>
-        <Slider x:Name="RSlider" LargeChange="5" Maximum="255" ValueChanged="Slider_ValueChanged" Width="200" Margin="1071,10,95,742" Padding="0,-15,0,0"/>
-        <Slider x:Name="GSlider" LargeChange="5" Maximum="255" ValueChanged="Slider_ValueChanged" Width="200" Margin="1071,39,95,714" Padding="0,-15,0,0"/>
-        <Slider x:Name="BSlider" LargeChange="5" Maximum="255" ValueChanged="Slider_ValueChanged" Width="200" Margin="1071,67,95,688" Padding="0,-15,0,0"/>
         <Rectangle x:Name="showColor" Margin="1286,10,10,688" Width="70" Height="70"/>
-        <ProgressBar x:Name="Progress" Minimum="0" Maximum="1" HorizontalAlignment="Left" Height="6" Margin="17,86,0,0" VerticalAlignment="Top" Width="1329"/>
+        <ProgressBar x:Name="Progress" Minimum="0" Maximum="1" HorizontalAlignment="Left" Height="6" Margin="10,53,0,0" VerticalAlignment="Top" Width="1329"/>
         <TextBlock x:Name="ProgressText" HorizontalAlignment="Left" Margin="370,47,0,0" TextWrapping="Wrap" FontSize="24" Text="" VerticalAlignment="Top" Width="57" RenderTransformOrigin="0.482,0.5" Height="28"/>
         <Image x:Name="FractalPanel" HorizontalAlignment="Left" Height="661" Margin="10,97,0,0" VerticalAlignment="Top" Width="1346"/>
-        <Button x:Name="SaveButton" Content="Save" HorizontalAlignment="Left" Margin="209,43,0,0" VerticalAlignment="Top" Click="SaveButton_Click_1"/>
-        <Button x:Name="RedrawButton" Content="Redraw" HorizontalAlignment="Left" Margin="281,43,0,0" VerticalAlignment="Top" Click="RedrawButton_Click_1"/>
-        <TextBlock HorizontalAlignment="Left" Margin="636,10,0,0" TextWrapping="Wrap" Text="Width" VerticalAlignment="Top" Height="32" Width="74" FontFamily="Global User Interface" FontSize="24"/>
-        <TextBox x:Name="ImageWidthBox" HorizontalAlignment="Left" Margin="636,47,0,0" TextWrapping="Wrap" Text="1024" VerticalAlignment="Top" KeyUp="SizeBox_KeyUp"/>
-        <TextBlock HorizontalAlignment="Left" Margin="729,10,0,0" TextWrapping="Wrap" Text="Height" VerticalAlignment="Top" Height="32" Width="74" FontSize="24"/>
-        <TextBox x:Name="ImageHeightBox" HorizontalAlignment="Left" Margin="729,47,0,0" TextWrapping="Wrap" Text="768" VerticalAlignment="Top" KeyUp="SizeBox_KeyUp"/>
-        <TextBlock x:Name="SizeWarning" HorizontalAlignment="Left" Margin="823,10,0,0" TextWrapping="Wrap" Text="The image below will be cropped. Save to view entire image" VerticalAlignment="Top" Height="44" Width="164" />
-        <ComboBox x:Name="Smoothness" HorizontalAlignment="Left" Margin="477,47,0,0" VerticalAlignment="Top" Width="129"/>
-        <TextBlock HorizontalAlignment="Left" Margin="477,10,0,0" TextWrapping="Wrap" Text="Smoothness" FontSize="24" VerticalAlignment="Top" Height="32" Width="142"/>
-        <TextBlock HorizontalAlignment="Left" Margin="10,10,0,0" TextWrapping="Wrap" Text="Fractal type" FontSize="24" VerticalAlignment="Top" Height="32" Width="142"/>
-        <TextBlock HorizontalAlignment="Left" Margin="992,10,0,0" TextWrapping="Wrap" Text="Red" VerticalAlignment="Top" Height="32" Width="74" FontSize="24"/>
-        <TextBlock HorizontalAlignment="Left" Margin="992,34,0,0" TextWrapping="Wrap" Text="Green" VerticalAlignment="Top" Height="32" Width="74" FontSize="24"/>
-        <TextBlock HorizontalAlignment="Left" Margin="992,60,0,0" TextWrapping="Wrap" Text="Blue" VerticalAlignment="Top" Height="32" Width="74" FontSize="24"/>
-        <TextBlock x:Name="CPUWarning" HorizontalAlignment="Left" Margin="823,48,0,0" TextWrapping="Wrap" Text="Images above 5000x3500 could take a long time to generate" VerticalAlignment="Top" Height="44" Width="164" />
+        <Button Content="Mandelbrot" HorizontalAlignment="Left" Margin="733,10,0,0" VerticalAlignment="Top" Click="Button_Click_1"/>
+        <Button Content="Julia" HorizontalAlignment="Left" Margin="596,10,0,0" VerticalAlignment="Top" Click="Button_Click_2"/>
         <!--<Button x:Name="ShareButton"  Content="Share" HorizontalAlignment="Left" Margin="122,47,0,0" VerticalAlignment="Top" Visibility="Collapsed" Click="ShareButton_Click_1"/>-->
     </Grid>
 </Page>
