@@ -12,21 +12,17 @@ using System.Threading.Tasks;
 using Windows.ApplicationModel.Resources;
 using Windows.ApplicationModel.Search;
 using Windows.Foundation;
-using Windows.Media;
 using Windows.Networking.BackgroundTransfer;
 using Windows.Networking.Connectivity;
 using Windows.Storage;
 using Windows.Storage.Pickers;
 using Windows.UI.ApplicationSettings;
-using Windows.UI.Core;
 using Windows.UI.Popups;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Controls.Primitives;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
-using Windows.Web;
 
 // The Search Contract item template is documented at http://go.microsoft.com/fwlink/?LinkId=234240
 
@@ -39,22 +35,26 @@ namespace MusicBird
     {
         private HttpClient searchClient;
         private HttpClient suggestionClient;
-        private List<TrackListItem> resultsList;
-        private DispatcherTimer _timer;
-        private DispatcherTimer playTimeoutTimer;
-        List<DownloadOperation> activeDownloads { get; set; }
-        private CancellationTokenSource cts;
+        private List<Track> resultsList;
         private SearchPane searchPane;
-        private List<TrackListItem> unFilteredList;
-        private Windows.UI.Core.CoreDispatcher dispatcher;
+        private List<Track> unFilteredList;
+
+        private RootPage RootPage { get { return (RootPage)((App)Application.Current).RootFrame.Content; } }
+        private Slider volumeSlider { get { return (RootPage.FindName("volumeSlider") as Slider); } }
+        private Slider progressSlider { get { return (RootPage.FindName("progressSlider") as Slider); } }
+        private ProgressBar DownloadProgressBar { get { return (RootPage.FindName("DownloadProgressBar") as ProgressBar); } }
+        private MediaElement playerElement { get { return (RootPage.FindName("playerElement") as MediaElement);  } }
+        private Button btnPlay { get { return (RootPage.FindName("btnPlay") as Button); } }
+        private Button btnStop { get { return (RootPage.FindName("btnStop") as Button); } }
+        private TextBlock currentTimeTextBlock { get { return (RootPage.FindName("currentTimeTextBlock") as TextBlock); } }
+        private TextBlock totalTimeTextBlock { get { return (RootPage.FindName("totalTimeTextBlock") as TextBlock); } }
+        private TextBlock DownloadProgressText { get { return (RootPage.FindName("DownloadProgressText") as TextBlock); } }
 
         private const int BACKUP_SERVICE_LIMIT = 200;   // Default: 5
 
         public SearchResultsPage()
         {
             this.InitializeComponent();
-
-            this.dispatcher = Window.Current.CoreWindow.Dispatcher;
 
             ResourceLoader loader = new ResourceLoader("Resources");
             string str = loader.GetString("resultText/Text");
@@ -63,8 +63,7 @@ namespace MusicBird
 
             searchPane = SearchPane.GetForCurrentView();
 
-            cts = new CancellationTokenSource();
-            resultsList = new List<TrackListItem>();
+            resultsList = new List<Track>();
             
             searchClient = new HttpClient();
             searchClient.MaxResponseContentBufferSize = 256000;
@@ -73,64 +72,6 @@ namespace MusicBird
             suggestionClient = new HttpClient();
             suggestionClient.MaxResponseContentBufferSize = 256000;
             suggestionClient.DefaultRequestHeaders.Add("User-Agent", "Mozilla/5.0 (compatible; MSIE 10.0; Windows NT 6.2; WOW64; Trident/6.0)");
-
-            MediaControl.PlayPressed += MediaControl_PlayPressed;
-            MediaControl.PausePressed += MediaControl_PausePressed;
-            MediaControl.PlayPauseTogglePressed += MediaControl_PlayPauseTogglePressed;
-            MediaControl.StopPressed += MediaControl_StopPressed;
-            MediaControl.SoundLevelChanged += MediaControl_SoundLevelChanged;
-
-            volumeSlider.Value = playerElement.Volume * 10;
-
-            progressSlider.ThumbToolTipValueConverter = new TimeSpanConverter();
-
-            enableButtons(true, false);
-
-            _timer = new DispatcherTimer();
-            _timer.Interval = TimeSpan.FromSeconds(1);
-            _timer.Tick += _timer_Tick;
-
-            playTimeoutTimer = new DispatcherTimer();
-            playTimeoutTimer.Interval = TimeSpan.FromSeconds(4);
-            playTimeoutTimer.Tick += playTimeoutTimer_Tick;
-        }
-
-        private void playTimeoutTimer_Tick(object sender, object e)
-        {
-            if (playerElement.CurrentState != MediaElementState.Playing) {
-                playerElement.Stop();
-                playerElement.Source = null;
-                var msgd = new MessageDialog("Error playing this track. Please try another file.");
-                try { msgd.ShowAsync(); }
-                catch (Exception) { }
-                HideWheel("playerTimeoutTimer_Tick");
-            }
-            playTimeoutTimer.Stop();
-        }
-
-        private async void MediaControl_SoundLevelChanged(object sender, object e)
-        {
-            await dispatcher.RunAsync(
-                Windows.UI.Core.CoreDispatcherPriority.Normal, () =>
-                {
-                    var soundLevel = Windows.Media.MediaControl.SoundLevel;
-                    switch (soundLevel)
-                    {
-                        case Windows.Media.SoundLevel.Muted:
-                            playerElement.Volume = 0;
-                            volumeSlider.Value = 0;
-                            break;
-                        case Windows.Media.SoundLevel.Low:
-                            playerElement.Volume = 0.2;
-                            volumeSlider.Value = 2;
-                            break;
-                        case Windows.Media.SoundLevel.Full:
-                            playerElement.Volume = 1;
-                            volumeSlider.Value = 10;
-                            break;
-                    }
-                });
-            
         }
 
         void StartPage_CommandsRequested(SettingsPane sender, SettingsPaneCommandsRequestedEventArgs args)
@@ -138,7 +79,7 @@ namespace MusicBird
             App.AddSettingsCommands(args);
         }
 
-        protected async override void OnNavigatedTo(NavigationEventArgs e)
+        protected override void OnNavigatedTo(NavigationEventArgs e)
         {
             base.OnNavigatedTo(e);
 
@@ -148,8 +89,6 @@ namespace MusicBird
 
             // SEARCH CONTRACT 2.5 Enable users to type into the search box directly from your app
             searchPane.ShowOnKeyboardInput = true;
-
-            await DiscoverActiveDownloadsAsync();
         }
 
         protected override void OnNavigatedFrom(NavigationEventArgs e)
@@ -229,15 +168,6 @@ namespace MusicBird
             }
         }
 
-        /// <summary>
-        /// Populates the page with content passed during navigation.  Any saved state is also
-        /// provided when recreating a page from a prior session.
-        /// </summary>
-        /// <param name="navigationParameter">The parameter value passed to
-        /// <see cref="Frame.Navigate(Type, Object)"/> when this page was initially requested.
-        /// </param>
-        /// <param name="pageState">A dictionary of state preserved by this page during an earlier
-        /// session.  This will be null the first time a page is visited.</param>
         protected override async void LoadState(Object navigationParameter, Dictionary<String, Object> pageState)
         {
             string queryText = (string)navigationParameter as String;
@@ -261,55 +191,21 @@ namespace MusicBird
                 }
                 StopWatch sw = new StopWatch(true);
 
-                List<TrackListItem> resultList = await getResults(queryText);             
+                List<Track> resultList = await getResults(queryText);             
                 
                 Debug.WriteLine(sw.Stop("getResults"));
 
                 if (resultList.Count < BACKUP_SERVICE_LIMIT) {
-                    // NEVER EVER DO THIS EVER. EVER.
-                    
-                    /*System.Diagnostics.Debug.WriteLine("Less than "+BACKUP_SERVICE_LIMIT+" results, starting backup service...");
-                    
-                    sw.Restart();
-                    
-                    List<TrackListItem> secondaryResultsList = await getResultsBackup(queryText);
-                    
-                    Debug.WriteLine(sw.Stop("getResultsBackup"));
-
-                    for (int i = 0; i < secondaryResultsList.Count; i++)
-                    {
-                        resultList.Insert(0, secondaryResultsList[i]);
-                    }
-
-                    Debug.WriteLine("Merged results: " + resultList.Count);
-                     */
                 }
                 unFilteredList = resultList;
                 resultsList = resultList;
                 this.DefaultViewModel["Results"] = resultList;
                 VisualStateManager.GoToState(this, "ResultsFound", true);
 
-                /*Parallel.ForEach(
-                    resultList,
-                    new ParallelOptions { MaxDegreeOfParallelism = 5 },
-                    result => {
-                        GetSizeAsync(result.url);
-                    }
-                );*/
-
-                // TODO: Application-specific searching logic.  The search process is responsible for
-                //       creating a list of user-selectable result categories:
-                //
-                //       filterList.Add(new Filter("<filter name>", <result count>));
-                //
-                //       Only the first filter, typically "All", should pass true as a third argument in
-                //       order to start in an active state.  Results for the active filter are provided
-                //       in Filter_SelectionChanged below.
-
                 var filterList = new List<Filter>();
                 filterList.Add(new Filter("All", resultList.Count, true));
 
-                var groupedList = resultList.GroupBy(c => c.artist);
+                var groupedList = resultList.GroupBy(c => c.Artist);
 
                 for(int i=0; i<Math.Min(5, groupedList.Count()-1); i++)
                 {
@@ -323,11 +219,6 @@ namespace MusicBird
             }
         }
 
-        /// <summary>
-        /// Invoked when a filter is selected using the ComboBox in snapped view state.
-        /// </summary>
-        /// <param name="sender">The ComboBox instance.</param>
-        /// <param name="e">Event data describing how the selected filter was changed.</param>
         void Filter_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             // Determine what filter was selected
@@ -338,8 +229,8 @@ namespace MusicBird
                 // RadioButton representation used when not snapped to reflect the change
                 selectedFilter.Active = true;
 
-                List<TrackListItem> fullList = unFilteredList;
-                List<TrackListItem> filteredList = new List<TrackListItem>();
+                List<Track> fullList = unFilteredList;
+                List<Track> filteredList = new List<Track>();
 
                 Debug.WriteLine(selectedFilter.Name);
                 Debug.WriteLine(selectedFilter.Description);
@@ -350,7 +241,7 @@ namespace MusicBird
 
                     for (int i = 0; i < fullList.Count; i++)
                     {
-                        if (fullList[i].artist.Equals(selectedFilter.Name))
+                        if (fullList[i].Artist.Equals(selectedFilter.Name))
                             filteredList.Add(fullList[i]);
                     }
                 }
@@ -379,11 +270,6 @@ namespace MusicBird
             VisualStateManager.GoToState(this, "NoResultsFound", true);
         }
 
-        /// <summary>
-        /// Invoked when a filter is selected using a RadioButton when not snapped.
-        /// </summary>
-        /// <param name="sender">The selected RadioButton instance.</param>
-        /// <param name="e">Event data describing how the RadioButton was selected.</param>
         void Filter_Checked(object sender, RoutedEventArgs e)
         {
             // Mirror the change into the CollectionViewSource used by the corresponding ComboBox
@@ -395,7 +281,7 @@ namespace MusicBird
             }
         }
 
-        private async Task<List<TrackListItem>> getResults(string searchterm)
+        private async Task<List<Track>> getResults(string searchterm)
         {
             cleanUp();
 
@@ -403,7 +289,9 @@ namespace MusicBird
             searchProgress.Visibility = Visibility.Visible;
 
             string responseText = "";
-            List<TrackListItem> trackList = new List<TrackListItem>();
+            List<Track> trackList = new List<Track>();
+
+            bool showMessage = false;
 
             try
             {
@@ -438,10 +326,10 @@ namespace MusicBird
                             int match1 = getDistance(searchterm, data[0] + " " + data[1]);
                             int match2 = getDistance(searchterm, data[1]+" "+data[0]);
                             int match = Math.Min(match1, match2);
-                            TrackListItem item = new TrackListItem(data[0], data[1], url, match);
+                            Track item = new Track(data[0], data[1], url, match);
                             int insertPos = 0;
                             for (int i = 0; i < trackList.Count; i++) {
-                                if (trackList[i].match < match) {
+                                if (trackList[i].Match < match) {
                                     insertPos = i;
                                     break;
                                 }
@@ -458,18 +346,21 @@ namespace MusicBird
                     // SEARCH CONTRACT 2.2 Populate your page with results from your app's data
                 }
             }
-            catch (HttpRequestException hre)
+            catch (HttpRequestException)
             {
-                var messageDialog = new MessageDialog("Network error: "+hre.Message+" Please check your connection and try again.");
-                messageDialog.ShowAsync();
+                showMessage = true;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                // For debugging
-                Debug.WriteLine(ex.ToString());
+                showMessage = true;
             }
             finally {
                 //toggleSearchIndicator();
+            }
+            if (showMessage)
+            {
+                var messageDialog = new MessageDialog("Network error. Please check your connection and try again.");
+                await messageDialog.ShowAsync();
             }
             return trackList;
         }
@@ -485,104 +376,17 @@ namespace MusicBird
         {
             int index = resultsListView.SelectedIndex;
             if (index == -1) return;
-            TrackListItem track = getTrackAt(index);
-            playTrack(track);
+            Track track = getTrackAt(index);
+            RootPage.PlayTrack(track);
         }
 
-        private TrackListItem getTrackAt(int index)
+        private Track getTrackAt(int index)
         {
-            TrackListItem track = resultsList[index];
+            Track track = resultsList[index];
             return track;
         }
 
-        private void playTrack(TrackListItem track)
-        {
-            Debug.WriteLine(track.artist + " " + track.title);
-            playerElement.Source = new Uri(track.url);
-
-            MediaControl.ArtistName = track.artist;
-            MediaControl.TrackName = track.title;
-
-            playerElement.Play();
-            playTimeoutTimer.Start();
-            ShowWheel("playTrack");
-        }
-
-        private async void ShowWheel(String msg) {
-            await dispatcher.RunAsync(
-                Windows.UI.Core.CoreDispatcherPriority.Normal, () =>
-                {
-                    progressWheel.IsActive = true;
-                    progressWheel.Visibility = Visibility.Visible;
-                    //progressPanel.Visibility = Visibility.Visible;
-                });
-            System.Diagnostics.Debug.WriteLine("Showing wheel: "+msg);
-        }
-
-        private void HideWheel(String msg)
-        {
-            System.Diagnostics.Debug.WriteLine("Hiding wheel: " + msg);
-            progressWheel.IsActive = false;
-            progressWheel.Visibility = Visibility.Collapsed;
-            //progressPanel.Visibility = Visibility.Collapsed;
-        }
-
-
-        #region mediaControl handlers
-        private void MediaControl_StopPressed(object sender, object e)
-        {
-            ShowWheel("MediaControl_StopPressed");
-            Dispatcher.RunAsync(CoreDispatcherPriority.Normal, new DispatchedHandler(() =>
-            {
-                btnStop_Click(null, null);
-            })).AsTask().Wait();
-        }
-
-        private void MediaControl_PlayPauseTogglePressed(object sender, object e)
-        {
-            ShowWheel("MediaControl_PlayPauseTogglePressed");
-            Dispatcher.RunAsync(CoreDispatcherPriority.Normal, new DispatchedHandler(() =>
-            {
-                if (playerElement.CurrentState == MediaElementState.Playing)
-                {
-                    btnPlay_Click(null, null);
-                }
-                else
-                {
-                    btnPlay_Click(null, null);
-                }
-            })).AsTask().Wait();
-
-        }
-
-        private void MediaControl_PausePressed(object sender, object e)
-        {
-            ShowWheel("MediaControl_PausePressed");
-            Dispatcher.RunAsync(CoreDispatcherPriority.Normal, new DispatchedHandler(() =>
-            {
-                btnPlay_Click(null, null);
-            })).AsTask().Wait();
-        }
-
-        private void MediaControl_PlayPressed(object sender, object e)
-        {
-            ShowWheel("MediaControl_PlayPressed");
-            Dispatcher.RunAsync(CoreDispatcherPriority.Normal, new DispatchedHandler(() =>
-            {
-                btnPlay_Click(null, null);
-            })).AsTask().Wait();
-        }
-        #endregion
-        
-        #region stringhelpers
-        #endregion
-
         #region UI helpers
-        private void enableButtons(bool playButton, bool stopButton)
-        {
-            btnPlay.IsEnabled = playButton;
-            btnStop.IsEnabled = stopButton;
-        }
 
         private void cleanUp()
         {
@@ -590,378 +394,31 @@ namespace MusicBird
             resultsListView.Items.Clear();
             resultsList.Clear();
         }
-
-        private void toggleSearchIndicator()
-        {
-            /*if (!searchIndicator.IsActive)
-            {
-
-                searchIndicator.IsActive = true;
-                searchIndicator.Visibility = Visibility.Visible;
-            }
-            else
-            {
-                searchIndicator.IsActive = false;
-                searchIndicator.Visibility = Visibility.Collapsed;
-            }*/
-        }
-        #endregion
-
-        #region playback buttons event handler
-        private void btnPlay_Click(object sender, RoutedEventArgs e)
-        {
-            if (playerElement.Source != null)
-                ShowWheel("btnPlay_Click");
-            else
-                return;
-            if (playerElement.CurrentState == MediaElementState.Playing)
-            {
-                playerElement.Pause();
-            }
-            else
-            {
-                if (playerElement.DefaultPlaybackRate != 1)
-                {
-                    playerElement.DefaultPlaybackRate = 1.0;
-                }
-                playerElement.Play();
-            }
-        }
-
-        private void btnStop_Click(object sender, RoutedEventArgs e)
-        {
-            ShowWheel("btnStop_Click");
-            playerElement.Stop();
-        }
-
-        private void btnForward_Click(object sender, RoutedEventArgs e)
-        {
-            ShowWheel("btnForward_Click");
-            playerElement.DefaultPlaybackRate = 1.8;
-            playerElement.Play();
-        }
-        private void btnReverse_Click(object sender, RoutedEventArgs e)
-        {
-            ShowWheel("btnReverse_Click");
-            playerElement.DefaultPlaybackRate = -1.8;
-            playerElement.Play();
-        }
-
-        private void btnMute_Click(object sender, RoutedEventArgs e)
-        {
-            playerElement.IsMuted = !playerElement.IsMuted;
-        }
-        #endregion
-
-        #region playback sliders event handler
-        private void slider_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
-        {
-            playerElement.Position = TimeSpan.FromSeconds(e.NewValue);
-            currentTimeTextBlock.Text = TimeSpan.FromSeconds(e.NewValue).ToString(@"mm\:ss");
-        }
-
-        private void _timer_Tick(object sender, object e)
-        {
-            progressSlider.Value = playerElement.Position.TotalSeconds;
-            currentTimeTextBlock.Text = playerElement.Position.ToString(@"mm\:ss");
-        }
-
-        private void volume_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
-        {
-            playerElement.Volume = volumeSlider.Value / 10;
-        }
-
-        private void appBarSaveButton_Click(object sender, RoutedEventArgs e)
-        {
-            int index = resultsListView.SelectedIndex;
-            TrackListItem track = getTrackAt(index);
-            saveTrack(track);
-        }
-
-        private void appBarPlayButton_Click(object sender, RoutedEventArgs e)
-        {
-            int index = resultsListView.SelectedIndex;
-            TrackListItem track = getTrackAt(index);
-            playTrack(track);
-        }
-
-        #endregion
-
-        private static Style GetStyle(string key)
-        {
-            return Application.Current.Resources[key] as Style;
-        }
-
-
-        #region playerElement event handlers
-        private void mediaElement_CurrentStateChanged(object sender, RoutedEventArgs e)
-        {
-            switch (playerElement.CurrentState)
-            {
-                case MediaElementState.Playing:
-                    HideWheel("mediaElement_CurrentStateChanged:playing");
-                    _timer.Start();
-                    playTimeoutTimer.Stop();
-                    btnPlay.Style = GetStyle("PauseButtonStyle");
-                    enableButtons(true, true);
-                    break;
-
-                case MediaElementState.Paused:
-                    HideWheel("mediaElement_CurrentStateChanged:paused");
-                    _timer.Stop();
-                    playTimeoutTimer.Stop();
-                    btnPlay.Style = GetStyle("PlayButtonStyle");
-                    enableButtons(true, true);
-                    break;
-
-                case MediaElementState.Stopped:
-                    HideWheel("mediaElement_CurrentStateChanged:stopped");
-                    _timer.Stop();
-                    playTimeoutTimer.Stop();
-                    btnPlay.Style = GetStyle("PlayButtonStyle");
-                    progressSlider.Value = 0;
-                    enableButtons(true, false);
-                    break;
-            }
-        }
-
-        private void mediaElement_MediaOpened(object sender, RoutedEventArgs e)
-        {
-            HideWheel("mediaElement_MediaOpened");
-            double absvalue = (int)Math.Round(
-            playerElement.NaturalDuration.TimeSpan.TotalSeconds,
-            MidpointRounding.AwayFromZero);
-
-            progressSlider.Maximum = absvalue;
-
-            progressSlider.StepFrequency =
-                SliderFrequency(playerElement.NaturalDuration.TimeSpan);
-
-            totalTimeTextBlock.Text = playerElement.NaturalDuration.TimeSpan.ToString(@"mm\:ss");
-        }
-
-        private void mediaElement_MediaEnded(object sender, RoutedEventArgs e)
-        {
-            _timer.Stop();
-            progressSlider.Value = 0.0;
-            HideWheel("mediaElement_MediaEnded");
-        }
-
-        private async void mediaElement_MediaFailed(object sender, ExceptionRoutedEventArgs e)
-        {
-            HideWheel("mediaElement_MediaFailed");
-            string hr = GetHresultFromErrorMessage(e);
-            Debug.WriteLine("ERROR:" + hr);
-            MessageDialog md = new MessageDialog("The playback of this file failed. Please try another.", "Error");
-            await md.ShowAsync();
-            playerElement.Stop();
-            playerElement.Source = null;
-            HideWheel("mediaElement_MediaFailed_After");
-            //playerElement.Play();
-        }
-
-        private void mediaElement_DownloadProgressChanged(object sender, RoutedEventArgs e)
-        {
-
-        }
-#endregion
-
-        #region other
-        private string GetHresultFromErrorMessage(ExceptionRoutedEventArgs e)
-        {
-            String hr = String.Empty;
-            String token = "HRESULT - ";
-            const int hrLength = 10;     // eg "0xFFFFFFFF"
-
-            int tokenPos = e.ErrorMessage.IndexOf(token, StringComparison.Ordinal);
-            if (tokenPos != -1)
-            {
-                hr = e.ErrorMessage.Substring(tokenPos + token.Length, hrLength);
-            }
-
-            return hr;
-        }
-
-        private double SliderFrequency(TimeSpan timevalue)
-        {
-            double stepfrequency = -1;
-
-            double absvalue = (int)Math.Round(
-                timevalue.TotalSeconds, MidpointRounding.AwayFromZero);
-
-            stepfrequency = (int)(Math.Round(absvalue / 100));
-
-            if (timevalue.TotalMinutes >= 10 && timevalue.TotalMinutes < 30)
-            {
-                stepfrequency = 10;
-            }
-            else if (timevalue.TotalMinutes >= 30 && timevalue.TotalMinutes < 60)
-            {
-                stepfrequency = 30;
-            }
-            else if (timevalue.TotalHours >= 1)
-            {
-                stepfrequency = 60;
-            }
-
-            if (stepfrequency == 0) stepfrequency += 1;
-
-            if (stepfrequency == 1)
-            {
-                stepfrequency = absvalue / 100;
-            }
-
-            return stepfrequency;
-        }
-
-        #endregion
-
-        #region downloads
-        private async void saveTrack(TrackListItem track)
-        {
-            string url = track.url;
-
-            Uri source = new Uri(url);
-            FileSavePicker savePicker = new FileSavePicker();
-            savePicker.SuggestedStartLocation = PickerLocationId.MusicLibrary;
-            savePicker.FileTypeChoices.Add("MPEG Layer 3 Audio", new List<string>() { ".mp3" });
-            savePicker.SuggestedFileName = track.artist + " - " + track.title;
-
-            StorageFile destinationFile = await savePicker.PickSaveFileAsync();
-
-            if (destinationFile == null) return;
-
-            BackgroundDownloader downloader = new BackgroundDownloader();
-            DownloadOperation download = downloader.CreateDownload(source, destinationFile);
-
-            await HandleDownloadAsync(download, true);
-        }
-
-        private async Task DiscoverActiveDownloadsAsync()
-        {
-            activeDownloads = new List<DownloadOperation>();
-            IReadOnlyList<DownloadOperation> downloads = null;
-            try
-            {
-                downloads = await BackgroundDownloader.GetCurrentDownloadsAsync();
-            }
-            catch (Exception)
-            {
-                if (false)
-                {
-                    throw;
-                }
-                return;
-            }
-            System.Diagnostics.Debug.WriteLine("Loading background downloads: " + downloads.Count);
-            if (downloads.Count > 0)
-            {
-                List<Task> tasks = new List<Task>();
-                foreach (DownloadOperation download in downloads)
-                {
-                    System.Diagnostics.Debug.WriteLine(String.Format("Discovered background download: {0}, Status: {1}", download.Guid,
-                        download.Progress.Status));
-                    tasks.Add(HandleDownloadAsync(download, false));
-                }
-                await Task.WhenAll(tasks);
-            }
-        }
-
-        private async Task HandleDownloadAsync(DownloadOperation download, bool start)
-        {
-            try
-            {
-                System.Diagnostics.Debug.WriteLine("Running: " + download.Guid);
-
-                // Store the download so we can pause/resume. 
-                activeDownloads.Add(download);
-
-                Progress<DownloadOperation> progressCallback = new Progress<DownloadOperation>(DownloadProgressHandler);
-                if (start)
-                {
-                    // Start the download and attach a progress handler. 
-                    await download.StartAsync().AsTask(cts.Token, progressCallback);
-                }
-                else
-                {
-                    // The download was already running when the application started, re-attach the progress handler. 
-                    await download.AttachAsync().AsTask(cts.Token, progressCallback);
-                }
-
-                ResponseInformation response = download.GetResponseInformation();
-
-                System.Diagnostics.Debug.WriteLine(String.Format("Completed: {0}, Status Code: {1}", download.Guid, response.StatusCode));
-            }
-            catch (TaskCanceledException)
-            {
-                System.Diagnostics.Debug.WriteLine("Canceled: " + download.Guid);
-            }
-            catch (Exception)
-            {
-
-            }
-            finally
-            {
-                activeDownloads.Remove(download);
-                UpdateDownloads();
-            }
-        }
-
-        private void DownloadProgressHandler(DownloadOperation obj)
-        {
-            UpdateDownloads();
-        }
-
-        private void UpdateDownloads() {
-            ulong totalSize = 0;
-            ulong totalReceived = 0;
-
-            foreach (DownloadOperation dlop in activeDownloads)
-            {
-                totalSize += dlop.Progress.TotalBytesToReceive;
-                totalReceived += dlop.Progress.BytesReceived;
-            }
-
-            try
-            {
-                double percentage = (double)totalReceived / (double)totalSize;
-                DownloadProgressBar.Value = percentage;
-                DownloadProgressText.Text = activeDownloads.Count + " Downloads. " + totalReceived / 1024 / 1024 + " of " + totalSize / 1024 / 1024 + "MB (" + Math.Round(percentage * 100) + "%)";
-            }
-            catch (Exception) { }
-        }
-
-        private void HidePopup(object sender, TappedRoutedEventArgs e)
-        {
-            TransparentGrid.Visibility = Visibility.Collapsed;
-        }
-
-        private void ShowPopup()
-        {
-            TransparentGrid.Visibility = Visibility.Visible;
-        }
-
         #endregion
 
         private void OnItemTapped(object sender, TappedRoutedEventArgs e)
         {
-            TrackListItem track = (TrackListItem)(sender as FrameworkElement).DataContext;
-            playTrack(track);
+            Track track = (Track)(sender as FrameworkElement).DataContext;
+            RootPage.PlayTrack(track);
         }
 
         private async void OnItemRightTapped(object sender, RightTappedRoutedEventArgs e)
         {
-            TrackListItem track = (TrackListItem)(sender as FrameworkElement).DataContext;
+            Track track = (Track)(sender as FrameworkElement).DataContext;
             //int index = trackList.IndexOf(track);
 
             var menu = new PopupMenu();
             menu.Commands.Add(new UICommand("Play", (command) =>
             {
-                playTrack(track);
+                RootPage.PlayTrack(track);
             }));
             menu.Commands.Add(new UICommand("Save", (command) =>
             {
-                saveTrack(track);
+                RootPage.DownloadManager.Add(track);
+            }));
+            menu.Commands.Add(new UICommand("Add to Playlist", (command) =>
+            {
+                RootPage.Playlist.Add(track);
             }));
             await menu.ShowForSelectionAsync(GetElementRect((FrameworkElement)sender));
         }
@@ -975,55 +432,16 @@ namespace MusicBird
 
         private void playButton_Click(object sender, RoutedEventArgs e)
         {
-            TrackListItem track = (TrackListItem)(sender as FrameworkElement).DataContext;
+            Track track = (Track)(sender as FrameworkElement).DataContext;
             if(track != null)
-                playTrack(track);
+                RootPage.PlayTrack(track);
         }
 
         private void downloadButton_Click(object sender, RoutedEventArgs e)
         {
-            TrackListItem track = (TrackListItem)(sender as FrameworkElement).DataContext;
-            System.Diagnostics.Debug.WriteLine(track.url);
-            saveTrack(track);
-        }
-
-        private void ShowPopup(object sender, TappedRoutedEventArgs e)
-        {
-            ShowPopup();
-        }
-
-        /*private void GoBack(object sender, RoutedEventArgs e)
-        {
-            if (this.Frame.CanGoBack) {
-                this.Frame.GoBack();
-            }
-        }*/
-    }
-
-    public class TrackListItem
-    {
-        public string title { get; set; }
-        public string artist { get; set; }
-        public double size
-        {
-            get{return size;}
-            set
-            {
-                sizeText = (value / (double)1048576).ToString("F2") + " MB";
-            }
-        }
-        public string duration { get; set; }
-        public string url { get; set; }
-        public string sizeText { get; private set; }
-        public int match { get; set; }
-
-        public TrackListItem(String artist, String title, String url, int match)
-        {
-            this.artist = artist;
-            this.title = title;
-            this.url = url;
-            this.size = 0;
-            this.match = match;
+            Track track = (Track)(sender as FrameworkElement).DataContext;
+            System.Diagnostics.Debug.WriteLine(track.Url);
+            RootPage.DownloadManager.Add(track);
         }
     }
 

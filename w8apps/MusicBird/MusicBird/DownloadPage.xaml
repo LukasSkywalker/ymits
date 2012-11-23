@@ -1,0 +1,38 @@
+﻿<Page
+    x:Class="MusicBird.DownloadPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:MusicBird"
+    DataContext="{Binding RelativeSource={RelativeSource Self}}"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d">
+
+    <Grid Background="{StaticResource ApplicationPageBackgroundThemeBrush}">
+        <ListView SelectionMode="None" ItemsSource="{Binding}">
+            <ListView.ItemTemplate>
+                <DataTemplate>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
+                        </Grid.RowDefinitions>
+                        <TextBlock Grid.Column="0" Grid.Row="0" Text="{Binding ResultFile.Name}" Style="{StaticResource PageSubheaderTextStyle}"/>
+                        <TextBlock Grid.Column="0" Grid.Row="1" Text="{Binding ResultFile.Progress}" Style="{StaticResource PageSubheaderTextStyle}"/>
+                        <Button Content="Pause" Grid.Row="0" Grid.Column="1" Click="DownloadPause_Click"/>
+                        <Button Content="Cancel" Grid.Row="1" Grid.Column="1" Click="DownloadCancel_Click"/>
+                        <!--<TextBlock Text="{Binding Progress.BytesReceived}" Grid.Column="0" Grid.Row="1"/>
+                        <TextBlock Text="{Binding Progress.TotalBytesToReceive}" Grid.Column="0" Grid.Row="2"/>
+                        <TextBlock Text="{Binding Progress.Status}" Grid.Column="1" Grid.Row="0"/>
+                        <Button Content="Pause" Grid.Column="1" Grid.Row="1" Click="DownloadPause_Click"/>
+                        <Button Content="Cancel" Grid.Column="1" Grid.Row="2" Click="DownloadCancel_Click"/>-->
+                    </Grid>
+                </DataTemplate>
+            </ListView.ItemTemplate>
+        </ListView>
+    </Grid>
+</Page>

@@ -3,6 +3,8 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Express 2012 for Windows 8
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MusicBird", "MusicBird\MusicBird.csproj", "{F212BCDA-FF0E-4B17-BE92-43EE3EDA98E8}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MusicBirdTest", "MusicBirdTest\MusicBirdTest.csproj", "{36A332C4-1622-4A27-9BEE-9B77B626680A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -39,6 +41,30 @@ Global
 		{F212BCDA-FF0E-4B17-BE92-43EE3EDA98E8}.Release|x86.ActiveCfg = Release|x86
 		{F212BCDA-FF0E-4B17-BE92-43EE3EDA98E8}.Release|x86.Build.0 = Release|x86
 		{F212BCDA-FF0E-4B17-BE92-43EE3EDA98E8}.Release|x86.Deploy.0 = Release|x86
+		{36A332C4-1622-4A27-9BEE-9B77B626680A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{36A332C4-1622-4A27-9BEE-9B77B626680A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{36A332C4-1622-4A27-9BEE-9B77B626680A}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{36A332C4-1622-4A27-9BEE-9B77B626680A}.Debug|ARM.ActiveCfg = Debug|ARM
+		{36A332C4-1622-4A27-9BEE-9B77B626680A}.Debug|ARM.Build.0 = Debug|ARM
+		{36A332C4-1622-4A27-9BEE-9B77B626680A}.Debug|ARM.Deploy.0 = Debug|ARM
+		{36A332C4-1622-4A27-9BEE-9B77B626680A}.Debug|x64.ActiveCfg = Debug|x64
+		{36A332C4-1622-4A27-9BEE-9B77B626680A}.Debug|x64.Build.0 = Debug|x64
+		{36A332C4-1622-4A27-9BEE-9B77B626680A}.Debug|x64.Deploy.0 = Debug|x64
+		{36A332C4-1622-4A27-9BEE-9B77B626680A}.Debug|x86.ActiveCfg = Debug|x86
+		{36A332C4-1622-4A27-9BEE-9B77B626680A}.Debug|x86.Build.0 = Debug|x86
+		{36A332C4-1622-4A27-9BEE-9B77B626680A}.Debug|x86.Deploy.0 = Debug|x86
+		{36A332C4-1622-4A27-9BEE-9B77B626680A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{36A332C4-1622-4A27-9BEE-9B77B626680A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{36A332C4-1622-4A27-9BEE-9B77B626680A}.Release|Any CPU.Deploy.0 = Release|Any CPU
+		{36A332C4-1622-4A27-9BEE-9B77B626680A}.Release|ARM.ActiveCfg = Release|ARM
+		{36A332C4-1622-4A27-9BEE-9B77B626680A}.Release|ARM.Build.0 = Release|ARM
+		{36A332C4-1622-4A27-9BEE-9B77B626680A}.Release|ARM.Deploy.0 = Release|ARM
+		{36A332C4-1622-4A27-9BEE-9B77B626680A}.Release|x64.ActiveCfg = Release|x64
+		{36A332C4-1622-4A27-9BEE-9B77B626680A}.Release|x64.Build.0 = Release|x64
+		{36A332C4-1622-4A27-9BEE-9B77B626680A}.Release|x64.Deploy.0 = Release|x64
+		{36A332C4-1622-4A27-9BEE-9B77B626680A}.Release|x86.ActiveCfg = Release|x86
+		{36A332C4-1622-4A27-9BEE-9B77B626680A}.Release|x86.Build.0 = Release|x86
+		{36A332C4-1622-4A27-9BEE-9B77B626680A}.Release|x86.Deploy.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -116,7 +116,16 @@
     <Compile Include="Common\StopWatch.cs" />
     <Compile Include="Common\SuspensionManager.cs" />
     <Compile Include="Common\Distance.cs" />
+    <Compile Include="DownloadManager.cs" />
+    <Compile Include="DownloadPage.xaml.cs">
+      <DependentUpon>DownloadPage.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Helper.cs" />
+    <Compile Include="Playlist.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="RootPage.xaml.cs">
+      <DependentUpon>RootPage.xaml</DependentUpon>
+    </Compile>
     <Compile Include="SearchResultsPage.xaml.cs">
       <DependentUpon>SearchResultsPage.xaml</DependentUpon>
     </Compile>
@@ -125,6 +134,7 @@
     </Compile>
     <Compile Include="Common\StringHelper.cs" />
     <Compile Include="Common\TimeSpanConverter.cs" />
+    <Compile Include="Track.cs" />
   </ItemGroup>
   <ItemGroup>
     <AppxManifest Include="Package.appxmanifest">
@@ -143,6 +153,19 @@
     <Content Include="Assets\SplashScreen_620x300.png" />
     <Content Include="Assets\StoreLogo.png" />
     <Content Include="Assets\StoreLogo_50x50.png" />
+    <Page Include="Common\Style.xaml">
+      <SubType>Designer</SubType>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="DownloadPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="RootPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <None Include="Package.StoreAssociation.xml" />
     <Page Include="StartPage.xaml">
       <SubType>Designer</SubType>
