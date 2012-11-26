@@ -13,12 +13,14 @@ namespace MusicBird
     public class DownloadManager : INotifyPropertyChanged
     {
         public static ObservableCollection<DownloadOperation> ActiveDownloads { get; set; }
+        public static ObservableCollection<DownloadOperationViewModel> AllDownloads { get; set; }
         private CancellationTokenSource cts = new CancellationTokenSource();
 
         public static int DownloadCount { get { return ActiveDownloads.Count; } }
 
         public DownloadManager() {
             ActiveDownloads = new ObservableCollection<DownloadOperation>();
+            AllDownloads = new ObservableCollection<DownloadOperationViewModel>();
         }
 
         public async void Add(Track track) {
@@ -27,7 +29,7 @@ namespace MusicBird
             Uri source = new Uri(url);
 
             StorageFolder musicLibrary = KnownFolders.MusicLibrary;
-            StorageFile destinationFile = await musicLibrary.CreateFileAsync(track.Artist+" "+track.Title,
+            StorageFile destinationFile = await musicLibrary.CreateFileAsync(track.Artist.Replace("\"", "") + " - " + track.Title.Replace("\"", "") + ".mp3",
                 CreationCollisionOption.ReplaceExisting);
 
             BackgroundDownloader downloader = new BackgroundDownloader();
@@ -38,9 +40,12 @@ namespace MusicBird
 
         private async Task HandleDownloadAsync(DownloadOperation download, bool start)
         {
+            DownloadOperationViewModel dlopvm = new DownloadOperationViewModel(download);
+
             try
             { 
                 ActiveDownloads.Add(download);
+                AllDownloads.Add(dlopvm);
                 RaisePropertyChanged("ActiveDownloads");
                 RaisePropertyChanged("DownloadCount");
                 Progress<DownloadOperation> progressCallback = new Progress<DownloadOperation>(DownloadProgressHandler);
@@ -63,6 +68,7 @@ namespace MusicBird
             finally
             {
                 ActiveDownloads.Remove(download);
+                AllDownloads.Remove(dlopvm);
                 RaisePropertyChanged("ActiveDownloads");
                 RaisePropertyChanged("DownloadCount");
             }
@@ -71,6 +77,16 @@ namespace MusicBird
         private void DownloadProgressHandler(DownloadOperation dlop)
         {
             RaisePropertyChanged("ActiveDownloads");
+            foreach (DownloadOperationViewModel dlopvm in AllDownloads)
+            {
+                if (dlopvm.Dlop == dlop)
+                {
+                    dlopvm.RaisePropChanged("BytesReceived");
+                    dlopvm.RaisePropChanged("TotalBytes");
+                    dlopvm.RaisePropChanged("ProgressStatus");
+                    break;
+                }
+            }
             System.Diagnostics.Debug.WriteLine(dlop.ResultFile.Name+" : "+dlop.Progress.Status+", "+dlop.Progress.BytesReceived+" of "+dlop.Progress.TotalBytesToReceive);
         }
 

@@ -3,13 +3,18 @@
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:local="using:MusicBird"
+    xmlns:common="using:MusicBird.Common"
     DataContext="{Binding RelativeSource={RelativeSource Self}}"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     mc:Ignorable="d">
+    
+    <Page.Resources>
+        <common:BytesMegabytesConverter x:Key="BytesMegabytesConverter"/>
+    </Page.Resources>
 
     <Grid Background="{StaticResource ApplicationPageBackgroundThemeBrush}">
-        <ListView SelectionMode="None" ItemsSource="{Binding}">
+        <ListView SelectionMode="None" ItemsSource="{Binding}" Margin="12,12,12,12">
             <ListView.ItemTemplate>
                 <DataTemplate>
                     <Grid>
@@ -20,19 +25,29 @@
                         <Grid.RowDefinitions>
                             <RowDefinition Height="Auto"/>
                             <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="Auto"/>
                         </Grid.RowDefinitions>
-                        <TextBlock Grid.Column="0" Grid.Row="0" Text="{Binding ResultFile.Name}" Style="{StaticResource PageSubheaderTextStyle}"/>
-                        <TextBlock Grid.Column="0" Grid.Row="1" Text="{Binding ResultFile.Progress}" Style="{StaticResource PageSubheaderTextStyle}"/>
-                        <Button Content="Pause" Grid.Row="0" Grid.Column="1" Click="DownloadPause_Click"/>
-                        <Button Content="Cancel" Grid.Row="1" Grid.Column="1" Click="DownloadCancel_Click"/>
-                        <!--<TextBlock Text="{Binding Progress.BytesReceived}" Grid.Column="0" Grid.Row="1"/>
-                        <TextBlock Text="{Binding Progress.TotalBytesToReceive}" Grid.Column="0" Grid.Row="2"/>
-                        <TextBlock Text="{Binding Progress.Status}" Grid.Column="1" Grid.Row="0"/>
-                        <Button Content="Pause" Grid.Column="1" Grid.Row="1" Click="DownloadPause_Click"/>
-                        <Button Content="Cancel" Grid.Column="1" Grid.Row="2" Click="DownloadCancel_Click"/>-->
+                        <TextBlock Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="2" Text="{Binding ResultFile}" Style="{StaticResource PageSubheaderTextStyle}"/>
+                        <ProgressBar Grid.Column="0" Grid.Row="1" Maximum="{Binding TotalBytes}" Value="{Binding BytesReceived}" HorizontalAlignment="Stretch"/>
+                        <StackPanel Grid.Column="1" Grid.Row="1" Orientation="Horizontal">
+                            <Button Content="Pause" Click="DownloadPause_Click"/>
+                            <Button Content="Cancel" Click="DownloadCancel_Click"/>
+                        </StackPanel>
+                        <StackPanel Grid.Column="0" Grid.Row="2" Grid.ColumnSpan="2" Orientation="Horizontal">
+                            <TextBlock Text="{Binding ProgressStatus}" Grid.Column="1" Grid.Row="0"/>
+                            <TextBlock Text="&#160;—&#160;"/>
+                            <TextBlock Text="{Binding BytesReceived, Converter={StaticResource BytesMegabytesConverter}}" Grid.Column="0" Grid.Row="1"/>
+                            <TextBlock Text="&#160;of&#160;"/>
+                            <TextBlock Text="{Binding TotalBytes, Converter={StaticResource BytesMegabytesConverter}}" Grid.Column="0" Grid.Row="2"/>
+                        </StackPanel>
                     </Grid>
                 </DataTemplate>
             </ListView.ItemTemplate>
+            <ListView.ItemContainerStyle>
+                <Style TargetType="ListViewItem">
+                    <Setter Property="HorizontalContentAlignment" Value="Stretch"></Setter>
+                </Style>
+            </ListView.ItemContainerStyle>
         </ListView>
     </Grid>
 </Page>

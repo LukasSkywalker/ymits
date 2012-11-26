@@ -218,20 +218,19 @@ namespace MusicBird
             progressWheel.Visibility = Visibility.Collapsed;
         }
 
-        private void HidePopup(object sender, TappedRoutedEventArgs e)
+        public  void HidePopup(object sender, TappedRoutedEventArgs e)
         {
             TransparentGrid.Visibility = Visibility.Collapsed;
         }
 
-        private void ShowPopup(Type ContentFrame)
+        public void ShowPopup(Type ContentFrame)
         {
-            PopupContent.Navigate(ContentFrame);
-            TransparentGrid.Visibility = Visibility.Visible;
+            ShowPopup(ContentFrame, null);
         }
 
-        private void ShowPopup(object sender, TappedRoutedEventArgs e)
-        {
-            ShowPopup(typeof(DownloadPage));
+        public void ShowPopup(Type ContentFrame, object parameter) {
+            PopupContent.Navigate(ContentFrame, parameter);
+            TransparentGrid.Visibility = Visibility.Visible;
         }
 
         private void PlaybackTimer_Tick(object sender, object e)
@@ -332,6 +331,11 @@ namespace MusicBird
         private void ShowPopup_Downloads(object sender, TappedRoutedEventArgs e)
         {
             ShowPopup(typeof(DownloadPage));
+        }
+
+        private void PlaylistPreview_Click(object sender, RoutedEventArgs e)
+        {
+            ShowPopup(typeof(PlaylistPage));
         }
     }
 }

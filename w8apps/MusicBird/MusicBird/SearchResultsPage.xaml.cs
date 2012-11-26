@@ -420,6 +420,10 @@ namespace MusicBird
             {
                 RootPage.Playlist.Add(track);
             }));
+            menu.Commands.Add(new UICommand("Similar tracks", (command) =>
+            {
+                RootPage.ShowPopup(typeof(SimilarPage), "http://ws.audioscrobbler.com/2.0/?method=track.getsimilar&artist=cher&track=believe&api_key={0}");
+            }));
             await menu.ShowForSelectionAsync(GetElementRect((FrameworkElement)sender));
         }
 

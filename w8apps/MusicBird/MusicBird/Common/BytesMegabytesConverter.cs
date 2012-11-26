@@ -15,17 +15,13 @@ namespace MusicBird.Common
     {
         public object Convert(object value, Type targetType, object parameter, string language)
         {
-            if (value is Int32)
-            {
-                int val = (Int32)value;
-                double d = val / 1024 / 1024;
-                decimal rounded = Math.Round((decimal)d, 2);
-                string text = rounded.ToString("0 MB");
-                return text;
-            }
-            else {
-                return "0 MB";
-            }
+            long bytes = System.Convert.ToInt64(value);
+            string[] suf = { "B", "KB", "MB", "GB", "TB", "PB" };
+            int place = (int)(Math.Floor(Math.Log(bytes, 1024)));
+            if (place < 0) place = 0;
+            if (place > 5) place = 5;
+            double num = Math.Round(bytes / Math.Pow(1024, place), 1);
+            return String.Format("{0:0.##} {1}", num, suf[place]);
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, string language)

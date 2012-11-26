@@ -28,12 +28,13 @@ namespace MusicBird
 
         protected override void OnNavigatedTo(NavigationEventArgs e)
         {
-            DataContext = DownloadManager.ActiveDownloads;
+            DataContext = DownloadManager.AllDownloads;
         }
 
         private void DownloadPause_Click(object sender, RoutedEventArgs e)
         {
-            DownloadOperation dlop = (DownloadOperation)(sender as FrameworkElement).DataContext;
+            DownloadOperationViewModel dlopvm = (DownloadOperationViewModel)(sender as FrameworkElement).DataContext;
+            DownloadOperation dlop = dlopvm.Dlop;
             if(dlop.Progress.Status == BackgroundTransferStatus.PausedByApplication)
                 dlop.Resume();
             else if(dlop.Progress.Status == BackgroundTransferStatus.Running)
@@ -42,7 +43,8 @@ namespace MusicBird
 
         private void DownloadCancel_Click(object sender, RoutedEventArgs e)
         {
-            DownloadOperation dlop = (DownloadOperation)(sender as FrameworkElement).DataContext;
+            DownloadOperationViewModel dlopvm = (DownloadOperationViewModel)(sender as FrameworkElement).DataContext;
+            DownloadOperation dlop = dlopvm.Dlop;
             dlop.AttachAsync().Cancel();
         }
     }

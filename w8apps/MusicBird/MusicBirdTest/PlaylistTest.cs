@@ -65,37 +65,30 @@ namespace MusicBirdTest
 
             pls.Position = 0;
             pls.Add(track4);
-            Assert.AreEqual(4, pls.Neighbors.Count);
+            Assert.AreEqual(3, pls.Neighbors.Count);
             Assert.AreEqual("TestArtist", pls.Neighbors[0].Artist);
             Assert.AreEqual("TestArtist2", pls.Neighbors[1].Artist);
             Assert.AreEqual("TestArtist3", pls.Neighbors[2].Artist);
-            Assert.AreEqual("TestArtist4", pls.Neighbors[3].Artist);
 
             pls.Position = 1;
             pls.Add(track5);
-            Assert.AreEqual(5, pls.Neighbors.Count);
+            Assert.AreEqual(3, pls.Neighbors.Count);
             Assert.AreEqual("TestArtist", pls.Neighbors[0].Artist);
             Assert.AreEqual("TestArtist2", pls.Neighbors[1].Artist);
             Assert.AreEqual("TestArtist3", pls.Neighbors[2].Artist);
-            Assert.AreEqual("TestArtist4", pls.Neighbors[3].Artist);
-            Assert.AreEqual("TestArtist5", pls.Neighbors[4].Artist);
 
             pls.Position = 2;
             pls.Add(track6);
-            Assert.AreEqual(5, pls.Neighbors.Count);
-            Assert.AreEqual("TestArtist", pls.Neighbors[0].Artist);
-            Assert.AreEqual("TestArtist2", pls.Neighbors[1].Artist);
-            Assert.AreEqual("TestArtist3", pls.Neighbors[2].Artist);
-            Assert.AreEqual("TestArtist4", pls.Neighbors[3].Artist);
-            Assert.AreEqual("TestArtist5", pls.Neighbors[4].Artist);
-            
-            pls.Position = 3;
-            Assert.AreEqual(5, pls.Neighbors.Count);
+            Assert.AreEqual(3, pls.Neighbors.Count);
             Assert.AreEqual("TestArtist2", pls.Neighbors[0].Artist);
             Assert.AreEqual("TestArtist3", pls.Neighbors[1].Artist);
             Assert.AreEqual("TestArtist4", pls.Neighbors[2].Artist);
-            Assert.AreEqual("TestArtist5", pls.Neighbors[3].Artist);
-            Assert.AreEqual("TestArtist6", pls.Neighbors[4].Artist);
+            
+            pls.Position = 3;
+            Assert.AreEqual(3, pls.Neighbors.Count);
+            Assert.AreEqual("TestArtist3", pls.Neighbors[0].Artist);
+            Assert.AreEqual("TestArtist4", pls.Neighbors[1].Artist);
+            Assert.AreEqual("TestArtist5", pls.Neighbors[2].Artist);
         }
         [TestMethod]
         public void TestCurrentTrack()

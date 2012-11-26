@@ -80,7 +80,7 @@
                 <ItemsControl ItemsSource="{Binding Playlist.Neighbors}">
                     <ItemsControl.ItemTemplate>
                         <DataTemplate>
-                            <Button Content="{Binding Title}" Style="{StaticResource TextButtonStyle2}"/> 
+                            <Button Content="{Binding Title}" Style="{StaticResource TextButtonStyle2}" Click="PlaylistPreview_Click"/> 
                         </DataTemplate>
                     </ItemsControl.ItemTemplate>
                 </ItemsControl>
