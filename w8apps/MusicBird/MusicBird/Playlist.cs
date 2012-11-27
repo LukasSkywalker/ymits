@@ -11,10 +11,10 @@ namespace MusicBird
 {
     public class Playlist : INotifyPropertyChanged
     {
-        public ObservableCollection<Track> Tracks { get; set; }
-        public int Position { get; set; }
-        public int Size { get { return Tracks.Count; } }
-        public ObservableCollection<Track> Neighbors
+        public static ObservableCollection<Track> Tracks { get; set; }
+        public static int Position { get; set; }
+        public static int Size { get { return Tracks.Count; } }
+        public static ObservableCollection<Track> Neighbors
         {
             get
             {
@@ -31,7 +31,13 @@ namespace MusicBird
                 return nb;
             }
         }
-        public Track CurrentTrack { get { return Tracks[mod(Position, Size)]; } }
+        public Track CurrentTrack { get {
+            int pos = mod(Position, Size);
+            if(pos == 0 && Tracks.Count == 0)
+                return null;
+            else
+                return Tracks[pos];
+        } }
 
         public Playlist() {
             Tracks = new ObservableCollection<Track>();
@@ -41,6 +47,10 @@ namespace MusicBird
         public void Add(Track track) {
             Tracks.Add(track);
             RaisePropertyChanged();
+        }
+
+        public int GetPosition(Track track){
+            return Tracks.IndexOf(track);
         }
 
         public void Remove(Track track) {
@@ -59,7 +69,7 @@ namespace MusicBird
         }
 
         private int mod(int number, int divisor) {
-            int r = number % divisor;
+            int r = divisor > 0 ? number % divisor : 0;
             return r < 0 ? r + divisor : r;
         }
 

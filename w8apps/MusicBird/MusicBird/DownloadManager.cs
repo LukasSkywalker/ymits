@@ -7,6 +7,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Windows.Networking.BackgroundTransfer;
 using Windows.Storage;
+using Windows.UI.Xaml;
 
 namespace MusicBird
 {
@@ -17,6 +18,30 @@ namespace MusicBird
         private CancellationTokenSource cts = new CancellationTokenSource();
 
         public static int DownloadCount { get { return ActiveDownloads.Count; } }
+        public static ulong TotalProgress { get {
+            if (TotalReceived == 0 || TotalBytes == 0) return 0;
+            return TotalReceived / TotalBytes;
+        } }
+
+        public static ulong TotalReceived { get {
+            ulong totalReceived = 0;
+            foreach (DownloadOperation dlop in ActiveDownloads)
+            {
+                totalReceived += dlop.Progress.BytesReceived;
+            }
+            return totalReceived;
+        } }
+
+        public static ulong TotalBytes { get {
+            ulong totalBytes = 0;
+            foreach (DownloadOperation dlop in ActiveDownloads)
+            {
+                totalBytes += dlop.Progress.TotalBytesToReceive;
+            }
+            return totalBytes;
+        } }
+
+        private static RootPage RootPage { get { return (RootPage)((App)Application.Current).RootFrame.Content; } }
 
         public DownloadManager() {
             ActiveDownloads = new ObservableCollection<DownloadOperation>();
@@ -26,7 +51,16 @@ namespace MusicBird
         public async void Add(Track track) {
             string url = track.Url;
 
-            Uri source = new Uri(url);
+            Uri source;
+            try
+            {
+                source = new Uri(url);
+            }
+            catch (FormatException ex) {
+                Helper.DumpException(ex);
+                RootPage.NotifyUser("Invalid address. Please try again.");
+                return;
+            }
 
             StorageFolder musicLibrary = KnownFolders.MusicLibrary;
             StorageFile destinationFile = await musicLibrary.CreateFileAsync(track.Artist.Replace("\"", "") + " - " + track.Title.Replace("\"", "") + ".mp3",

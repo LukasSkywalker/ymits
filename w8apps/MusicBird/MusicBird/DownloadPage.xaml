@@ -14,10 +14,14 @@
     </Page.Resources>
 
     <Grid Background="{StaticResource ApplicationPageBackgroundThemeBrush}">
-        <ListView SelectionMode="None" ItemsSource="{Binding}" Margin="12,12,12,12">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+            <ListView SelectionMode="None" ItemsSource="{Binding}" Margin="12,12,12,12" Grid.Row="0">
             <ListView.ItemTemplate>
                 <DataTemplate>
-                    <Grid>
+                    <Grid Margin="0,0,0,20">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*"/>
                             <ColumnDefinition Width="Auto"/>
@@ -27,11 +31,11 @@
                             <RowDefinition Height="Auto"/>
                             <RowDefinition Height="Auto"/>
                         </Grid.RowDefinitions>
-                        <TextBlock Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="2" Text="{Binding ResultFile}" Style="{StaticResource PageSubheaderTextStyle}"/>
-                        <ProgressBar Grid.Column="0" Grid.Row="1" Maximum="{Binding TotalBytes}" Value="{Binding BytesReceived}" HorizontalAlignment="Stretch"/>
+                        <TextBlock Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="2" Text="{Binding ResultFile}" Style="{StaticResource PageSubheaderTextStyle}" Margin="0,0,0,0"/>
+                        <ProgressBar Grid.Column="0" Grid.Row="1" Height="20" Maximum="{Binding TotalBytes}" Value="{Binding BytesReceived}" HorizontalAlignment="Stretch"/>
                         <StackPanel Grid.Column="1" Grid.Row="1" Orientation="Horizontal">
-                            <Button Content="Pause" Click="DownloadPause_Click"/>
-                            <Button Content="Cancel" Click="DownloadCancel_Click"/>
+                            <Button Style="{StaticResource PauseAppBarButtonStyle}" Click="DownloadPause_Click"/>
+                            <Button Style="{StaticResource DiscardAppBarButtonStyle}" Click="DownloadCancel_Click"/>
                         </StackPanel>
                         <StackPanel Grid.Column="0" Grid.Row="2" Grid.ColumnSpan="2" Orientation="Horizontal">
                             <TextBlock Text="{Binding ProgressStatus}" Grid.Column="1" Grid.Row="0"/>
@@ -49,5 +53,9 @@
                 </Style>
             </ListView.ItemContainerStyle>
         </ListView>
+        <StackPanel Orientation="Horizontal" Grid.Row="1">
+            <Button Content="Pause all" Click="PauseAll_Click"/>
+            <Button Content="Remove all" Click="RemoveAll_Click"/>
+        </StackPanel>
     </Grid>
 </Page>

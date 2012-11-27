@@ -32,27 +32,27 @@ namespace MusicBird
             this.searchPane = SearchPane.GetForCurrentView();
         }
 
-
-        void StartPage_CommandsRequested(SettingsPane sender, SettingsPaneCommandsRequestedEventArgs args)
-        {
-            App.AddSettingsCommands(args);
-        }
-
         protected override void OnNavigatedTo(NavigationEventArgs e)
         {
             base.OnNavigatedTo(e);
 
-            SettingsPane.GetForCurrentView().CommandsRequested += StartPage_CommandsRequested;
-            searchPane.SuggestionsRequested += new TypedEventHandler<SearchPane, SearchPaneSuggestionsRequestedEventArgs>(OnSearchPaneSuggestionsRequested);
-
+            //searchPane.SuggestionsRequested += new TypedEventHandler<SearchPane, SearchPaneSuggestionsRequestedEventArgs>(OnSearchPaneSuggestionsRequested);
+            SearchContract.WatchKeyboard(false);
             searchTextBox.Focus(Windows.UI.Xaml.FocusState.Keyboard);
         }
 
-        private void OnSearchPaneSuggestionsRequested(SearchPane sender, SearchPaneSuggestionsRequestedEventArgs args)
+        protected override void OnNavigatingFrom(NavigatingCancelEventArgs e)
+        {
+            base.OnNavigatingFrom(e);
+
+            SearchContract.WatchKeyboard(true);
+        }
+
+        /*private void OnSearchPaneSuggestionsRequested(SearchPane sender, SearchPaneSuggestionsRequestedEventArgs args)
         {
             this.Frame.Navigate(typeof(SearchResultsPage));
             searchPane.SuggestionsRequested -= OnSearchPaneSuggestionsRequested;
-        }
+        }*/
 
         /// <summary>
         /// Populates the page with content passed during navigation.  Any saved state is also

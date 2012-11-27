@@ -34,18 +34,25 @@ namespace MusicBird
         private void DownloadPause_Click(object sender, RoutedEventArgs e)
         {
             DownloadOperationViewModel dlopvm = (DownloadOperationViewModel)(sender as FrameworkElement).DataContext;
-            DownloadOperation dlop = dlopvm.Dlop;
-            if(dlop.Progress.Status == BackgroundTransferStatus.PausedByApplication)
-                dlop.Resume();
-            else if(dlop.Progress.Status == BackgroundTransferStatus.Running)
-                dlop.Pause();
+            dlopvm.PauseResume();
         }
 
         private void DownloadCancel_Click(object sender, RoutedEventArgs e)
         {
             DownloadOperationViewModel dlopvm = (DownloadOperationViewModel)(sender as FrameworkElement).DataContext;
-            DownloadOperation dlop = dlopvm.Dlop;
-            dlop.AttachAsync().Cancel();
+            dlopvm.Cancel();
+        }
+
+        private void PauseAll_Click(object sender, RoutedEventArgs e)
+        {
+            foreach (DownloadOperationViewModel dlopvm in DownloadManager.AllDownloads)
+                dlopvm.PauseResume();
+        }
+
+        private void RemoveAll_Click(object sender, RoutedEventArgs e)
+        {
+            foreach (DownloadOperationViewModel dlopvm in DownloadManager.AllDownloads)
+                dlopvm.Cancel();
         }
     }
 }

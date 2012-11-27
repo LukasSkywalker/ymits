@@ -31,6 +31,8 @@ namespace MusicBird
             }
         }
 
+        public const string USER_AGENT_FIREFOX = "Mozilla/5.0 (compatible; MSIE 10.0; Windows NT 6.2; WOW64; Trident/6.0)";
+
         /// <summary>
         /// Initializes the singleton application object.  This is the first line of authored code
         /// executed, and as such is the logical equivalent of main() or WinMain().
@@ -39,16 +41,6 @@ namespace MusicBird
         {
             this.InitializeComponent();
             this.Suspending += OnSuspending;
-        }
-
-        public static void AddSettingsCommands(SettingsPaneCommandsRequestedEventArgs args)
-        {
-            args.Request.ApplicationCommands.Clear();
-            SettingsCommand privacyPref = new SettingsCommand("privacyPref", "Privacy Policy", async (uiCommand) =>
-            {
-                await Windows.System.Launcher.LaunchUriAsync(new Uri("http://musicdc.sourceforge.net/musicbird.php"));
-            });
-            args.Request.ApplicationCommands.Add(privacyPref);
         }
 
         /// <summary>

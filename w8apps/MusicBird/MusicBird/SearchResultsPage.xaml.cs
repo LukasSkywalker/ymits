@@ -4,19 +4,12 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using System.Net;
 using System.Net.Http;
 using System.Text.RegularExpressions;
-using System.Threading;
 using System.Threading.Tasks;
 using Windows.ApplicationModel.Resources;
-using Windows.ApplicationModel.Search;
 using Windows.Foundation;
-using Windows.Networking.BackgroundTransfer;
 using Windows.Networking.Connectivity;
-using Windows.Storage;
-using Windows.Storage.Pickers;
-using Windows.UI.ApplicationSettings;
 using Windows.UI.Popups;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
@@ -34,21 +27,10 @@ namespace MusicBird
     public sealed partial class SearchResultsPage : MusicBird.Common.LayoutAwarePage
     {
         private HttpClient searchClient;
-        private HttpClient suggestionClient;
         private List<Track> resultsList;
-        private SearchPane searchPane;
         private List<Track> unFilteredList;
 
-        private RootPage RootPage { get { return (RootPage)((App)Application.Current).RootFrame.Content; } }
-        private Slider volumeSlider { get { return (RootPage.FindName("volumeSlider") as Slider); } }
-        private Slider progressSlider { get { return (RootPage.FindName("progressSlider") as Slider); } }
-        private ProgressBar DownloadProgressBar { get { return (RootPage.FindName("DownloadProgressBar") as ProgressBar); } }
-        private MediaElement playerElement { get { return (RootPage.FindName("playerElement") as MediaElement);  } }
-        private Button btnPlay { get { return (RootPage.FindName("btnPlay") as Button); } }
-        private Button btnStop { get { return (RootPage.FindName("btnStop") as Button); } }
-        private TextBlock currentTimeTextBlock { get { return (RootPage.FindName("currentTimeTextBlock") as TextBlock); } }
-        private TextBlock totalTimeTextBlock { get { return (RootPage.FindName("totalTimeTextBlock") as TextBlock); } }
-        private TextBlock DownloadProgressText { get { return (RootPage.FindName("DownloadProgressText") as TextBlock); } }
+        private static RootPage RootPage { get { return (RootPage)((App)Application.Current).RootFrame.Content; } }
 
         private const int BACKUP_SERVICE_LIMIT = 200;   // Default: 5
 
@@ -61,111 +43,21 @@ namespace MusicBird
             string modstring = str.Replace("&#00a0", "\x00a0");
             resultText.Text = modstring;
 
-            searchPane = SearchPane.GetForCurrentView();
-
             resultsList = new List<Track>();
             
             searchClient = new HttpClient();
             searchClient.MaxResponseContentBufferSize = 256000;
-            searchClient.DefaultRequestHeaders.Add("User-Agent", "Mozilla/5.0 (compatible; MSIE 10.0; Windows NT 6.2; WOW64; Trident/6.0)");
-
-            suggestionClient = new HttpClient();
-            suggestionClient.MaxResponseContentBufferSize = 256000;
-            suggestionClient.DefaultRequestHeaders.Add("User-Agent", "Mozilla/5.0 (compatible; MSIE 10.0; Windows NT 6.2; WOW64; Trident/6.0)");
-        }
-
-        void StartPage_CommandsRequested(SettingsPane sender, SettingsPaneCommandsRequestedEventArgs args)
-        {
-            App.AddSettingsCommands(args);
+            searchClient.DefaultRequestHeaders.Add("User-Agent", App.USER_AGENT_FIREFOX);
         }
 
         protected override void OnNavigatedTo(NavigationEventArgs e)
         {
             base.OnNavigatedTo(e);
-
-            searchPane.SuggestionsRequested += new TypedEventHandler<SearchPane, SearchPaneSuggestionsRequestedEventArgs>(OnSearchPaneSuggestionsRequested);
-
-            SettingsPane.GetForCurrentView().CommandsRequested += StartPage_CommandsRequested;
-
-            // SEARCH CONTRACT 2.5 Enable users to type into the search box directly from your app
-            searchPane.ShowOnKeyboardInput = true;
         }
 
         protected override void OnNavigatedFrom(NavigationEventArgs e)
         {
             base.OnNavigatedFrom(e);
-            searchPane.ShowOnKeyboardInput = false;
-        }
-
-        private async void OnSearchPaneSuggestionsRequested(SearchPane sender, SearchPaneSuggestionsRequestedEventArgs e)
-        {
-            var queryText = e.QueryText;
-            if (string.IsNullOrEmpty(queryText))
-            {
-                //Wait
-            }
-            else
-            {
-                var request = e.Request;
-                var deferral = request.GetDeferral();
-
-                try
-                {
-                    Task task = GetSuggestionsAsync(queryText, request.SearchSuggestionCollection);
-                    await task;
-                    if (task.Status == TaskStatus.RanToCompletion)
-                    {
-                        if (request.SearchSuggestionCollection.Size > 0)
-                        {
-                            //MainPage.Current.NotifyUser("Suggestions provided for query: " + queryText, NotifyType.StatusMessage);
-                        }
-                        else
-                        {
-                            //MainPage.Current.NotifyUser("No suggestions provided for query: " + queryText, NotifyType.StatusMessage);
-                        }
-                    }
-                }
-                catch (TaskCanceledException)
-                {
-                    // Previous suggestion request was canceled.
-                }
-                catch (Exception exc)
-                {
-                    System.Diagnostics.Debug.WriteLine("Err:"+exc.Message);
-                }
-                finally
-                {
-                    System.Diagnostics.Debug.WriteLine("Sugg. completed.");
-                    deferral.Complete();
-                }
-            }
-        }
-
-        private async Task GetSuggestionsAsync(string queryText, SearchSuggestionCollection searchSuggestionCollection)
-        {
-            String url = "http://www.lastfm.de/search/autocomplete?q={0}&force=1";
-            Uri uri = new Uri(String.Format(url, WebUtility.UrlEncode(queryText)));
-
-            //TODO cancelling ends up with no suggestions at all (typing too fast), but leaving
-            //     all impacts perfromance, maybe.
-            //suggestionClient.CancelPendingRequests();
-            HttpResponseMessage response = await suggestionClient.GetAsync(uri);
-            response.EnsureSuccessStatusCode();
-            string responseText = await response.Content.ReadAsStringAsync();
-            Regex pattern = new Regex("\"track\":\"(.*?)\",", RegexOptions.IgnoreCase);
-            Regex pattern2 = new Regex("\"artist\":\"(.*?)\",", RegexOptions.IgnoreCase);
-            Match m = pattern.Match(responseText);
-            Match n = pattern2.Match(responseText);
-            while (m.Success)
-            {
-                Group g = m.Groups[1];
-                Group h = n.Groups[1];
-                String title = g.ToString();
-                String artist = h.ToString();
-                searchSuggestionCollection.AppendQuerySuggestion(artist + " " + title);
-                m = m.NextMatch();
-                n = n.NextMatch();
-            }
         }
 
         protected override async void LoadState(Object navigationParameter, Dictionary<String, Object> pageState)
@@ -181,8 +73,7 @@ namespace MusicBird
             {
                 this.DefaultViewModel["QueryText"] = '\u201c' + queryText + '\u201d';
 
-                ConnectionProfile InternetConnectionProfile = NetworkInformation.GetInternetConnectionProfile();
-                if (InternetConnectionProfile == null)
+                if (!NetworkWatcher.Connected)
                 {
                     var msgd = new MessageDialog("No internet connection. Please connect to the internet and try again");
                     await msgd.ShowAsync();
@@ -491,59 +382,6 @@ namespace MusicBird
         public String Description
         {
             get { return String.Format("{0} ({1})", _name, _count); }
-        }
-    }
-
-    public class ActionQueue {
-        private const int QUEUE_SIZE = 3;
-        List<Task> actions = new List<Task>();
-        List<Task> runningActions = new List<Task>();
-        List<Task> completedActions = new List<Task>();
-        int actionCount = 0;
-
-        public ActionQueue() {
-            actions.Clear();
-            runningActions.Clear();
-            completedActions.Clear();
-        }
-
-        public void Add(Task item)
-        {
-            actions.Add(item);
-        }
-
-        public void RunNext() {
-            if (actions.Count > 0)
-            {
-                Debug.WriteLine("Starting next action");
-                Task action = actions[0];
-                if (actions.Count > QUEUE_SIZE)
-                {
-                    action.ContinueWith((t) => actions[QUEUE_SIZE]);
-                }
-                action.Start();
-                actions.RemoveAt(0);
-                runningActions.Add(action);
-                Debug.Assert(actionCount == actions.Count + runningActions.Count + completedActions.Count);
-            }
-        }
-
-        public void Start() {
-            actionCount = actions.Count;
-            int max = Math.Min(QUEUE_SIZE, actionCount);
-            Debug.WriteLine("Starting " + max + " actions");
-            for (int i = 0; i < max; i++) {
-                RunNext();
-            }
-        }
-
-        public void OnCompleted(Task action)
-        {
-            Debug.WriteLine("Action Completed");
-            completedActions.Add(action);
-            runningActions.Remove(action);
-            Debug.Assert(actionCount == actions.Count + runningActions.Count + completedActions.Count);
-            RunNext();
         }
     }
 }

@@ -28,13 +28,21 @@ namespace MusicBird
             this.InitializeComponent();
         }
 
-        /// <summary>
-        /// Invoked when this page is about to be displayed in a Frame.
-        /// </summary>
-        /// <param name="e">Event data that describes how this page was reached.  The Parameter
-        /// property is typically used to configure the page.</param>
         protected override void OnNavigatedTo(NavigationEventArgs e)
         {
+            DataContext = Playlist.Tracks;
+        }
+
+        private void RemoveButton_Click(object sender, RoutedEventArgs e)
+        {
+            Track track = (Track)(sender as FrameworkElement).DataContext;
+            RootPage.Playlist.Remove(track);
+        }
+
+        private void PlayButton_Click(object sender, RoutedEventArgs e)
+        {
+            Track track = (Track)(sender as FrameworkElement).DataContext;
+            RootPage.PlayPosition(RootPage.Playlist.GetPosition(track));
         }
     }
 }

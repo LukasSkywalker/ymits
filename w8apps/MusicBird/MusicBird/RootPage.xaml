@@ -60,32 +60,50 @@
                 <ColumnDefinition Width="*"/>
                 <ColumnDefinition Width="Auto"/>
             </Grid.ColumnDefinitions>
-                <Border BorderThickness="0,2,0,0" BorderBrush="Gainsboro" Margin="0,0,0,10" Grid.Row="0" Grid.ColumnSpan="2"/>
-                <StackPanel Orientation="Horizontal" Grid.Row="1">
-                    <Button x:Name="btnPlay" Click="btnPlay_Click" AutomationProperties.Name="Play Button" 
-        	            Style="{StaticResource PlayButtonStyle}" Margin="0,0,0,-1"/>
-                    <Button x:Name="btnStop" Click="btnStop_Click" AutomationProperties.Name="Stop Button"
-                        Style="{StaticResource StopButtonStyle}"/>
-                    <Slider x:Name="volumeSlider" Width="45" Orientation="Vertical" ValueChanged="volume_ValueChanged" Maximum="10" StepFrequency="1" AutomationProperties.Name="Volume Slider"/>
-                    <MediaElement x:Name="playerElement" HorizontalAlignment="Stretch" AudioCategory="BackgroundCapableMedia"
-                            CurrentStateChanged="mediaElement_CurrentStateChanged" MediaEnded="mediaElement_MediaEnded"
-                            MediaFailed="mediaElement_MediaFailed" MediaOpened="mediaElement_MediaOpened"
-                            DownloadProgressChanged="mediaElement_DownloadProgressChanged"/>
+            <!-- this is row 0, the border -->
+            <Border BorderThickness="0,2,0,0" BorderBrush="Gainsboro" Margin="0,0,0,10" Grid.Row="0" Grid.ColumnSpan="2"/>
+            <!-- this is row 1, the buttons, slider, downloads, and mediaelement -->
+            <StackPanel Orientation="Horizontal" Grid.Row="1">
+                <Button x:Name="btnPlay" Click="btnPlay_Click" AutomationProperties.Name="Play Button" 
+        	        Style="{StaticResource PlayButtonStyle}" Margin="0,0,0,-1"/>
+                <Button x:Name="btnStop" Click="btnStop_Click" AutomationProperties.Name="Stop Button"
+                    Style="{StaticResource StopButtonStyle}"/>
+                <Slider x:Name="volumeSlider" Width="45" Orientation="Vertical" ValueChanged="volume_ValueChanged" Maximum="10" StepFrequency="1" AutomationProperties.Name="Volume Slider"/>
+                <MediaElement x:Name="playerElement" HorizontalAlignment="Stretch" AudioCategory="BackgroundCapableMedia"
+                        CurrentStateChanged="mediaElement_CurrentStateChanged" MediaEnded="mediaElement_MediaEnded"
+                        MediaFailed="mediaElement_MediaFailed" MediaOpened="mediaElement_MediaOpened"
+                        DownloadProgressChanged="mediaElement_DownloadProgressChanged"/>
                 <StackPanel Orientation="Horizontal">
-                    <TextBlock x:Name="DownloadCount" Text="{Binding DownloadManager.DownloadCount}"/>
-                    <TextBlock Text=" Downloads" Tapped="ShowPopup_Downloads"/>
+                    <TextBlock Text="{Binding Playlist.CurrentTrack.Artist}" Style="{StaticResource PageSubheaderTextStyle}" Margin="0,0,0,0"/>
+                    <TextBlock Text="&#160;—&#160;" Style="{StaticResource PageSubheaderTextStyle}" Margin="0,0,0,0"/>
+                    <TextBlock Text="{Binding Playlist.CurrentTrack.Title}" Style="{StaticResource PageSubheaderTextStyle}" Margin="0,0,0,0"/>
+                </StackPanel>
+                <StackPanel Orientation="Vertical">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock x:Name="DownloadCount" Text="{Binding DownloadManager.DownloadCount}" Style="{StaticResource PageSubheaderTextStyle}" Margin="0,0,0,0"/>
+                        <TextBlock Text=" Downloads" Tapped="DownloadPreview_Click" Style="{StaticResource PageSubheaderTextStyle}" Margin="0,0,0,0"/>
+                    </StackPanel>
+                    <ProgressBar Maximum="{Binding DownloadManager.TotalBytes}" Value="{Binding DownloadManager.TotalReceived}" Margin="0,12,0,0"/>
                 </StackPanel>
             </StackPanel>
-            <ScrollViewer Width="150" VerticalAlignment="Stretch" Grid.Column="1" Grid.Row="1" Grid.RowSpan="2">
-                <ItemsControl ItemsSource="{Binding Playlist.Neighbors}">
-                    <ItemsControl.ItemTemplate>
-                        <DataTemplate>
-                            <Button Content="{Binding Title}" Style="{StaticResource TextButtonStyle2}" Click="PlaylistPreview_Click"/> 
-                        </DataTemplate>
-                    </ItemsControl.ItemTemplate>
-                </ItemsControl>
-            </ScrollViewer>
-
+            <StackPanel x:Name="PlaylistControls" Grid.Column="1" Grid.Row="1" Grid.RowSpan="2">
+                <ScrollViewer Width="150" VerticalAlignment="Stretch">
+                    <ItemsControl ItemsSource="{Binding Playlist.Neighbors}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <StackPanel Orientation="Horizontal">
+                                    <Button Content="{Binding Artist}" Style="{StaticResource TextButtonStyle2}" Click="PlaylistPreview_Click"/>
+                                    <Button Content="{Binding Title}" Style="{StaticResource TextButtonStyle2}" Click="PlaylistPreview_Click"/>
+                                </StackPanel>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </ScrollViewer>
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                    <TextBlock Text="{Binding Playlist.Size}" Style="{StaticResource PageSubheaderTextStyle}" Margin="0,0,0,0"/>
+                    <TextBlock Text="&#160;Tracks" Style="{StaticResource PageSubheaderTextStyle}" Margin="0,0,0,0"/>
+                </StackPanel>
+            </StackPanel>
             <!--
                     This grid acts as the progress panel that defines three columns:
                     * Column 0 contains the current time
@@ -101,22 +119,23 @@
                         <ColumnDefinition Width="Auto"/>
                     </Grid.ColumnDefinitions>
                     <TextBlock x:Name="currentTimeTextBlock" Grid.Column="0" HorizontalAlignment="Left"  TextWrapping="Wrap" Text="00:00" VerticalAlignment="Center" Margin="0,5,10,0"/>
-                    <Slider x:Name="progressSlider" Grid.Column="1" ValueChanged="slider_ValueChanged" HorizontalAlignment="Stretch" VerticalAlignment="Center" Margin="0,0,0,-20" AutomationProperties.Name="Progress Slider" ThumbToolTipValueConverter="{StaticResource TimeSpanConverter}"/>
+                    <Slider x:Name="progressSlider" Grid.Column="1" ValueChanged="slider_ValueChanged" HorizontalAlignment="Stretch" VerticalAlignment="Center" Padding="0,-15,0,-30"  AutomationProperties.Name="Progress Slider" ThumbToolTipValueConverter="{StaticResource TimeSpanConverter}"/>
                     <TextBlock x:Name="totalTimeTextBlock" Grid.Column="2" HorizontalAlignment="Right" TextWrapping="Wrap" Text="00:00" VerticalAlignment="Center" Margin="10,5,0,0"/>
                 </Grid>
             </Grid>
+        
         <Grid x:Name="TransparentGrid" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Opacity="1" Visibility="Collapsed"
-              Grid.ColumnSpan="2" Grid.RowSpan="2" Grid.Column="0" Grid.Row="0" DataContext="{Binding DownloadManager}">
+              Grid.ColumnSpan="2" Grid.RowSpan="2" Grid.Column="0" Grid.Row="0">
             <Grid VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Opacity="0.6" Background="Black" Tapped="HidePopup">
                 <Button Content="Close" HorizontalAlignment="Right" VerticalAlignment="Top"/>
             </Grid>
-            <Grid VerticalAlignment="Center" HorizontalAlignment="Center" Width="800" Height="600" Background="White">
-                <Border BorderThickness="2,2,2,2" BorderBrush="Black" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Padding="10,10,10,10">
+            <Grid VerticalAlignment="Center" HorizontalAlignment="Center" Width="800" Height="600">
+                <Border BorderThickness="2,2,2,2" BorderBrush="White" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
                     <Grid HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
                         <Frame x:Name="PopupContent"/>
                     </Grid>
                 </Border>
             </Grid>
         </Grid>
-        </Grid>
+    </Grid>
 </Page>

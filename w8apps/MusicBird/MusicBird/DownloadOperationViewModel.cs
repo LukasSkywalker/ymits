@@ -40,6 +40,22 @@ namespace MusicBird
             get { return _myDownloadOperation; }
         }
 
+        public void PauseResume() {
+            if (_myDownloadOperation.Progress.Status == BackgroundTransferStatus.PausedByApplication ||
+                _myDownloadOperation.Progress.Status == BackgroundTransferStatus.PausedCostedNetwork ||
+                _myDownloadOperation.Progress.Status == BackgroundTransferStatus.PausedNoNetwork)
+                try { _myDownloadOperation.Resume(); }
+                catch (Exception ex) { Helper.DumpException(ex); }
+            else
+                try { _myDownloadOperation.Pause(); }
+                catch (Exception ex) { Helper.DumpException(ex); }
+        }
+
+        public void Cancel()
+        {
+            _myDownloadOperation.AttachAsync().Cancel();
+        }
+
         protected override void RaisePropertyChanged(string propertyName)
         {
             base.RaisePropertyChanged(propertyName);

@@ -1,6 +1,13 @@
 ﻿using MusicBird.Common;
 using System;
+using System.Net;
+using System.Net.Http;
+using System.Text.RegularExpressions;
+using System.Threading.Tasks;
+using Windows.ApplicationModel.Search;
+using Windows.Foundation;
 using Windows.Media;
+using Windows.UI.ApplicationSettings;
 using Windows.UI.Core;
 using Windows.UI.Popups;
 using Windows.UI.Xaml;
@@ -18,10 +25,11 @@ namespace MusicBird
     {
         private DispatcherTimer PlaybackTimer;
         private DispatcherTimer PlayTimeoutTimer;
-        private Windows.UI.Core.CoreDispatcher EventDispatcher;
 
+        public Windows.UI.Core.CoreDispatcher EventDispatcher { get; set;}
         public Playlist Playlist { get; set; }
         public DownloadManager DownloadManager { get; set; }
+        public NetworkWatcher NetworkWatcher { get; set; }
 
         public RootPage()
         {
@@ -29,6 +37,7 @@ namespace MusicBird
 
             Playlist = new Playlist();
             DownloadManager = new DownloadManager();
+            NetworkWatcher = new NetworkWatcher();
 
             PlaybackTimer = new DispatcherTimer();
             PlaybackTimer.Interval = TimeSpan.FromSeconds(1);
@@ -56,10 +65,22 @@ namespace MusicBird
 
         protected override void OnNavigatedTo(NavigationEventArgs e)
         {
+            base.OnNavigatedTo(e);
+
             DownloadManager.ResumeDownloads();
+
+            SearchContract.AttachSearchHandler(SearchPane.GetForCurrentView());
+            SettingsCharm.AttachRequestHandler(SettingsPane.GetForCurrentView());
+            NetworkWatcher.StartMonitor();
 
             progressWheel.Visibility = Visibility.Collapsed;
             _frame.Navigate(typeof(StartPage));
+
+#if DEBUG
+            Track myTrack = new Track("myArtist", "myTitle", "http://www.google.ch", 1);
+            Playlist.Add(myTrack);
+            DownloadManager.Add(myTrack);
+#endif
         }
 
         /* Public Methods To Be Used By Subpages */
@@ -218,7 +239,7 @@ namespace MusicBird
             progressWheel.Visibility = Visibility.Collapsed;
         }
 
-        public  void HidePopup(object sender, TappedRoutedEventArgs e)
+        private void HidePopup(object sender, TappedRoutedEventArgs e)
         {
             TransparentGrid.Visibility = Visibility.Collapsed;
         }
@@ -328,7 +349,7 @@ namespace MusicBird
             );
         }
 
-        private void ShowPopup_Downloads(object sender, TappedRoutedEventArgs e)
+        private void DownloadPreview_Click(object sender, TappedRoutedEventArgs e)
         {
             ShowPopup(typeof(DownloadPage));
         }
@@ -336,6 +357,14 @@ namespace MusicBird
         private void PlaylistPreview_Click(object sender, RoutedEventArgs e)
         {
             ShowPopup(typeof(PlaylistPage));
+        }
+
+        public async void NotifyUser(String msg) {
+            await EventDispatcher.RunAsync(CoreDispatcherPriority.Normal, async () =>
+                    {
+                        MessageDialog md = new MessageDialog(msg, "Error");
+                        await md.ShowAsync();
+                    });
         }
     }
 }
