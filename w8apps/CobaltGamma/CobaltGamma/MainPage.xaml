@@ -1,0 +1,207 @@
+﻿<Page
+    x:Class="CobaltGamma.MainPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:CobaltGamma"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:common="using:CobaltGamma.Common"
+    xmlns:cfo="using:CharmFlyoutLibrary"
+    mc:Ignorable="d">
+    
+    <Page.Resources>
+        <common:DateTimeConverter x:Key="DateTimeConverter"/>
+    </Page.Resources>
+
+    <Grid Background="{StaticResource ApplicationPageBackgroundThemeBrush}" KeyDown="Grid_KeyDown">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <Button x:Name="KeyboardShowButton" Grid.Column="1" Grid.Row="1" VerticalAlignment="Bottom" Content="⌨" Tag="toggleKB" Click="ShowKeyboard" Style="{StaticResource KeyboardButtonStyle2}"/>
+        <cfo:CharmFlyout Grid.ColumnSpan="2" Grid.RowSpan="2"
+    		x:Name="flyoutAbout"
+    		Heading="About"
+    		HeadingBackgroundBrush="DarkGray">
+            <StackPanel>
+                <TextBlock
+    				FontSize="16">
+    				<Run Text="Cobalt|Gamma by Lukas Diener"/>
+                </TextBlock>
+                <TextBlock
+    				FontSize="16">
+    				<Run Text="For support:"/>
+                </TextBlock>
+                <HyperlinkButton NavigateUri="http://www.lukasdiener.tk" Content="http://www.lukasdiener.tk"/>
+            </StackPanel>
+        </cfo:CharmFlyout>
+        <cfo:CharmFlyout Grid.ColumnSpan="2" Grid.RowSpan="2"
+    		x:Name="flyoutSettings"
+    		Heading="Settings"
+    		HeadingBackgroundBrush="DarkGray"/>
+        <cfo:CharmFlyout Grid.ColumnSpan="2" Grid.RowSpan="2"
+    		x:Name="flyoutPrivacy"
+    		Heading="Privacy Policy"
+    		HeadingBackgroundBrush="DarkGray">
+            <Grid Margin="12,0,12,0">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+
+                <TextBlock FontSize="18" Grid.Row="0">
+    				<Run Text="Cobalt|Gamma by Lukas Diener"/>
+                </TextBlock>
+                <ScrollViewer Grid.Row="1">
+                    <StackPanel VerticalAlignment="Top" HorizontalAlignment="Left">
+                        <TextBlock FontSize="16" TextWrapping="Wrap">
+    						<Run Text="We understand your concerns about how your information is used and shared, and we endeavor to use such information carefully and sensibly. This page explains how the information you provide is collected and used."/>
+                        </TextBlock>
+                        <TextBlock FontSize="16" TextWrapping="Wrap" Style="{StaticResource PageSubheaderTextStyle}" Margin="0,10,0,10">
+    						<Run Text="What Information Do We Collect?"/>
+                        </TextBlock>
+                        <TextBlock FontSize="16" TextWrapping="Wrap">
+    						<Run Text="If you chose so, we use your location (latitude/longitude) to refine search results, such as for the query 'weather'."/>
+                        </TextBlock>
+                        <TextBlock FontSize="16" TextWrapping="Wrap">
+    						<Run Text="We receive non-personally identifiable information whenever you interact with our app, including your Internet Protocol (IP) address, geographical region, and your search queries."/>
+                        </TextBlock>
+                        <TextBlock FontSize="16" TextWrapping="Wrap" Style="{StaticResource PageSubheaderTextStyle}" Margin="0,10,0,10">
+    						<Run Text="How Is Your Information Used?"/>
+                        </TextBlock>
+                        <TextBlock FontSize="16" TextWrapping="Wrap">
+    						<Run Text="We do not sell, rent, or lease your information to third parties. The information we obtain from Cobalt|Gamma users helps us enhance and refine our service and content. Non-personal information collected about you through your experience and queries is used to better understand the entire population that is utilizing our website and how we might improve our services to improve the collective experience. Except as noted below, we track and record IP addresses that access our website for internal reporting, diagnostic, and analysis purposes only. Your IP address is used to determine, when possible, your approximate geographical location, which affects such things as your results' default currency and units of measure, based on what country you are in. Your browser type may be used to fine-tune the results for optimal display, for example on mobile devices or to work around limitations of a particular browser. Referrer URLs may be used to generate usage statistics and analyze usage patterns."/>
+                        </TextBlock>
+                        <TextBlock FontSize="16" TextWrapping="Wrap" Style="{StaticResource PageSubheaderTextStyle}" Margin="0,10,0,10">
+    						<Run Text="Other Disclosures of Your Information"/>
+                        </TextBlock>
+                        <TextBlock FontSize="16" TextWrapping="Wrap">
+    						<Run Text="We may release personally identifying information when we believe release is necessary to comply with lawful court orders. Any collected information associated with your use of the website (personal and non-personal) will be disclosed to government authorities or third parties only pursuant to a lawful request, subpoena, or other process that legally compels disclosure of that information. We may also preserve, use, or disclose your information if necessary to enforce our Terms of Use and related agreements; to detect, prevent, or otherwise address fraud, security or technical issues, including high-volume use of the website; to respond to support requests; or to protect the rights, property, or safety of Cobalt|Gamma, our users, or others."/>
+                        </TextBlock>
+                        <TextBlock FontSize="16" TextWrapping="Wrap" Style="{StaticResource PageSubheaderTextStyle}" Margin="0,10,0,10">
+    						<Run Text="Security"/>
+                        </TextBlock>
+                        <TextBlock FontSize="16" TextWrapping="Wrap">
+    						<Run Text="We take appropriate measures to ensure the security of our website and systems. This includes precautions to safeguard your personal information against loss, theft, and misuse, as well as against unauthorized access, alteration, disclosure, or destruction of data. Despite our efforts to protect your personal information, there is always some risk that an unauthorized third party may find a way around our security systems or that transmissions of your information over the internet may be intercepted. Your use of the website constitutes an acceptance of such risk."/>
+                        </TextBlock>
+                    </StackPanel>
+                </ScrollViewer>
+            </Grid>
+        </cfo:CharmFlyout>
+        <ListBox x:Name="HistoryListBox" Grid.Column="0" Grid.Row="0"  Margin="12,12,12,64" Width="320"
+    		SelectionChanged="History_SelectionChanged" SelectedValuePath="Text" Visibility="Collapsed">
+            <ListBox.ItemContainerStyle>
+                <Style TargetType="ListBoxItem">
+                    <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                </Style>
+            </ListBox.ItemContainerStyle>
+            <ListBox.ItemTemplate>
+                <DataTemplate>
+                    <Grid HorizontalAlignment="Stretch">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Text="{Binding Text}" Grid.Column="0" HorizontalAlignment="Left"/>
+                        <TextBlock Text="{Binding DateTime, Converter={StaticResource DateTimeConverter}}" Grid.Column="1" HorizontalAlignment="Right"/>
+                    </Grid>
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+        </ListBox>
+        <Button x:Name="HistoryClearButton" Content="Clear" Grid.Column="0" Grid.Row="0" HorizontalAlignment="Center"
+    		VerticalAlignment="Bottom" Margin="0,0,0,12" Click="ClearHistory" Visibility="Collapsed"/>
+        <StackPanel Grid.Column="1" Grid.Row="0" Orientation="Vertical" HorizontalAlignment="Center" VerticalAlignment="Center">
+            <StackPanel  Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Center">
+                <TextBox x:Name="searchTextBox" Margin="0,0,0,0" TabIndex="0" TextWrapping="Wrap" Text="" VerticalAlignment="Center" Width="268" KeyUp="Search_KeyUp"/>
+                <Button Content="Search" Margin="0,0,0,0" TabIndex="1" VerticalAlignment="Center" Click="Button_Click_1"/>
+                <Button Content="History" Click="ShowHistory" />
+            </StackPanel>
+            <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Left">
+                <CheckBox IsChecked="False" x:Name="LocationCheckbox"  VerticalAlignment="Center" Checked="LocationCheckbox_Checked_1"/>
+                <TextBlock Text="Enable location detection" FontSize="20" VerticalAlignment="Center"/>
+                <ProgressRing x:Name="LocationProgress" Visibility="Collapsed" IsActive="False" Margin="10,0,0,0"/>
+            </StackPanel>
+        </StackPanel>
+        <Grid x:Name="AdditionalKeyboard" Grid.Column="0" Grid.ColumnSpan="3" Grid.Row="1" Visibility="Visible" Background="Black">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+            <StackPanel x:Name="Row1" Orientation="Horizontal" HorizontalAlignment="Center" Grid.Column="0" Grid.Row="0">
+                <Button Content="π" Tag="pi" Click="InsertCharacter" Style="{StaticResource KeyboardButtonStyle}"/>
+                <Button Content="°" Tag="degree" Click="InsertCharacter" Style="{StaticResource KeyboardButtonStyle}"/>
+                <Button Content="∞" Tag="infinity" Click="InsertCharacter" Style="{StaticResource KeyboardButtonStyle}"/>
+                <Button Content="√" Tag="sqrt" Click="InsertCharacter" Style="{StaticResource KeyboardButtonStyle}"/>
+                <Button Content="∫" Tag="integrate from x=0 to 10" Click="InsertCharacter" Style="{StaticResource KeyboardButtonStyle}"/>
+                <Button Content="∑" Tag="sum from x=0 to 10" Click="InsertCharacter" Style="{StaticResource KeyboardButtonStyle}"/>
+                <Button Content="∂" Tag="d" Click="InsertCharacter" Style="{StaticResource KeyboardButtonStyle}"/>
+                <Button Content="Π" Tag="table" Click="InsertCharacter" Style="{StaticResource KeyboardButtonStyle}"/>
+                <Button Content="∀" Tag="for every" Click="InsertCharacter" Style="{StaticResource KeyboardButtonStyle}"/>
+                <Button Content="∃" Tag="exists" Click="InsertCharacter" Style="{StaticResource KeyboardButtonStyle}"/>
+                <Button Content="∪" Tag="Union" Click="InsertCharacter" Style="{StaticResource KeyboardButtonStyle}"/>
+                <Button Content="∩" Tag="Intersection" Click="InsertCharacter" Style="{StaticResource KeyboardButtonStyle}"/>
+                <Button Content="∇" Tag="gradient" Click="InsertCharacter" Style="{StaticResource KeyboardButtonStyle}"/>
+                <Button Content="Δ" Tag="delta" Click="InsertCharacter" Style="{StaticResource KeyboardButtonStyle}"/>
+            </StackPanel>
+            <StackPanel x:Name="Row2" Orientation="Horizontal" HorizontalAlignment="Center" Grid.Column="0" Grid.Row="1">
+                <Button Content="α" Tag="alpha" Click="InsertCharacter" Style="{StaticResource KeyboardButtonStyle}"/>
+                <Button Content="β" Tag="beta" Click="InsertCharacter" Style="{StaticResource KeyboardButtonStyle}"/>
+                <Button Content="γ" Tag="gamma" Click="InsertCharacter" Style="{StaticResource KeyboardButtonStyle}"/>
+                <Button Content="δ" Tag="delta" Click="InsertCharacter" Style="{StaticResource KeyboardButtonStyle}"/>
+                <Button Content="ε" Tag="epsilon" Click="InsertCharacter" Style="{StaticResource KeyboardButtonStyle}"/>
+                <Button Content="ζ" Tag="zeta" Click="InsertCharacter" Style="{StaticResource KeyboardButtonStyle}"/>
+                <Button Content="η" Tag="eta" Click="InsertCharacter" Style="{StaticResource KeyboardButtonStyle}"/>
+                <Button Content="θ" Tag="theta" Click="InsertCharacter" Style="{StaticResource KeyboardButtonStyle}"/>
+                <Button Content="κ" Tag="kappa" Click="InsertCharacter" Style="{StaticResource KeyboardButtonStyle}"/>
+                <Button Content="λ" Tag="lambda" Click="InsertCharacter" Style="{StaticResource KeyboardButtonStyle}"/>
+                <Button Content="⊂" Tag="subset" Click="InsertCharacter" Style="{StaticResource KeyboardButtonStyle}"/>
+                <Button Content="⊃" Tag="subset" Click="InsertCharacter" Style="{StaticResource KeyboardButtonStyle}"/>
+                <Button Content="⊆" Tag="subset" Click="InsertCharacter" Style="{StaticResource KeyboardButtonStyle}"/>
+                <Button Content="⊇" Tag="subset" Click="InsertCharacter" Style="{StaticResource KeyboardButtonStyle}"/>
+
+            </StackPanel>
+            <StackPanel x:Name="Row3" Orientation="Horizontal" HorizontalAlignment="Center" Grid.Column="0" Grid.Row="2">
+                <Button Content="μ" Tag="mu" Click="InsertCharacter" Style="{StaticResource KeyboardButtonStyle}"/>
+                <Button Content="ν" Tag="nu" Click="InsertCharacter" Style="{StaticResource KeyboardButtonStyle}"/>
+                <Button Content="ξ" Tag="xi" Click="InsertCharacter" Style="{StaticResource KeyboardButtonStyle}"/>
+                <Button Content="ρ" Tag="rho" Click="InsertCharacter" Style="{StaticResource KeyboardButtonStyle}"/>
+                <Button Content="σ" Tag="sigma" Click="InsertCharacter" Style="{StaticResource KeyboardButtonStyle}"/>
+                <Button Content="τ" Tag="tau" Click="InsertCharacter" Style="{StaticResource KeyboardButtonStyle}"/>
+                <Button Content="φ" Tag="phi" Click="InsertCharacter" Style="{StaticResource KeyboardButtonStyle}"/>
+                <Button Content="χ" Tag="chi" Click="InsertCharacter" Style="{StaticResource KeyboardButtonStyle}"/>
+                <Button Content="ψ" Tag="psi" Click="InsertCharacter" Style="{StaticResource KeyboardButtonStyle}"/>
+                <Button Content="ω" Tag="omega" Click="InsertCharacter" Style="{StaticResource KeyboardButtonStyle}"/>
+                <!--<Button Content="&#x0393;" Tag="gamma" Click="InsertCharacter" Style="{StaticResource KeyboardButtonStyle}"/>-->
+                <Button Content="Θ" Tag="theta" Click="InsertCharacter" Style="{StaticResource KeyboardButtonStyle}"/>
+                <!--<Button Content="&#x039B;" Tag="lambda" Click="InsertCharacter" Style="{StaticResource KeyboardButtonStyle}"/>-->
+                <!--<Button Content="&#x039E;" Tag="xi" Click="InsertCharacter" Style="{StaticResource KeyboardButtonStyle}"/>-->
+                <Button Content="Υ" Tag="upsilon" Click="InsertCharacter" Style="{StaticResource KeyboardButtonStyle}"/>
+                <Button Content="Φ" Tag="phi" Click="InsertCharacter" Style="{StaticResource KeyboardButtonStyle}"/>
+                <Button Content="Ψ" Tag="psi" Click="InsertCharacter" Style="{StaticResource KeyboardButtonStyle}"/>
+            </StackPanel>
+            <StackPanel x:Name="Row4" Orientation="Horizontal" HorizontalAlignment="Center" Grid.Column="0" Grid.Row="3">
+                <Button Content="Ω" Tag="omega" Click="InsertCharacter" Style="{StaticResource KeyboardButtonStyle}"/>
+                <!--<Button Content="omega_inv" Tag="" Click="InsertCharacter" Style="{StaticResource KeyboardButtonStyle}"/>-->
+                <Button Content="Å" Tag="angström" Click="InsertCharacter" Style="{StaticResource KeyboardButtonStyle}"/>
+                <Button Content="ħ" Tag="h with stroke" Click="InsertCharacter" Style="{StaticResource KeyboardButtonStyle}"/>
+                <Button Content="ℵ" Tag="aleph" Click="InsertCharacter" Style="{StaticResource KeyboardButtonStyle}"/>
+                <Button Content="⇔" Tag="&lt;-&gt;" Click="InsertCharacter" Style="{StaticResource KeyboardButtonStyle}"/>
+                <Button Content="→" Tag="-&gt;" Click="InsertCharacter" Style="{StaticResource KeyboardButtonStyle}"/>
+                <Button Content="⊕" Tag="direct sum" Click="InsertCharacter" Style="{StaticResource KeyboardButtonStyle}"/>
+                <Button Content="☉" Tag="sun" Click="InsertCharacter" Style="{StaticResource KeyboardButtonStyle}"/>
+                <Button Content="♂" Tag="man" Click="InsertCharacter" Style="{StaticResource KeyboardButtonStyle}"/>
+                <Button Content="♀" Tag="woman" Click="InsertCharacter" Style="{StaticResource KeyboardButtonStyle}"/>
+                <Button Content="✝" Tag="latin cross" Click="InsertCharacter" Style="{StaticResource KeyboardButtonStyle}"/>
+                <Button Content="∧" Tag="and" Click="InsertCharacter" Style="{StaticResource KeyboardButtonStyle}"/>
+                <Button Content="∨" Tag="or" Click="InsertCharacter" Style="{StaticResource KeyboardButtonStyle}"/>
+                <Button Content="⌨" Tag="toggleKB" Click="ShowKeyboard" Style="{StaticResource KeyboardButtonStyle2}"/>
+            </StackPanel>
+        </Grid>
+    </Grid>
+</Page>
