@@ -13,5 +13,8 @@
     <releaseNotes>Add IsOpenChanged and ContentPadding</releaseNotes>
     <copyright>John Michael Hauck</copyright>
     <tags>Charm Flyout Win8 WinRt XAML Popup Settings</tags>
+    <references>
+      <reference file="CharmFlyoutLibrary.dll" />
+    </references>
   </metadata>
 </package>

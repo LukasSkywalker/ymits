@@ -1,8 +1,8 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Package xmlns="http://schemas.microsoft.com/appx/2010/manifest">
-  <Identity Name="48394LukasDiener.Wolfram" Publisher="CN=5360E734-E386-40B8-A705-92BCE4D08C54" Version="0.1.0.7" />
+  <Identity Name="48394LukasDiener.Wolfram" Publisher="CN=5360E734-E386-40B8-A705-92BCE4D08C54" Version="1.0.0.11" />
   <Properties>
-    <DisplayName>Wolfram</DisplayName>
+    <DisplayName>CobaltGamma</DisplayName>
     <PublisherDisplayName>Lukas Diener</PublisherDisplayName>
     <Logo>Assets\StoreLogo_50x502.png</Logo>
   </Properties>

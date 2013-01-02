@@ -141,11 +141,11 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Assets\Logo_150x150.png" />
-    <Content Include="Assets\SmallerLogo_24x24.png" />
     <Content Include="Assets\SmallLogo_30x30.png" />
     <Content Include="Assets\SplashScreen_620x300.png" />
+    <Content Include="Assets\StoreLogo.scale-100.png" />
     <Content Include="Assets\StoreLogo_50x50.png" />
-    <Content Include="Assets\StoreLogo_50x502.png" />
+    <Content Include="Assets\StoreLogo_50x502.scale-100.png" />
     <Content Include="Common\ReadMe.txt" />
     <None Include="Package.StoreAssociation.xml" />
     <Page Include="ItemDetailPage.xaml">
@@ -168,8 +168,9 @@
     </Page>
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="CharmFlyoutLibrary">
-      <HintPath>..\packages\CharmFlyout.1.0.9\lib\winrt45\CharmFlyoutLibrary.dll</HintPath>
+    <Reference Include="CharmFlyoutLibrary, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\CharmFlyout.1.0.11\lib\winrt45\CharmFlyoutLibrary.dll</HintPath>
     </Reference>
   </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '11.0' ">
