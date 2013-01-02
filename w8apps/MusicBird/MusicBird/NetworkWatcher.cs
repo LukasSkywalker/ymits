@@ -11,6 +11,9 @@ namespace MusicBird
 {
     public class NetworkWatcher
     {
+        public delegate void NetworkChangeHandler(object sender, NetworkChangeEventArgs e);
+        public event NetworkChangeHandler OnNetworkChange;
+
         public static bool Connected
         {
             get
@@ -39,17 +42,21 @@ namespace MusicBird
 
                 if (InternetConnectionProfile == null)
                 {
-                    RootPage.NotifyUser("Not connected to Internet\n");
+                    if (OnNetworkChange == null) return;
+                    NetworkChangeEventArgs args = new NetworkChangeEventArgs(InternetConnectionProfile, connectionProfileInfo);
+                    OnNetworkChange(this, args);
                 }
                 else
                 {
                     connectionProfileInfo = GetConnectionProfile(InternetConnectionProfile);
-                    RootPage.NotifyUser(connectionProfileInfo);
+                    if (OnNetworkChange == null) return;
+                    NetworkChangeEventArgs args = new NetworkChangeEventArgs(InternetConnectionProfile, connectionProfileInfo);
+                    OnNetworkChange(this, args);
                 }
             }
             catch (Exception ex)
             {
-                RootPage.NotifyUser("Unexpected exception occured: " + ex.ToString());
+                Helper.DumpException(ex);
             }
         }
 
@@ -334,5 +341,17 @@ namespace MusicBird
             networkSecurity += "\n";
             return networkSecurity;
         } 
+    }
+
+    public class NetworkChangeEventArgs : EventArgs
+    {
+        public ConnectionProfile Profile { get; private set; }
+        public String Text { get; private set; }
+
+        public NetworkChangeEventArgs(ConnectionProfile profile, String text)
+        {
+            Profile = profile;
+            Text = text;
+        }
     }
 }

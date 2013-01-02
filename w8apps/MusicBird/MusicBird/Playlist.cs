@@ -6,15 +6,19 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
+using Windows.UI.Xaml;
 
 namespace MusicBird
 {
     public class Playlist : INotifyPropertyChanged
     {
-        public static ObservableCollection<Track> Tracks { get; set; }
-        public static int Position { get; set; }
-        public static int Size { get { return Tracks.Count; } }
-        public static ObservableCollection<Track> Neighbors
+        private int position = 0;
+
+        public ObservableCollection<Track> Tracks { get; private set; }
+        public int Position { get { return position; } set { position = value; RaisePropertyChanged("CurrentTrack"); } }
+        public int Size { get { return Tracks.Count; } }
+
+        public ObservableCollection<Track> Neighbors
         {
             get
             {
@@ -73,7 +77,7 @@ namespace MusicBird
             return r < 0 ? r + divisor : r;
         }
 
-        private void RaisePropertyChanged(string caller = "")
+        public void RaisePropertyChanged(string caller = "")
         {
             if (PropertyChanged != null)
             {
@@ -82,5 +86,10 @@ namespace MusicBird
         }
 
         public event PropertyChangedEventHandler PropertyChanged = delegate { };
+
+        public enum PlaybackMode {
+            Normal,
+            TryPlay = 1,
+        }
     }
 }

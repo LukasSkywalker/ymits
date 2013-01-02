@@ -13,8 +13,8 @@ namespace MusicBird
 {
     public class DownloadManager : INotifyPropertyChanged
     {
-        public static ObservableCollection<DownloadOperation> ActiveDownloads { get; set; }
-        public static ObservableCollection<DownloadOperationViewModel> AllDownloads { get; set; }
+        public static ObservableCollection<DownloadOperation> ActiveDownloads { get; private set; }
+        public static ObservableCollection<DownloadOperationViewModel> AllDownloads { get; private set; }
         private CancellationTokenSource cts = new CancellationTokenSource();
 
         public static int DownloadCount { get { return ActiveDownloads.Count; } }
@@ -80,8 +80,7 @@ namespace MusicBird
             { 
                 ActiveDownloads.Add(download);
                 AllDownloads.Add(dlopvm);
-                RaisePropertyChanged("ActiveDownloads");
-                RaisePropertyChanged("DownloadCount");
+                RaisePropertyChanged("");
                 Progress<DownloadOperation> progressCallback = new Progress<DownloadOperation>(DownloadProgressHandler);
                 if (start)
                 {
@@ -103,14 +102,13 @@ namespace MusicBird
             {
                 ActiveDownloads.Remove(download);
                 AllDownloads.Remove(dlopvm);
-                RaisePropertyChanged("ActiveDownloads");
-                RaisePropertyChanged("DownloadCount");
+                RaisePropertyChanged("");
             }
         }
 
         private void DownloadProgressHandler(DownloadOperation dlop)
         {
-            RaisePropertyChanged("ActiveDownloads");
+            RaisePropertyChanged("");
             foreach (DownloadOperationViewModel dlopvm in AllDownloads)
             {
                 if (dlopvm.Dlop == dlop)
@@ -118,6 +116,7 @@ namespace MusicBird
                     dlopvm.RaisePropChanged("BytesReceived");
                     dlopvm.RaisePropChanged("TotalBytes");
                     dlopvm.RaisePropChanged("ProgressStatus");
+                    dlopvm.RaisePropChanged("Running");
                     break;
                 }
             }
@@ -168,7 +167,7 @@ namespace MusicBird
         {
             if (PropertyChanged != null)
             {
-                System.Diagnostics.Debug.WriteLine("Prop Changed");
+                System.Diagnostics.Debug.WriteLine("DownloadManager Prop Changed: "+caller);
                 PropertyChanged(this, new PropertyChangedEventArgs(caller));
             }
         }

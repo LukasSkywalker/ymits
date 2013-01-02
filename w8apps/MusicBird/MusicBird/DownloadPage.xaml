@@ -11,6 +11,7 @@
     
     <Page.Resources>
         <common:BytesMegabytesConverter x:Key="BytesMegabytesConverter"/>
+        <common:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
     </Page.Resources>
 
     <Grid Background="{StaticResource ApplicationPageBackgroundThemeBrush}">
@@ -34,7 +35,10 @@
                         <TextBlock Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="2" Text="{Binding ResultFile}" Style="{StaticResource PageSubheaderTextStyle}" Margin="0,0,0,0"/>
                         <ProgressBar Grid.Column="0" Grid.Row="1" Height="20" Maximum="{Binding TotalBytes}" Value="{Binding BytesReceived}" HorizontalAlignment="Stretch"/>
                         <StackPanel Grid.Column="1" Grid.Row="1" Orientation="Horizontal">
-                            <Button Style="{StaticResource PauseAppBarButtonStyle}" Click="DownloadPause_Click"/>
+                            <Button Style="{StaticResource PlayAppBarButtonStyle}" Click="DownloadResume_Click"
+                                    Visibility="{Binding Running, Converter={StaticResource BooleanToVisibilityConverter}, ConverterParameter=False}"/>
+                            <Button Style="{StaticResource PauseAppBarButtonStyle}" Click="DownloadPause_Click"
+                                    Visibility="{Binding Running, Converter={StaticResource BooleanToVisibilityConverter}, ConverterParameter=True}"/>
                             <Button Style="{StaticResource DiscardAppBarButtonStyle}" Click="DownloadCancel_Click"/>
                         </StackPanel>
                         <StackPanel Grid.Column="0" Grid.Row="2" Grid.ColumnSpan="2" Orientation="Horizontal">

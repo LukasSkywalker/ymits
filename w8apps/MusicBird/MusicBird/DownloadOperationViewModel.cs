@@ -21,6 +21,8 @@ namespace MusicBird
             get { return _myDownloadOperation.ResultFile.Name; }
         }
 
+        public bool Running { get { return _myDownloadOperation.Progress.Status == BackgroundTransferStatus.Running; } }
+
         public BackgroundTransferStatus ProgressStatus
         {
             get { return _myDownloadOperation.Progress.Status; }
@@ -40,15 +42,18 @@ namespace MusicBird
             get { return _myDownloadOperation; }
         }
 
-        public void PauseResume() {
+        public void Pause() {
+            try { _myDownloadOperation.Pause(); }
+            catch (Exception ex) { Helper.DumpException(ex); }
+        }
+
+        public void Resume() {
             if (_myDownloadOperation.Progress.Status == BackgroundTransferStatus.PausedByApplication ||
                 _myDownloadOperation.Progress.Status == BackgroundTransferStatus.PausedCostedNetwork ||
-                _myDownloadOperation.Progress.Status == BackgroundTransferStatus.PausedNoNetwork)
+                _myDownloadOperation.Progress.Status == BackgroundTransferStatus.PausedNoNetwork) {
                 try { _myDownloadOperation.Resume(); }
                 catch (Exception ex) { Helper.DumpException(ex); }
-            else
-                try { _myDownloadOperation.Pause(); }
-                catch (Exception ex) { Helper.DumpException(ex); }
+            }
         }
 
         public void Cancel()

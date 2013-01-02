@@ -32,6 +32,10 @@ namespace MusicBird
         }
 
         public const string USER_AGENT_FIREFOX = "Mozilla/5.0 (compatible; MSIE 10.0; Windows NT 6.2; WOW64; Trident/6.0)";
+        public const string URL_SIMILAR_TRACKS = "http://ws.audioscrobbler.com/2.0/?method=track.getsimilar&artist={0}&track={1}&api_key={2}";
+        public const string URL_SIMILAR_ARTISTS = "http://ws.audioscrobbler.com/2.0/?method=artist.getsimilar&artist=cher&track=believe&api_key={0}";
+        public const string URL_COVER = "http://www.amazon.com/s/ref=nb_sb_noss?url=search-alias%3Dpopular&field-keywords={0}";
+        public static bool TryPlayMode = false;
 
         /// <summary>
         /// Initializes the singleton application object.  This is the first line of authored code

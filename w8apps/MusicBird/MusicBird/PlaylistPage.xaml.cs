@@ -30,7 +30,7 @@ namespace MusicBird
 
         protected override void OnNavigatedTo(NavigationEventArgs e)
         {
-            DataContext = Playlist.Tracks;
+            DataContext = RootPage.Playlist.Tracks;
         }
 
         private void RemoveButton_Click(object sender, RoutedEventArgs e)
@@ -43,6 +43,12 @@ namespace MusicBird
         {
             Track track = (Track)(sender as FrameworkElement).DataContext;
             RootPage.PlayPosition(RootPage.Playlist.GetPosition(track));
+        }
+
+        private void DownloadButton_Click(object sender, RoutedEventArgs e)
+        {
+            Track track = (Track)(sender as FrameworkElement).DataContext;
+            RootPage.DownloadManager.Add(track);
         }
     }
 }

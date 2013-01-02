@@ -415,12 +415,12 @@
         <Setter Property="AutomationProperties.AutomationId" Value="SkipAheadAppBarButton"/>
         <Setter Property="AutomationProperties.Name" Value="Skip Ahead"/>
         <Setter Property="Content" Value="&#xE101;"/>
-    </Style>
+    </Style>-->
     <Style x:Key="PlayAppBarButtonStyle" TargetType="ButtonBase" BasedOn="{StaticResource AppBarButtonStyle}">
         <Setter Property="AutomationProperties.AutomationId" Value="PlayAppBarButton"/>
         <Setter Property="AutomationProperties.Name" Value="Play"/>
         <Setter Property="Content" Value="&#xE102;"/>
-    </Style>-->
+    </Style>
     <Style x:Key="PlayButtonStyle" TargetType="ButtonBase" BasedOn="{StaticResource AppBarButtonStyle}">
         <Setter Property="AutomationProperties.AutomationId" Value="PlayAppBarButton"/>
         <Setter Property="Content" Value="&#xE102;"/>
@@ -1860,5 +1860,11 @@
         <Setter Property="HorizontalAlignment" Value="Left"/>
         <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
         <Setter Property="VerticalContentAlignment" Value="Stretch"/>
+    </Style>
+    
+    <Style x:Key="TrackItemContainerStyle" TargetType="Control">
+        <Setter Property="Height" Value="95"/>
+        <Setter Property="Margin" Value="0,0,18,8"/>
+        <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
     </Style>
 </ResourceDictionary>

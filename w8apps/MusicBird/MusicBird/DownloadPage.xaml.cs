@@ -31,10 +31,16 @@ namespace MusicBird
             DataContext = DownloadManager.AllDownloads;
         }
 
+        private void DownloadResume_Click(object sender, RoutedEventArgs e)
+        {
+            DownloadOperationViewModel dlopvm = (DownloadOperationViewModel)(sender as FrameworkElement).DataContext;
+            dlopvm.Resume();
+        }
+
         private void DownloadPause_Click(object sender, RoutedEventArgs e)
         {
             DownloadOperationViewModel dlopvm = (DownloadOperationViewModel)(sender as FrameworkElement).DataContext;
-            dlopvm.PauseResume();
+            dlopvm.Pause();
         }
 
         private void DownloadCancel_Click(object sender, RoutedEventArgs e)
@@ -46,7 +52,7 @@ namespace MusicBird
         private void PauseAll_Click(object sender, RoutedEventArgs e)
         {
             foreach (DownloadOperationViewModel dlopvm in DownloadManager.AllDownloads)
-                dlopvm.PauseResume();
+                dlopvm.Pause();
         }
 
         private void RemoveAll_Click(object sender, RoutedEventArgs e)

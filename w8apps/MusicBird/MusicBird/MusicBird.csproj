@@ -112,6 +112,7 @@
     <Compile Include="Common\LayoutAwarePage.cs" />
     <Compile Include="Common\NBSpaceConverter.cs" />
     <Compile Include="Common\PlayAccessibilityConverter.cs" />
+    <Compile Include="Common\RelayCommand.cs" />
     <Compile Include="Common\RichTextColumns.cs" />
     <Compile Include="Common\StopWatch.cs" />
     <Compile Include="Common\SuspensionManager.cs" />
@@ -163,6 +164,9 @@
     <Content Include="Assets\SplashScreen_620x300.png" />
     <Content Include="Assets\StoreLogo.png" />
     <Content Include="Assets\StoreLogo_50x50.png" />
+    <Content Include="Assets\vinyl.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="MVVMLight.Nuget.Readme.txt" />
     <Page Include="Common\Style.xaml">
       <SubType>Designer</SubType>
@@ -191,6 +195,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="SearchResultsPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Themes\Generic.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

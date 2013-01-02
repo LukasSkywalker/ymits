@@ -10,25 +10,13 @@
 
     <Grid Background="{StaticResource ApplicationPageBackgroundThemeBrush}">
         <ListView
-                    x:Name="resultsListView"
-                    AutomationProperties.AutomationId="ResultsListView"
-                    AutomationProperties.Name="Search Results"
-                    TabIndex="1"
-                    Grid.Row="1"
-                    Margin="0,0,0,0"
-                    Padding="10,10,10,60"
-                    SelectionMode="None"
-                    IsSwipeEnabled="false"
-                    IsItemClickEnabled="True"
-                    ItemsSource="{Binding LastFmResult}"
-                    >
-            <!--ItemTemplate="{StaticResource StandardSmallIcon70ItemTemplate}"-->
-            <ListView.ItemContainerStyle>
-                <Style TargetType="Control">
-                    <Setter Property="Height" Value="95"/>
-                    <Setter Property="Margin" Value="0,0,18,8"/>
-                </Style>
-            </ListView.ItemContainerStyle>
+            x:Name="resultsListView"
+            AutomationProperties.AutomationId="ResultsListView"
+            AutomationProperties.Name="Search Results" TabIndex="1"
+            Padding="10,10,10,60"
+            SelectionMode="None" IsSwipeEnabled="false"
+            IsItemClickEnabled="True" Margin="0,3,0,-3"
+            ItemContainerStyle="{StaticResource TrackItemContainerStyle}">
             <ListView.ItemTemplate>
                 <DataTemplate>
                     <Grid Margin="10,0,0,0" Height="100">
@@ -37,16 +25,12 @@
                             <ColumnDefinition Width="*" />
                             <ColumnDefinition Width="Auto" />
                         </Grid.ColumnDefinitions>
-                        <!--<StackPanel Orientation="Horizontal" Height="80" Margin="20,0,0,0">-->
-
-                        <StackPanel Grid.Column="1" Width="900" HorizontalAlignment="Stretch">
-                            <TextBlock Text="{Binding Artist.Name}"
-                               Foreground="#FFC8AB14" FontSize="28" />
-                            <TextBlock Text="{Binding Track.Name}"
-                               TextWrapping="Wrap" FontSize="24" />
+                        <Button Grid.Column="0" Margin="0,0,20,10" Style="{StaticResource PlayButtonStyle}"
+                                    HorizontalAlignment="Left" VerticalAlignment="Center" Click="PlayButton_Click"/>
+                        <StackPanel Grid.Column="1" HorizontalAlignment="Stretch">
+                            <TextBlock Text="{Binding Artist}" Foreground="#FFC8AB14" FontSize="28" />
+                            <TextBlock Text="{Binding Title}" TextWrapping="Wrap" FontSize="24" />
                         </StackPanel>
-                        <Button Grid.Column="2" Style="{StaticResource DownloadButtonStyle}" HorizontalAlignment="Right"/>
-                        <!--<TextBlock Text="{Binding size}" Foreground="#FFC8AB14" FontSize="20"/>-->
                     </Grid>
                 </DataTemplate>
             </ListView.ItemTemplate>

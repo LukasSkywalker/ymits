@@ -4,7 +4,11 @@ using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
+using System.Threading.Tasks;
+using System.Xml;
+using System.Xml.Linq;
 using System.Xml.Serialization;
+using Windows.Data.Xml.Dom;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
 using Windows.UI.Xaml;
@@ -19,21 +23,19 @@ namespace MusicBird
 {
     public sealed partial class SimilarPage : Page
     {
-        public LastFmResult LastFmResult { get; set; }
+        private static RootPage RootPage { get { return (RootPage)((App)Application.Current).RootFrame.Content; } }
 
         public SimilarPage()
         {
             this.InitializeComponent();
-            LastFmResult = new LastFmResult();
         }
 
         protected async override void OnNavigatedTo(NavigationEventArgs e)
         {
-            String requestUrl = (string)e.Parameter;
+            Track reference = (Track)e.Parameter;
             const string key = "8a08d6d31c85b7780084b65a0608bb16";
-            //const string secret = "a1ef21e96a3575dac1ea6094863617a6";
             
-            Uri url = new Uri(String.Format(requestUrl, key));
+            Uri url = new Uri(String.Format(App.URL_SIMILAR_TRACKS, reference.Artist, reference.Title, key));
 
             HttpClient lfmClient = new HttpClient();
 
@@ -41,52 +43,33 @@ namespace MusicBird
             response.EnsureSuccessStatusCode();
             string responseText = await response.Content.ReadAsStringAsync();
 
-            LastFmResult lfr = new LastFmResult();
+            List<Track> similarTracks = new List<Track>();
 
-            try
-            {
-                XmlSerializer des = new XmlSerializer(typeof(LastFmResult));
-                var reader = new StringReader(responseText);
-                lfr = (LastFmResult)des.Deserialize(reader);
-
-                LastFmResult = lfr;
-
-                System.Diagnostics.Debug.WriteLine("Status:" + lfr.Status);
+            XDocument doc = XDocument.Parse(responseText);
+            
+            foreach (XElement element in doc.Descendants("track")){
+                String title = (string)element.Element("name").Value;
+                String artist = (string)element.Element("artist").Element("name").Value;
+                int match = (int)(Convert.ToDouble(element.Element("match").Value) * 100);
+                similarTracks.Add(new Track(artist, title, null, match));
             }
-            catch (Exception ex)
-            {
-                Helper.DumpException(ex);
+
+            resultsListView.ItemsSource = similarTracks;
+            if (similarTracks.Count == 0) {
+                RootPage.NotifyUser("No similar tracks found");
             }
-        } 
-    }
-
-    [XmlRoot("lfm")]
-    public class LastFmResult
-    {
-        [XmlAttribute("status")]
-        public string Status { get; set; }
-
-        [XmlArray("similartracks")]
-        [XmlArrayItem("track")]
-        public ObservableCollection<Track> SimilarTracks { get; set; }
-
-        [XmlArray("similarartists")]
-        [XmlArrayItem("artist")]
-        public ObservableCollection<Artist> SimilarArtists { get; set; }
-
-        public class Track
-        {
-            [XmlElement("name")]
-            public string Name { get; set; }
-
-            [XmlElement("artist")]
-            public Artist Artist { get; set; }
         }
 
-        public class Artist
+        private async void PlayButton_Click(object sender, RoutedEventArgs e)
         {
-            [XmlElement("name")]
-            public string Name { get; set; }
+            Track track = (Track)(sender as FrameworkElement).DataContext;
+            await FindAlternatives(track);
+            RootPage.PlayTrack(track);
+        }
+
+        private async Task FindAlternatives(Track track) {
+            List<Track> trackList = await Helper.GetResult(track.Artist + " " + track.Title);
+            track.Candidates = trackList;
         }
     }
 }

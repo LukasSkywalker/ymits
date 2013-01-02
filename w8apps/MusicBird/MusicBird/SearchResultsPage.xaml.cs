@@ -26,7 +26,6 @@ namespace MusicBird
     /// </summary>
     public sealed partial class SearchResultsPage : MusicBird.Common.LayoutAwarePage
     {
-        private HttpClient searchClient;
         private List<Track> resultsList;
         private List<Track> unFilteredList;
 
@@ -44,10 +43,6 @@ namespace MusicBird
             resultText.Text = modstring;
 
             resultsList = new List<Track>();
-            
-            searchClient = new HttpClient();
-            searchClient.MaxResponseContentBufferSize = 256000;
-            searchClient.DefaultRequestHeaders.Add("User-Agent", App.USER_AGENT_FIREFOX);
         }
 
         protected override void OnNavigatedTo(NavigationEventArgs e)
@@ -179,88 +174,9 @@ namespace MusicBird
             searchProgress.IsIndeterminate = true;
             searchProgress.Visibility = Visibility.Visible;
 
-            string responseText = "";
-            List<Track> trackList = new List<Track>();
+            List<Track> trackList = await Helper.GetResult(searchterm);
 
-            bool showMessage = false;
-
-            try
-            {
-                string address = "http://mp3skull.com/mp3/" + searchterm.Replace(" ", "_") + ".html";
-                searchClient.CancelPendingRequests();
-                HttpResponseMessage response = await searchClient.GetAsync(address);
-                response.EnsureSuccessStatusCode();
-                responseText = await response.Content.ReadAsStringAsync();
-
-                Regex pattern = new Regex("<a href=\"(.*?.mp3)\" rel=\"nofollow\"", RegexOptions.IgnoreCase);
-                Regex pattern2 = new Regex("<div style=\"font-size:15px;\"><b>(.*?) mp3</b></div>", RegexOptions.IgnoreCase);
-                try
-                {
-                    String s = responseText;
-
-                    // Match the regular expression pattern against a text string.
-                    Match m = pattern.Match(s);
-                    Match n = pattern2.Match(s);
-
-                    while (m.Success)
-                    {
-                        Group g = m.Groups[1];
-                        Group h = n.Groups[1];
-                        string name = h.ToString();
-                        string artist = name;
-                        string title = name;
-                        string url = g.ToString();
-                        string[] data = StringHelper.getArtistAndTitle(name);
-                        // 4shared lets users download again (2012-09-20)
-                        //if (url.IndexOf("4shared") == -1)
-                        //{
-                            int match1 = getDistance(searchterm, data[0] + " " + data[1]);
-                            int match2 = getDistance(searchterm, data[1]+" "+data[0]);
-                            int match = Math.Min(match1, match2);
-                            Track item = new Track(data[0], data[1], url, match);
-                            int insertPos = 0;
-                            for (int i = 0; i < trackList.Count; i++) {
-                                if (trackList[i].Match < match) {
-                                    insertPos = i;
-                                    break;
-                                }
-                            }
-                            trackList.Insert(insertPos, item);
-                        //}
-                        m = m.NextMatch();
-                        n = n.NextMatch();
-                    }
-                    System.Diagnostics.Debug.WriteLine("mp3skull: Results found: " + trackList.Count);
-                }
-                finally
-                {
-                    // SEARCH CONTRACT 2.2 Populate your page with results from your app's data
-                }
-            }
-            catch (HttpRequestException)
-            {
-                showMessage = true;
-            }
-            catch (Exception)
-            {
-                showMessage = true;
-            }
-            finally {
-                //toggleSearchIndicator();
-            }
-            if (showMessage)
-            {
-                var messageDialog = new MessageDialog("Network error. Please check your connection and try again.");
-                await messageDialog.ShowAsync();
-            }
             return trackList;
-        }
-
-        private int getDistance(string searchterm, string p)
-        {
-            double distance = Distance.compareStrings(searchterm, p);
-            int dist = (int)Math.Round(distance * 100);
-            return dist;
         }
 
         private void OnListViewSelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -313,7 +229,7 @@ namespace MusicBird
             }));
             menu.Commands.Add(new UICommand("Similar tracks", (command) =>
             {
-                RootPage.ShowPopup(typeof(SimilarPage), "http://ws.audioscrobbler.com/2.0/?method=track.getsimilar&artist=cher&track=believe&api_key={0}");
+                RootPage.ShowPopup(typeof(SimilarPage), track);
             }));
             await menu.ShowForSelectionAsync(GetElementRect((FrameworkElement)sender));
         }

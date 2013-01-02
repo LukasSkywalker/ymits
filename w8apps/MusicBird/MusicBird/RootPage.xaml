@@ -57,13 +57,17 @@
                     <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
             <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
                 <ColumnDefinition Width="*"/>
                 <ColumnDefinition Width="Auto"/>
             </Grid.ColumnDefinitions>
             <!-- this is row 0, the border -->
             <Border BorderThickness="0,2,0,0" BorderBrush="Gainsboro" Margin="0,0,0,10" Grid.Row="0" Grid.ColumnSpan="2"/>
+
+            <Image Width="90" Height="90" Stretch="UniformToFill" x:Name="AlbumImage" Source="{Binding Playlist.CurrentTrack.Image}"
+                   Grid.Row="1" Grid.Column="0" Margin="0,0,0,0" Grid.RowSpan="2"/>
             <!-- this is row 1, the buttons, slider, downloads, and mediaelement -->
-            <StackPanel Orientation="Horizontal" Grid.Row="1">
+            <StackPanel Orientation="Horizontal" Grid.Row="1" Grid.Column="1">
                 <Button x:Name="btnPlay" Click="btnPlay_Click" AutomationProperties.Name="Play Button" 
         	        Style="{StaticResource PlayButtonStyle}" Margin="0,0,0,-1"/>
                 <Button x:Name="btnStop" Click="btnStop_Click" AutomationProperties.Name="Stop Button"
@@ -86,7 +90,7 @@
                     <ProgressBar Maximum="{Binding DownloadManager.TotalBytes}" Value="{Binding DownloadManager.TotalReceived}" Margin="0,12,0,0"/>
                 </StackPanel>
             </StackPanel>
-            <StackPanel x:Name="PlaylistControls" Grid.Column="1" Grid.Row="1" Grid.RowSpan="2">
+            <StackPanel x:Name="PlaylistControls" Grid.Column="2" Grid.Row="1" Grid.RowSpan="2">
                 <ScrollViewer Width="150" VerticalAlignment="Stretch">
                     <ItemsControl ItemsSource="{Binding Playlist.Neighbors}">
                         <ItemsControl.ItemTemplate>
@@ -112,7 +116,7 @@
             
                     |00:00| |################I>        | |03:12|
                     -->
-                <Grid Grid.Row="2">
+            <Grid Grid.Row="2" Grid.Column="1">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="Auto"/>
                         <ColumnDefinition Width="*"/>

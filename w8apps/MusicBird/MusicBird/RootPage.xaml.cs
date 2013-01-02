@@ -1,12 +1,17 @@
 ﻿using MusicBird.Common;
 using System;
+using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using System.Windows.Input;
 using Windows.ApplicationModel.Search;
 using Windows.Foundation;
 using Windows.Media;
+using Windows.Networking.BackgroundTransfer;
+using Windows.Storage;
 using Windows.UI.ApplicationSettings;
 using Windows.UI.Core;
 using Windows.UI.Popups;
@@ -15,6 +20,7 @@ using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Primitives;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
+using Windows.UI.Xaml.Media.Imaging;
 using Windows.UI.Xaml.Navigation;
 
 // The Blank Page item template is documented at http://go.microsoft.com/fwlink/?LinkId=234238
@@ -26,10 +32,16 @@ namespace MusicBird
         private DispatcherTimer PlaybackTimer;
         private DispatcherTimer PlayTimeoutTimer;
 
+        private String PlaybackMode = "";
+        private int PlaybackCounter = -1;
+
         public Windows.UI.Core.CoreDispatcher EventDispatcher { get; set;}
         public Playlist Playlist { get; set; }
         public DownloadManager DownloadManager { get; set; }
         public NetworkWatcher NetworkWatcher { get; set; }
+        public RelayCommand PlayTrackCommand { get; set; }
+
+        private RelayCommand SaveTrackCommand { get; set; }
 
         public RootPage()
         {
@@ -61,6 +73,9 @@ namespace MusicBird
             progressSlider.ThumbToolTipValueConverter = new TimeSpanConverter();
 
             TransparentGrid.Visibility = Visibility.Collapsed;
+
+            Action save = () => System.Diagnostics.Debug.WriteLine("bla bla");
+            SaveTrackCommand = new RelayCommand(save);
         }
 
         protected override void OnNavigatedTo(NavigationEventArgs e)
@@ -89,7 +104,7 @@ namespace MusicBird
             Playlist.Add(track);
             Playlist.Position = Playlist.Size - 1;
 
-            Play(track);
+            Play();
         }
         
 
@@ -99,9 +114,7 @@ namespace MusicBird
 
         public void PlayPosition(int position) {
             Playlist.Position = position;
-            Track track = Playlist.CurrentTrack;
-            
-            Play(track);
+            Play();
         }
 
         private void slider_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
@@ -110,15 +123,47 @@ namespace MusicBird
             currentTimeTextBlock.Text = TimeSpan.FromSeconds(e.NewValue).ToString(@"mm\:ss");
         }
 
-        private void Play(Track track)
+        private async void Play()
         {
-            playerElement.Source = new Uri(Playlist.CurrentTrack.Url);
+            Track track = Playlist.CurrentTrack;
+            if (track.Url == null)
+            {
+                TryCandidates(track);
+            }
+            else
+            {
+                playerElement.Source = new Uri(track.Url);
+                playerElement.Play();
+                PlayTimeoutTimer.Start();
 
-            MediaControl.ArtistName = Playlist.CurrentTrack.Artist;
-            MediaControl.TrackName = Playlist.CurrentTrack.Title;
+                MediaControl.ArtistName = track.Artist;
+                MediaControl.TrackName = track.Title;
 
-            playerElement.Play();
-            PlayTimeoutTimer.Start();
+                await track.FetchCover();
+                MediaControl.AlbumArt = track.Image;
+            }
+        }
+
+        private async void TryCandidates(Track track) {
+            this.PlaybackMode = "try";
+            TryTrack(track, 0);
+        }
+
+        private async void TryTrack(Track track, int index) {
+            List<Track> candidates = track.Candidates;
+            for(this.PlaybackCounter = index; this.PlaybackCounter < candidates.Count; this.PlaybackCounter++)
+            {
+                Track candidate = candidates[this.PlaybackCounter];
+                HttpResponseMessage response = await Helper.GetHead(candidate.Url);
+                if (response.IsSuccessStatusCode &&
+                    response.Content.Headers.ContentLength > 100000)
+                {  // Let's take 100 kB here...
+                    track.Url = candidate.Url;
+                    System.Diagnostics.Debug.WriteLine("Trying " + track.Url);
+                    Play();
+                    break;
+                }
+            }
         }
 
         private void volume_ValueChanged(object sender, RangeBaseValueChangedEventArgs e)
@@ -186,6 +231,7 @@ namespace MusicBird
         private void mediaElement_MediaOpened(object sender, RoutedEventArgs e)
         {
             HideWheel("mediaElement_MediaOpened");
+            App.TryPlayMode = false;
             double absvalue = (int)Math.Round(
             playerElement.NaturalDuration.TimeSpan.TotalSeconds,
             MidpointRounding.AwayFromZero);
@@ -204,16 +250,25 @@ namespace MusicBird
             HideWheel("mediaElement_MediaEnded");
         }
 
-        private async void mediaElement_MediaFailed(object sender, ExceptionRoutedEventArgs e)
+        private void mediaElement_MediaFailed(object sender, ExceptionRoutedEventArgs e)
         {
-            HideWheel("mediaElement_MediaFailed");
-            string hr = Helper.GetHresultFromErrorMessage(e);
-            System.Diagnostics.Debug.WriteLine("ERROR:" + hr);
-            MessageDialog md = new MessageDialog("The playback of this file failed. Please try another.", "Error");
-            await md.ShowAsync();
-            playerElement.Stop();
-            playerElement.Source = null;
-            HideWheel("mediaElement_MediaFailed_After");
+            Track track = Playlist.CurrentTrack;
+            if (track.Url == null)
+            {
+                // we got a try-file here
+                TryTrack(track, this.PlaybackCounter + 1);
+            }
+            else
+            {
+                HideWheel("mediaElement_MediaFailed");
+                string hr = Helper.GetHresultFromErrorMessage(e);
+                System.Diagnostics.Debug.WriteLine("ERROR:" + hr);
+                NotifyUser("The playback of the file failed. Please try another.");
+                PlaybackTimer.Stop();
+                playerElement.Stop();
+                playerElement.Source = null;
+                HideWheel("mediaElement_MediaFailed_After");
+            }
         }
 
         private void mediaElement_DownloadProgressChanged(object sender, RoutedEventArgs e)
@@ -262,16 +317,24 @@ namespace MusicBird
 
         private async void PlayTimeoutTimer_Tick(object sender, object e)
         {
-            if (playerElement.CurrentState != MediaElementState.Playing)
+            Track track = Playlist.CurrentTrack;
+            if (track.Url == null)
             {
-                playerElement.Stop();
-                playerElement.Source = null;
-                var msgd = new MessageDialog("Error playing this track. Please try another file.");
-                try { await msgd.ShowAsync(); }
-                catch (Exception) { }
-                HideWheel("playerTimeoutTimer_Tick");
+                TryTrack(track, this.PlaybackCounter + 1);
             }
-            PlayTimeoutTimer.Stop();
+            else
+            {
+                if (playerElement.CurrentState != MediaElementState.Playing)
+                {
+                    playerElement.Stop();
+                    playerElement.Source = null;
+                    var msgd = new MessageDialog("Playback timed out. Please try another file.");
+                    try { await msgd.ShowAsync(); }
+                    catch (Exception) { }
+                    HideWheel("playerTimeoutTimer_Tick");
+                }
+                PlayTimeoutTimer.Stop();
+            }
         }
 
         private void EnableButtons(bool playButton, bool stopButton)

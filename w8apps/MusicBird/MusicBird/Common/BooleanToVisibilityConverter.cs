@@ -12,7 +12,13 @@ namespace MusicBird.Common
     {
         public object Convert(object value, Type targetType, object parameter, string language)
         {
-            return (value is bool && (bool)value) ? Visibility.Visible : Visibility.Collapsed;
+            if (value == null) return Visibility.Collapsed;
+            bool comparer = true;
+            if (parameter != null)
+            {
+                comparer = System.Convert.ToBoolean(parameter);
+            }
+            return System.Convert.ToBoolean(value) == comparer ? Visibility.Visible : Visibility.Collapsed;
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, string language)
