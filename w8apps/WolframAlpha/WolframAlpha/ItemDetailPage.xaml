@@ -16,7 +16,7 @@
         <common:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
         <common:NullToVisibilityConverter x:Key="NullToVisibilityConverter"/>
         <common:EmptyToMoreConverter x:Key="EmptyToMoreConverter"/>
-        <x:String x:Key="AppName">Wolfram</x:String>
+        <x:String x:Key="AppName">Cobalt|Gamma</x:String>
     </Page.Resources>
 
     <!--

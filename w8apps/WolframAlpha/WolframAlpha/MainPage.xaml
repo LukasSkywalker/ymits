@@ -30,7 +30,7 @@
             <StackPanel>
                 <TextBlock
     				FontSize="16">
-    				<Run Text="Wolfram|Alpha by Lukas Diener"/>
+    				<Run Text="Cobalt|Gamma by Lukas Diener"/>
                 </TextBlock>
                 <TextBlock
     				FontSize="16">
@@ -54,7 +54,7 @@
                 </Grid.RowDefinitions>
 
                 <TextBlock FontSize="18" Grid.Row="0">
-    				<Run Text="Wolfram|Alpha by Lukas Diener"/>
+    				<Run Text="Cobalt|Gamma by Lukas Diener"/>
                 </TextBlock>
                 <ScrollViewer Grid.Row="1">
                     <StackPanel VerticalAlignment="Top" HorizontalAlignment="Left">

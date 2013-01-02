@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
+  <metadata>
+    <id>CharmFlyout</id>
+    <version>1.0.11</version>
+    <title>CharmFlyout</title>
+    <authors>JohnMichaelHauck</authors>
+    <owners>JohnMichaelHauck</owners>
+    <projectUrl>http://charmflyout.codeplex.com/</projectUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>A Custom Content Control for Windows 8 app Settings Charm Flyouts.</description>
+    <summary>http://w8isms.blogspot.com/2012/07/charmflyout-another-charming.html</summary>
+    <releaseNotes>Add IsOpenChanged and ContentPadding</releaseNotes>
+    <copyright>John Michael Hauck</copyright>
+    <tags>Charm Flyout Win8 WinRt XAML Popup Settings</tags>
+  </metadata>
+</package>
