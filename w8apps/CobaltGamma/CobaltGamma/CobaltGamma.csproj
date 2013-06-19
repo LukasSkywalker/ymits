@@ -167,7 +167,7 @@
   </ItemGroup>
   <ItemGroup>
     <Reference Include="CharmFlyoutLibrary">
-      <HintPath>..\packages\CharmFlyout.1.0.11\lib\winrt45\CharmFlyoutLibrary.dll</HintPath>
+      <HintPath>.\CharmFlyoutLibrary.dll</HintPath>
     </Reference>
   </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '11.0' ">

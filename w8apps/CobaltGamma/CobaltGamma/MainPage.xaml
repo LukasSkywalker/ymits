@@ -23,10 +23,14 @@
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
         <Button x:Name="KeyboardShowButton" Grid.Column="1" Grid.Row="1" VerticalAlignment="Bottom" Content="⌨" Tag="toggleKB" Click="ShowKeyboard" Style="{StaticResource KeyboardButtonStyle2}"/>
-        <cfo:CharmFlyout Grid.ColumnSpan="2" Grid.RowSpan="2"
+        
+        <!--<cfo:CharmFlyout Grid.ColumnSpan="2" Grid.RowSpan="2"
     		x:Name="flyoutAbout"
     		Heading="About"
     		HeadingBackgroundBrush="DarkGray">
+            <cfo:CharmFlyout.ParentFlyout>
+                <cfo:CharmFlyout/>
+            </cfo:CharmFlyout.ParentFlyout>
             <StackPanel>
                 <TextBlock
     				FontSize="16">
@@ -45,6 +49,7 @@
     		HeadingBackgroundBrush="DarkGray"/>
         <cfo:CharmFlyout Grid.ColumnSpan="2" Grid.RowSpan="2"
     		x:Name="flyoutPrivacy"
+            Visibility="Collapsed"
     		Heading="Privacy Policy"
     		HeadingBackgroundBrush="DarkGray">
             <Grid Margin="12,0,12,0">
@@ -91,7 +96,7 @@
                     </StackPanel>
                 </ScrollViewer>
             </Grid>
-        </cfo:CharmFlyout>
+        </cfo:CharmFlyout>-->
         <ListBox x:Name="HistoryListBox" Grid.Column="0" Grid.Row="0"  Margin="12,12,12,64" Width="320"
     		SelectionChanged="History_SelectionChanged" SelectedValuePath="Text" Visibility="Collapsed">
             <ListBox.ItemContainerStyle>
@@ -116,7 +121,7 @@
     		VerticalAlignment="Bottom" Margin="0,0,0,12" Click="ClearHistory" Visibility="Collapsed"/>
         <StackPanel Grid.Column="1" Grid.Row="0" Orientation="Vertical" HorizontalAlignment="Center" VerticalAlignment="Center">
             <StackPanel  Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Center">
-                <TextBox x:Name="searchTextBox" Margin="0,0,0,0" TabIndex="0" TextWrapping="Wrap" Text="" VerticalAlignment="Center" Width="268" KeyUp="Search_KeyUp"/>
+                <TextBox x:Name="searchTextBox" Margin="0,0,0,0" TabIndex="0" TextWrapping="Wrap" Text="" VerticalAlignment="Center" Width="481" KeyUp="Search_KeyUp"/>
                 <Button Content="Search" Margin="0,0,0,0" TabIndex="1" VerticalAlignment="Center" Click="Button_Click_1"/>
                 <Button Content="History" Click="ShowHistory" />
             </StackPanel>
@@ -148,13 +153,13 @@
                 <Button Content="∩" Tag="Intersection" Click="InsertCharacter" Style="{StaticResource KeyboardButtonStyle}"/>
                 <Button Content="∇" Tag="gradient" Click="InsertCharacter" Style="{StaticResource KeyboardButtonStyle}"/>
                 <Button Content="Δ" Tag="delta" Click="InsertCharacter" Style="{StaticResource KeyboardButtonStyle}"/>
-            </StackPanel>
-            <StackPanel x:Name="Row2" Orientation="Horizontal" HorizontalAlignment="Center" Grid.Column="0" Grid.Row="1">
                 <Button Content="α" Tag="alpha" Click="InsertCharacter" Style="{StaticResource KeyboardButtonStyle}"/>
                 <Button Content="β" Tag="beta" Click="InsertCharacter" Style="{StaticResource KeyboardButtonStyle}"/>
                 <Button Content="γ" Tag="gamma" Click="InsertCharacter" Style="{StaticResource KeyboardButtonStyle}"/>
                 <Button Content="δ" Tag="delta" Click="InsertCharacter" Style="{StaticResource KeyboardButtonStyle}"/>
                 <Button Content="ε" Tag="epsilon" Click="InsertCharacter" Style="{StaticResource KeyboardButtonStyle}"/>
+            </StackPanel>
+            <StackPanel x:Name="Row2" Orientation="Horizontal" HorizontalAlignment="Center" Grid.Column="0" Grid.Row="1">
                 <Button Content="ζ" Tag="zeta" Click="InsertCharacter" Style="{StaticResource KeyboardButtonStyle}"/>
                 <Button Content="η" Tag="eta" Click="InsertCharacter" Style="{StaticResource KeyboardButtonStyle}"/>
                 <Button Content="θ" Tag="theta" Click="InsertCharacter" Style="{StaticResource KeyboardButtonStyle}"/>
@@ -164,9 +169,6 @@
                 <Button Content="⊃" Tag="subset" Click="InsertCharacter" Style="{StaticResource KeyboardButtonStyle}"/>
                 <Button Content="⊆" Tag="subset" Click="InsertCharacter" Style="{StaticResource KeyboardButtonStyle}"/>
                 <Button Content="⊇" Tag="subset" Click="InsertCharacter" Style="{StaticResource KeyboardButtonStyle}"/>
-
-            </StackPanel>
-            <StackPanel x:Name="Row3" Orientation="Horizontal" HorizontalAlignment="Center" Grid.Column="0" Grid.Row="2">
                 <Button Content="μ" Tag="mu" Click="InsertCharacter" Style="{StaticResource KeyboardButtonStyle}"/>
                 <Button Content="ν" Tag="nu" Click="InsertCharacter" Style="{StaticResource KeyboardButtonStyle}"/>
                 <Button Content="ξ" Tag="xi" Click="InsertCharacter" Style="{StaticResource KeyboardButtonStyle}"/>
@@ -177,6 +179,8 @@
                 <Button Content="χ" Tag="chi" Click="InsertCharacter" Style="{StaticResource KeyboardButtonStyle}"/>
                 <Button Content="ψ" Tag="psi" Click="InsertCharacter" Style="{StaticResource KeyboardButtonStyle}"/>
                 <Button Content="ω" Tag="omega" Click="InsertCharacter" Style="{StaticResource KeyboardButtonStyle}"/>
+            </StackPanel>
+            <StackPanel x:Name="Row3" Orientation="Horizontal" HorizontalAlignment="Center" Grid.Column="0" Grid.Row="2">
                 <!--<Button Content="&#x0393;" Tag="gamma" Click="InsertCharacter" Style="{StaticResource KeyboardButtonStyle}"/>-->
                 <Button Content="Θ" Tag="theta" Click="InsertCharacter" Style="{StaticResource KeyboardButtonStyle}"/>
                 <!--<Button Content="&#x039B;" Tag="lambda" Click="InsertCharacter" Style="{StaticResource KeyboardButtonStyle}"/>-->
@@ -184,8 +188,6 @@
                 <Button Content="Υ" Tag="upsilon" Click="InsertCharacter" Style="{StaticResource KeyboardButtonStyle}"/>
                 <Button Content="Φ" Tag="phi" Click="InsertCharacter" Style="{StaticResource KeyboardButtonStyle}"/>
                 <Button Content="Ψ" Tag="psi" Click="InsertCharacter" Style="{StaticResource KeyboardButtonStyle}"/>
-            </StackPanel>
-            <StackPanel x:Name="Row4" Orientation="Horizontal" HorizontalAlignment="Center" Grid.Column="0" Grid.Row="3">
                 <Button Content="Ω" Tag="omega" Click="InsertCharacter" Style="{StaticResource KeyboardButtonStyle}"/>
                 <!--<Button Content="omega_inv" Tag="" Click="InsertCharacter" Style="{StaticResource KeyboardButtonStyle}"/>-->
                 <Button Content="Å" Tag="angström" Click="InsertCharacter" Style="{StaticResource KeyboardButtonStyle}"/>
@@ -200,7 +202,7 @@
                 <Button Content="✝" Tag="latin cross" Click="InsertCharacter" Style="{StaticResource KeyboardButtonStyle}"/>
                 <Button Content="∧" Tag="and" Click="InsertCharacter" Style="{StaticResource KeyboardButtonStyle}"/>
                 <Button Content="∨" Tag="or" Click="InsertCharacter" Style="{StaticResource KeyboardButtonStyle}"/>
-                <Button Content="⌨" Tag="toggleKB" Click="ShowKeyboard" Style="{StaticResource KeyboardButtonStyle2}"/>
+                <Button Content="⌨" Tag="toggleKB" Click="ShowKeyboard" Style="{StaticResource KeyboardButtonStyle2}" Margin="68,0,0,0"/>
             </StackPanel>
         </Grid>
     </Grid>

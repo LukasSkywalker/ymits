@@ -107,9 +107,9 @@ namespace CobaltGamma
 
         private void CommandsRequested(SettingsPane sender, SettingsPaneCommandsRequestedEventArgs args)
         {
-            args.Request.ApplicationCommands.Add(new SettingsCommand("A", "About", (p) => { flyoutAbout.IsOpen = true; }));
-            args.Request.ApplicationCommands.Add(new SettingsCommand("S", "Settings", (p) => { flyoutSettings.IsOpen = true; }));
-            args.Request.ApplicationCommands.Add(new SettingsCommand("P", "Privacy Policy", (p) => { flyoutPrivacy.IsOpen = true; }));
+            //args.Request.ApplicationCommands.Add(new SettingsCommand("A", "About", (p) => { flyoutAbout.IsOpen = true; }));
+            //args.Request.ApplicationCommands.Add(new SettingsCommand("S", "Settings", (p) => { flyoutSettings.IsOpen = true; }));
+            //args.Request.ApplicationCommands.Add(new SettingsCommand("P", "Privacy Policy", (p) => { flyoutPrivacy.IsOpen = true; }));
         }
 
         private void DataChangeHandler(ApplicationData sender, object args)
@@ -204,6 +204,13 @@ namespace CobaltGamma
             }
 
             HideHistory();
+
+            try
+            {
+                String queryText = (String)e.Parameter;
+                searchTextBox.Text = queryText;
+            }
+            catch (NullReferenceException) { }
         }
 
         void StartPage_CommandsRequested(SettingsPane sender, SettingsPaneCommandsRequestedEventArgs args)

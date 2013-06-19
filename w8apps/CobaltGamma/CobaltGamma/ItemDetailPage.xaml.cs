@@ -891,5 +891,13 @@ namespace CobaltGamma
             }
             var chosenCommand = await menu.ShowForSelectionAsync(GetElementRect((FrameworkElement)sender, Placement.Above));
         }
+
+        private void Querytext_Click(object sender, RoutedEventArgs e)
+        {
+            Button tb = ((Button)sender);
+            String query = (String)tb.Content;
+            query = query.Trim('“', '”');
+            this.Frame.Navigate(typeof(MainPage), query);
+        }
     }
 }
