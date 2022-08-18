@@ -1,0 +1,71 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<AdSettings xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+            xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <CultureDescriptors>
+    <AdCultureDescriptor CultureName="en-AU">
+      <Probabilities Probability="99" AdType="PubCenter" />
+      <Probabilities Probability="1" AdType="AdDuplex" />
+    </AdCultureDescriptor>
+    <AdCultureDescriptor CultureName="nl-BE">
+      <Probabilities Probability="99" AdType="PubCenter" />
+      <Probabilities Probability="1" AdType="AdDuplex" />
+    </AdCultureDescriptor>
+    <AdCultureDescriptor CultureName="nl-FR">
+      <Probabilities Probability="99" AdType="PubCenter" />
+      <Probabilities Probability="1" AdType="AdDuplex" />
+    </AdCultureDescriptor>
+    <AdCultureDescriptor CultureName="en-CA">
+      <Probabilities Probability="99" AdType="PubCenter" />
+      <Probabilities Probability="1" AdType="AdDuplex" />
+    </AdCultureDescriptor>
+    <AdCultureDescriptor CultureName="fr-CA">
+      <Probabilities Probability="99" AdType="PubCenter" />
+      <Probabilities Probability="1" AdType="AdDuplex" />
+    </AdCultureDescriptor>
+    <AdCultureDescriptor CultureName="fi-FI">
+      <Probabilities Probability="99" AdType="PubCenter" />
+      <Probabilities Probability="1" AdType="AdDuplex" />
+    </AdCultureDescriptor>
+    <AdCultureDescriptor CultureName="fr-FR">
+      <Probabilities Probability="99" AdType="PubCenter" />
+      <Probabilities Probability="1" AdType="AdDuplex" />
+    </AdCultureDescriptor>
+    <AdCultureDescriptor CultureName="de-DE">
+      <Probabilities Probability="99" AdType="PubCenter" />
+      <Probabilities Probability="1" AdType="AdDuplex" />
+    </AdCultureDescriptor>
+    <AdCultureDescriptor CultureName="it-IT">
+      <Probabilities Probability="99" AdType="PubCenter" />
+      <Probabilities Probability="1" AdType="AdDuplex" />
+    </AdCultureDescriptor>
+    <AdCultureDescriptor CultureName="nl-NL">
+      <Probabilities Probability="99" AdType="PubCenter" />
+      <Probabilities Probability="1" AdType="AdDuplex" />
+    </AdCultureDescriptor>
+    <AdCultureDescriptor CultureName="nb-NO">
+      <Probabilities Probability="99" AdType="PubCenter" />
+      <Probabilities Probability="1" AdType="AdDuplex" />
+    </AdCultureDescriptor>
+    <AdCultureDescriptor CultureName="nn-NO">
+      <Probabilities Probability="99" AdType="PubCenter" />
+      <Probabilities Probability="1" AdType="AdDuplex" />
+    </AdCultureDescriptor>
+    <AdCultureDescriptor CultureName="es-ES">
+      <Probabilities Probability="99" AdType="PubCenter" />
+      <Probabilities Probability="1" AdType="AdDuplex" />
+    </AdCultureDescriptor>
+    <AdCultureDescriptor CultureName="en-GB">
+      <Probabilities Probability="99" AdType="PubCenter" />
+      <Probabilities Probability="1" AdType="AdDuplex" />
+    </AdCultureDescriptor>
+    <AdCultureDescriptor CultureName="en-US">
+      <Probabilities Probability="99" AdType="PubCenter" />
+      <Probabilities Probability="1" AdType="AdDuplex" />
+    </AdCultureDescriptor>
+    <AdCultureDescriptor CultureName="default">
+      <Probabilities Probability="30" AdType="AdDuplex" />
+      <Probabilities Probability="30" AdType="MobFox" />
+      <Probabilities Probability="30" AdType="AdMob" />
+    </AdCultureDescriptor>
+  </CultureDescriptors>
+</AdSettings>

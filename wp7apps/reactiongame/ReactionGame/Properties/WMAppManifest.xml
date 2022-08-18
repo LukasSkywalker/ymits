@@ -1,0 +1,21 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Deployment xmlns="http://schemas.microsoft.com/windowsphone/2009/deployment" AppPlatformVersion="7.1">
+  <App xmlns="" ProductID="{140821b7-b366-4236-b9d5-e26d486dee25}" Title="ReactionGame" RuntimeType="Silverlight" Version="1.0.0.0" Genre="apps.normal" Author="ReactionGame author" Description="Sample description" Publisher="ReactionGame">
+    <IconPath IsRelative="true" IsResource="false">rg_62.png</IconPath>
+    <Capabilities>
+      <Capability Name="ID_CAP_GAMERSERVICES" />
+    </Capabilities>
+    <Tasks>
+      <DefaultTask Name="_default" NavigationPage="MainPage.xaml" />
+    </Tasks>
+    <Tokens>
+      <PrimaryToken TokenID="ReactionGameToken" TaskName="_default">
+        <TemplateType5>
+          <BackgroundImageURI IsRelative="true" IsResource="false">rg_173.png</BackgroundImageURI>
+          <Count>0</Count>
+          <Title>ReactionGame</Title>
+        </TemplateType5>
+      </PrimaryToken>
+    </Tokens>
+  </App>
+</Deployment>
